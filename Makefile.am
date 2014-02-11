@@ -8,6 +8,7 @@ src_cm4all_qrelay_SOURCES = \
 	src/Config.hxx \
 	src/CommandLine.cxx src/CommandLine.hxx \
 	src/Event.cxx src/Event.hxx \
+	src/net/SocketAddress.cxx src/net/SocketAddress.hxx \
 	src/net/ServerSocket.cxx src/net/ServerSocket.hxx \
 	src/djb/NetstringError.cxx src/djb/NetstringError.hxx \
 	src/djb/NetstringServer.cxx src/djb/NetstringServer.hxx \

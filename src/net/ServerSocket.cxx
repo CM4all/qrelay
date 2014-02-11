@@ -5,11 +5,11 @@
  */
 
 #include "ServerSocket.hxx"
+#include "SocketAddress.hxx"
 #include "util/Error.hxx"
 
 #include <daemon/log.h>
 
-#include <sys/un.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
@@ -28,15 +28,15 @@ ServerSocket::~ServerSocket()
 }
 
 static int
-Listen(const sockaddr *address, size_t size, Error &error)
+Listen(const SocketAddress &address, Error &error)
 {
-    int fd = socket(address->sa_family, SOCK_STREAM, 0);
+    int fd = socket(address.GetFamily(), SOCK_STREAM, 0);
     if (fd < 0) {
         error.SetErrno("Failed to create socket");
         return -1;
     }
 
-    if (bind(fd, address, size) < 0) {
+    if (bind(fd, address, address.GetSize()) < 0) {
         error.SetErrno("Failed to bind");
         close(fd);
         return -1;
@@ -52,11 +52,11 @@ Listen(const sockaddr *address, size_t size, Error &error)
 }
 
 bool
-ServerSocket::Listen(const sockaddr *address, size_t size, Error &error)
+ServerSocket::Listen(const SocketAddress &address, Error &error)
 {
     assert(fd < 0);
 
-    fd = ::Listen(address, size, error);
+    fd = ::Listen(address, error);
     if (fd < 0)
         return false;
 
@@ -71,15 +71,10 @@ ServerSocket::ListenPath(const char *path, Error &error)
 
     unlink(path);
 
-    const size_t path_length = strlen(path);
+    SocketAddress address;
+    address.SetLocal(path);
 
-    sockaddr_un sun;
-    sun.sun_family = AF_UNIX;
-    memcpy(sun.sun_path, path, path_length + 1);
-
-    const size_t size = sizeof(sun) - sizeof(sun.sun_path) + path_length;
-
-    return Listen((const sockaddr *)&sun, size, error);
+    return Listen(address, error);
 }
 
 void

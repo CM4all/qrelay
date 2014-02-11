@@ -11,6 +11,7 @@
 
 struct sockaddr;
 class Error;
+class SocketAddress;
 
 class ServerSocket {
     int fd;
@@ -21,7 +22,7 @@ public:
     ServerSocket();
     ~ServerSocket();
 
-    bool Listen(const sockaddr *address, size_t size, Error &error);
+    bool Listen(const SocketAddress &address, Error &error);
     bool ListenPath(const char *path, Error &error);
 
 protected:
