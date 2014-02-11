@@ -7,7 +7,7 @@
 
 #include "Logger.hxx"
 #include "QmqpRelayConnection.hxx"
-#include "ServerSocket.hxx"
+#include "net/ServerSocket.hxx"
 
 class QmqpRelayServer final : public ServerSocket {
     Logger logger;
