@@ -16,7 +16,6 @@
 #include <errno.h>
 
 static constexpr timeval busy_timeout{5, 0};
-static constexpr timeval idle_timeout{20, 0};
 
 NetstringServer::NetstringServer(int _fd)
     :fd(_fd), event([this](int, short events){ OnEvent(events); }),
@@ -68,7 +67,6 @@ NetstringServer::SendResponse(const void *data, size_t size)
         !Send(",", 1, MSG_DONTWAIT))
         return false;
 
-    event.Add(&idle_timeout);
     return true;
 }
 

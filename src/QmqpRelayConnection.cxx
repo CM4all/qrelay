@@ -9,6 +9,7 @@ void
 QmqpRelayConnection::OnRequest(void *data, size_t size)
 {
     SendResponse(data, size);
+    delete this;
 }
 
 void
