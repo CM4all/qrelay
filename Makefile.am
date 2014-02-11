@@ -8,11 +8,16 @@ src_cm4all_qrelay_SOURCES = \
 	src/Config.hxx \
 	src/CommandLine.cxx src/CommandLine.hxx \
 	src/Event.cxx src/Event.hxx \
+	src/net/Error.cxx src/net/Error.hxx \
 	src/net/SocketAddress.cxx src/net/SocketAddress.hxx \
 	src/net/ServerSocket.cxx src/net/ServerSocket.hxx \
+	src/net/ConnectSocket.cxx src/net/ConnectSocket.hxx \
+	src/net/SendBuffer.cxx src/net/SendBuffer.hxx \
 	src/djb/NetstringError.cxx src/djb/NetstringError.hxx \
 	src/djb/NetstringServer.cxx src/djb/NetstringServer.hxx \
+	src/djb/NetstringClient.cxx src/djb/NetstringClient.hxx \
 	src/djb/NetstringInput.cxx src/djb/NetstringInput.hxx \
+	src/djb/NetstringOutput.cxx src/djb/NetstringOutput.hxx \
 	src/util/Error.cxx src/util/Error.hxx \
 	src/util/HugeAllocator.cxx src/util/HugeAllocator.hxx \
 	src/Instance.hxx \

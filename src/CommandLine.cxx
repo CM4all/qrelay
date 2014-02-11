@@ -4,6 +4,7 @@
 
 #include "CommandLine.hxx"
 #include "Config.hxx"
+#include "util/Error.hxx"
 
 #include <daemon/daemonize.h>
 
@@ -27,6 +28,8 @@ ParseCommandLine(int argc, char **argv)
         ("help", "produce help message")
         ("listen", po::value<std::string>()->required(),
          "listen on this UNIX domain socket")
+        ("connect", po::value<std::string>()->required(),
+         "connect to this QMQP server")
         ("no-daemon", "don't daemonize")
         ("pidfile", po::value<std::string>(), "create a pid file")
         ("user", po::value<std::string>(), "switch to another user id")
@@ -80,6 +83,13 @@ ParseCommandLine(int argc, char **argv)
 
     Config config;
     config.listen = vm["listen"].as<std::string>();
+
+    Error error;
+    if (!config.connect.Lookup(vm["connect"].as<std::string>().c_str(),
+                               "qmqp", SOCK_STREAM, error)) {
+        cerr << error.GetMessage() << endl;
+        exit(EXIT_FAILURE);
+    }
 
     return config;
 }

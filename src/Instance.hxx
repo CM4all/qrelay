@@ -8,14 +8,16 @@
 #include "Logger.hxx"
 #include "QmqpRelayServer.hxx"
 
+struct Config;
+
 class Instance {
 public:
     Logger logger;
 
     QmqpRelayServer qmqp_relay_server;
 
-    Instance()
-        :qmqp_relay_server(logger) {}
+    Instance(const Config &config)
+        :qmqp_relay_server(config, logger) {}
 };
 
 #endif

@@ -9,15 +9,19 @@
 #include "QmqpRelayConnection.hxx"
 #include "net/ServerSocket.hxx"
 
+struct Config;
+
 class QmqpRelayServer final : public ServerSocket {
+    const Config &config;
     Logger logger;
 
 public:
-    QmqpRelayServer(const Logger &_logger):logger(_logger) {}
+    QmqpRelayServer(const Config &_config, const Logger &_logger)
+        :config(_config), logger(_logger) {}
 
 protected:
     virtual void OnAccept(int fd) override {
-        new QmqpRelayConnection(logger, fd);
+        new QmqpRelayConnection(config, logger, fd);
     }
 };
 

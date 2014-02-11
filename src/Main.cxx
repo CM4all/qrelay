@@ -40,7 +40,7 @@ Run(const Config &config)
         sigint_event(SIGINT, quit_handler),
         sigquit_event(SIGQUIT, quit_handler);
 
-    Instance instance;
+    Instance instance(config);
 
     Error error;
     if (!instance.qmqp_relay_server.ListenPath(config.listen.c_str(), error)) {

@@ -48,6 +48,9 @@ public:
      * Make this a "local" address (UNIX domain socket).
      */
     void SetLocal(const char *path);
+
+    bool Lookup(const char *host, const char *service, int socktype,
+                Error &error);
 };
 
 #endif
