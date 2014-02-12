@@ -70,6 +70,12 @@ NetstringServer::SendResponse(const void *data, size_t size)
     return true;
 }
 
+bool
+NetstringServer::SendResponse(const char *data)
+{
+    return SendResponse((const void *)data, strlen(data));
+}
+
 void
 NetstringServer::OnEvent(short events)
 {

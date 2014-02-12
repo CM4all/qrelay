@@ -27,6 +27,7 @@ public:
 
 protected:
     bool SendResponse(const void *data, size_t size);
+    bool SendResponse(const char *data);
 
     /**
      * A netstring has been received.
