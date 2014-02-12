@@ -30,7 +30,9 @@ ServerSocket::~ServerSocket()
 static int
 Listen(const SocketAddress &address, Error &error)
 {
-    int fd = socket(address.GetFamily(), SOCK_STREAM, 0);
+    int fd = socket(address.GetFamily(),
+                    SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK,
+                    0);
     if (fd < 0) {
         error.SetErrno("Failed to create socket");
         return -1;
