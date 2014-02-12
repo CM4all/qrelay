@@ -4,12 +4,13 @@
  * author: Max Kellermann <mk@cm4all.com>
  */
 
-#include "NetstringServer.hxx"
+#include "NetstringInput.hxx"
 #include "NetstringError.hxx"
 #include "util/HugeAllocator.hxx"
 #include "util/Error.hxx"
 #include "util/Domain.hxx"
 
+#include <sys/socket.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
