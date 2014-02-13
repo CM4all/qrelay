@@ -1,0 +1,22 @@
+# -*- shell-script -*-
+
+# Which user should qrelay run as?
+#DAEMON_USER=cm4all-qrelay
+
+# Which group should qrelay run as?
+#DAEMON_GROUP=
+
+# Process which receives the daemon's log messages
+#LOGGER="exec logger -p daemon.info -t cm4all-qrelay"
+
+# Which user should the qrelay logger run as?
+#LOGGER_USER=cm4all-logger
+
+# Which path does qrelay listen on?
+#LISTEN=/var/run/cm4all/qrelay.sock
+
+# Which QMQP server does qrelay connect to?
+#CONNECT=localhost
+
+# Other options
+#OPTIONS="-v"

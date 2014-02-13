@@ -1,0 +1,9 @@
+/*.after
+/*.before
+/substvars
+/stamp-*
+/files
+/*.substvars
+/tmp
+
+/cm4all-qrelay

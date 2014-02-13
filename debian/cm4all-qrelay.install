@@ -1,0 +1,2 @@
+src/cm4all-qrelay usr/sbin
+debian/cm4all-qrelay.service lib/systemd/system

@@ -1,0 +1,7 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@ --with=autoreconf --parallel --with=systemd
+
+override_dh_auto_install:
+override_dh_strip:

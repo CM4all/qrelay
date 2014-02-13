@@ -1,0 +1,21 @@
+Source: cm4all-qrelay
+Section: non-free/mail
+Priority: extra
+Maintainer: Max Kellermann <mk@cm4all.com>
+Build-Depends: debhelper (>= 9), dh-autoreconf, dh-systemd,
+ autoconf (>= 2.60), automake (>= 1.11),
+ g++ (>= 4.6), libc6-dev (>= 2.13),
+ libevent-dev (>= 2.0.19),
+ libcm4all-inline-dev (>= 0.3.4),
+ libcm4all-daemon-dev (>= 0.4.1)
+Standards-Version: 3.9.1
+XS-Python-Standards-Version: 0.4
+XS-Python-Version: all
+Vcs-git: git.intern.cm-ag:/srv/git/master/qrelay.git
+
+Package: cm4all-qrelay
+Architecture: any
+Depends: ${shlibs:Depends}, init-system-helpers
+Description: QMQP relay daemon
+ qrelay is a daemon that accepts QMQP on a UNIX domain socket and
+ relays it to another QMQP daemon.

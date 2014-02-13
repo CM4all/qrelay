@@ -1,0 +1,8 @@
+#! /bin/sh -e
+# Author: Max Kellermann <mk@cm4all.com>
+
+if [ "$1" = "purge" ]; then
+    rm -f /var/run/cm4all/qrelay.pid /var/run/cm4all/qrelay.sock
+fi
+
+#DEBHELPER#
