@@ -170,4 +170,6 @@ NetstringInput::Receive(int fd, Error &error)
     case State::VALUE:
         return ReceiveValue(fd, error);
     }
+
+    gcc_unreachable();
 }
