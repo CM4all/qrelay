@@ -33,7 +33,7 @@ AC_SUBST(AM_LDFLAGS)
 
 AM_CXXFLAGS="-std=gnu++0x -Wall"
 AM_CPPFLAGS=""
-AM_LDFLAGS=""
+AM_LDFLAGS="-Wl,--as-needed"
 
 if test "$am_cv_CC_dependencies_compiler_type" = "gcc3"; then
 	AM_CXXFLAGS="$AM_CXXFLAGS -Wextra"
