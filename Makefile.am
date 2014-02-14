@@ -15,6 +15,7 @@ src_cm4all_qrelay_SOURCES = \
 	src/net/ConnectSocket.cxx src/net/ConnectSocket.hxx \
 	src/net/SendBuffer.cxx src/net/SendBuffer.hxx \
 	src/djb/NetstringError.cxx src/djb/NetstringError.hxx \
+	src/djb/NetstringParser.cxx src/djb/NetstringParser.hxx \
 	src/djb/NetstringServer.cxx src/djb/NetstringServer.hxx \
 	src/djb/NetstringClient.cxx src/djb/NetstringClient.hxx \
 	src/djb/NetstringInput.cxx src/djb/NetstringInput.hxx \
