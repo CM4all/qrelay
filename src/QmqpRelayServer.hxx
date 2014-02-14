@@ -7,22 +7,11 @@
 
 #include "Logger.hxx"
 #include "QmqpRelayConnection.hxx"
-#include "net/ServerSocket.hxx"
+#include "net/TemplateServerSocket.hxx"
 
 struct Config;
 
-class QmqpRelayServer final : public ServerSocket {
-    const Config &config;
-    Logger logger;
-
-public:
-    QmqpRelayServer(const Config &_config, const Logger &_logger)
-        :config(_config), logger(_logger) {}
-
-protected:
-    virtual void OnAccept(int fd) override {
-        new QmqpRelayConnection(config, logger, fd);
-    }
-};
+typedef TemplateServerSocket<QmqpRelayConnection,
+                             const Config &, Logger> QmqpRelayServer;
 
 #endif
