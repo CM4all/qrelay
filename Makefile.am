@@ -19,6 +19,8 @@ src_cm4all_qrelay_SOURCES = \
 	src/djb/NetstringClient.cxx src/djb/NetstringClient.hxx \
 	src/djb/NetstringInput.cxx src/djb/NetstringInput.hxx \
 	src/djb/NetstringOutput.cxx src/djb/NetstringOutput.hxx \
+	src/util/Range.hxx \
+	src/util/ConstBuffer.hxx \
 	src/util/Error.cxx src/util/Error.hxx \
 	src/util/HugeAllocator.cxx src/util/HugeAllocator.hxx \
 	src/Instance.hxx \
