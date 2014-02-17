@@ -89,6 +89,8 @@ ConnectSocket::OnEvent(short events)
         return;
     }
 
-    on_connect(fd);
+    const int fd2 = fd;
     fd = -1;
+
+    on_connect(fd2);
 }
