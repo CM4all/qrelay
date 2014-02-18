@@ -1,6 +1,6 @@
 cm4all-qrelay (0.2) unstable; urgency=low
 
-  * 
+  * load settings from /etc/cm4all/qrelay.conf
 
  --   
 

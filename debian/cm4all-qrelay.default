@@ -12,11 +12,8 @@
 # Which user should the qrelay logger run as?
 #LOGGER_USER=cm4all-logger
 
-# Which path does qrelay listen on?
-#LISTEN=/var/run/cm4all/qrelay.sock
-
-# Which QMQP server does qrelay connect to?
-#CONNECT=localhost
+# Configuration file
+#CONFIG=/etc/cm4all/qrelay.conf
 
 # Other options
 #OPTIONS="-v"

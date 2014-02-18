@@ -5,7 +5,7 @@ AM_CPPFLAGS += \
 
 bin_PROGRAMS = src/cm4all-qrelay
 src_cm4all_qrelay_SOURCES = \
-	src/Config.hxx \
+	src/Config.cxx src/Config.hxx \
 	src/CommandLine.cxx src/CommandLine.hxx \
 	src/Event.cxx src/Event.hxx \
 	src/net/Error.cxx src/net/Error.hxx \
@@ -20,10 +20,14 @@ src_cm4all_qrelay_SOURCES = \
 	src/djb/NetstringClient.cxx src/djb/NetstringClient.hxx \
 	src/djb/NetstringInput.cxx src/djb/NetstringInput.hxx \
 	src/djb/NetstringOutput.cxx src/djb/NetstringOutput.hxx \
+	src/util/CharUtil.hxx \
+	src/util/StringUtil.cxx src/util/StringUtil.hxx \
+	src/util/Tokenizer.cxx src/util/Tokenizer.hxx \
 	src/util/Range.hxx \
 	src/util/ConstBuffer.hxx \
 	src/util/Error.cxx src/util/Error.hxx \
 	src/util/HugeAllocator.cxx src/util/HugeAllocator.hxx \
+	src/io/TextFile.cxx src/io/TextFile.hxx \
 	src/Instance.hxx \
 	src/Logger.hxx \
 	src/QmqpRelayServer.hxx \

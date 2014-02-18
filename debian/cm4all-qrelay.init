@@ -26,8 +26,7 @@ DAEMON_USER=cm4all-qrelay
 DAEMON_GROUP=
 LOGGER="exec logger -p daemon.info -t cm4all-qrelay"
 LOGGER_USER=cm4all-logger
-LISTEN=$RUNDIR/qrelay.sock
-CONNECT=localhost
+CONFIG=/etc/cm4all/qrelay.conf
 OPTIONS=""
 
 test -f /etc/default/cm4all-qrelay && source /etc/default/cm4all-qrelay
@@ -53,8 +52,7 @@ case "$1" in
             --user "$DAEMON_USER" \
             --logger "$LOGGER" \
             --logger-user "$LOGGER_USER" \
-            --listen "$LISTEN" \
-            --connect "$CONNECT" \
+            --config "$CONFIG" \
             $OPTIONS
 	log_end_msg $?
 	;;

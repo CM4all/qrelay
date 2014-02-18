@@ -26,10 +26,8 @@ ParseCommandLine(int argc, char **argv)
     po::options_description desc("Allowed options");
     desc.add_options()
         ("help", "produce help message")
-        ("listen", po::value<std::string>()->required(),
-         "listen on this UNIX domain socket")
-        ("connect", po::value<std::string>()->required(),
-         "connect to this QMQP server")
+        ("config", po::value<std::string>()->required(),
+         "load this configuration file")
         ("no-daemon", "don't daemonize")
         ("pidfile", po::value<std::string>(), "create a pid file")
         ("user", po::value<std::string>(), "switch to another user id")
@@ -82,11 +80,9 @@ ParseCommandLine(int argc, char **argv)
     }
 
     Config config;
-    config.listen = vm["listen"].as<std::string>();
 
     Error error;
-    if (!config.connect.Lookup(vm["connect"].as<std::string>().c_str(),
-                               "qmqp", SOCK_STREAM, error)) {
+    if (!config.LoadFile(vm["config"].as<std::string>().c_str(), error)) {
         cerr << error.GetMessage() << endl;
         exit(EXIT_FAILURE);
     }

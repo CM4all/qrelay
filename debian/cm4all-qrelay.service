@@ -3,10 +3,9 @@ Description=CM4all QMQP relay daemon
 After=network.target
 
 [Service]
-Environment=LISTEN=%t/cm4all/qrelay.sock
-Environment=CONNECT=localhost
+Environment=CONFIG=/etc/cm4all/qrelay.conf
 EnvironmentFile=/etc/default/cm4all-qrelay
-ExecStart=/usr/sbin/cm4all-qrelay --no-daemon --listen ${LISTEN} --connect ${CONNECT} --user cm4all-qrelay
+ExecStart=/usr/sbin/cm4all-qrelay --no-daemon --config ${CONFIG} --user cm4all-qrelay
 
 [Install]
 WantedBy=multi-user.target

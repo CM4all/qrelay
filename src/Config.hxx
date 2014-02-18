@@ -9,10 +9,22 @@
 
 #include <string>
 
+class Error;
+class Tokenizer;
+class TextFile;
+
 struct Config {
     std::string listen;
 
     SocketAddress connect;
+
+    Config() {
+        connect.Clear();
+    }
+
+    bool ParseLine(Tokenizer &tokenizer, Error &error);
+    bool LoadFile(TextFile &file, Error &error);
+    bool LoadFile(const char *path, Error &error);
 };
 
 #endif
