@@ -14,12 +14,28 @@ class Tokenizer;
 class TextFile;
 
 struct Config {
+    struct Action {
+        SocketAddress connect;
+
+        void Clear() {
+            connect.Clear();
+        }
+
+        bool IsDefined() const {
+            return connect.IsDefined();
+        }
+    };
+
     std::string listen;
 
-    SocketAddress connect;
+    Action action;
 
     Config() {
-        connect.Clear();
+        action.Clear();
+    }
+
+    const Action &GetAction() const {
+        return action;
     }
 
     bool ParseLine(Tokenizer &tokenizer, Error &error);

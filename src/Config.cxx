@@ -44,12 +44,12 @@ Config::ParseLine(Tokenizer &tokenizer, Error &error)
             return false;
         }
 
-        if (connect.IsDefined()) {
+        if (action.IsDefined()) {
             error.Format(config_domain, "duplicate '%s'", key);
             return false;
         }
 
-        return connect.Lookup(value, "qmqp", SOCK_STREAM, error);
+        return action.connect.Lookup(value, "qmqp", SOCK_STREAM, error);
     } else {
         error.Format(config_domain, "unknown option '%s'", key);
         return false;
@@ -82,7 +82,7 @@ Config::LoadFile(TextFile &file, Error &error)
         return false;
     }
 
-    if (!connect.IsDefined()) {
+    if (!action.connect.IsDefined()) {
         error.Format(config_domain, "no 'connect' in %s", file.GetPath());
         return false;
     }

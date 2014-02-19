@@ -64,7 +64,7 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
                 delete this;
         });
 
-    connect.Connect(config.connect);
+    connect.Connect(config.GetAction().connect);
 }
 
 void
