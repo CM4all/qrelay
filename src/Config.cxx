@@ -65,8 +65,10 @@ Config::LoadFile(TextFile &file, Error &error)
     char *line;
     while ((line = file.ReadLine()) != nullptr) {
         Tokenizer tokenizer(line);
-        if (!ParseLine(tokenizer, error))
+        if (!ParseLine(tokenizer, error)) {
+            file.PrefixError(error);
             return false;
+        }
     }
 
     if (listen.empty()) {
