@@ -15,9 +15,6 @@ static constexpr Domain config_domain("config");
 bool
 Config::ParseLine(Tokenizer &tokenizer, Error &error)
 {
-    if (tokenizer.IsEnd() || tokenizer.CurrentChar() == '#')
-        return true;
-
     const char *key = tokenizer.NextWord(error);
     if (key == nullptr) {
         assert(error.IsDefined());
@@ -65,7 +62,16 @@ Config::LoadFile(TextFile &file, Error &error)
     char *line;
     while ((line = file.ReadLine()) != nullptr) {
         Tokenizer tokenizer(line);
+        if (tokenizer.IsEnd() || tokenizer.CurrentChar() == '#')
+            continue;
+
         if (!ParseLine(tokenizer, error)) {
+            file.PrefixError(error);
+            return false;
+        }
+
+        if (!tokenizer.IsEnd()) {
+            error.Set(config_domain, "too many arguments");
             file.PrefixError(error);
             return false;
         }
