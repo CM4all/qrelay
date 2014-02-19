@@ -24,6 +24,8 @@ struct Config {
         bool IsDefined() const {
             return connect.IsDefined();
         }
+
+        bool ParseConnect(Tokenizer &tokenizer, Error &error);
     };
 
     std::string listen;

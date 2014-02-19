@@ -13,6 +13,21 @@
 static constexpr Domain config_domain("config");
 
 bool
+Config::Action::ParseConnect(Tokenizer &tokenizer, Error &error)
+{
+    assert(!IsDefined());
+
+    const char *value = tokenizer.NextString(error);
+    if (value == nullptr || *value == 0) {
+        if (!error.IsDefined())
+            error.Set(config_domain, "missing value");
+        return false;
+    }
+
+    return connect.Lookup(value, "qmqp", SOCK_STREAM, error);
+}
+
+bool
 Config::ParseLine(Tokenizer &tokenizer, Error &error)
 {
     const char *key = tokenizer.NextWord(error);
@@ -37,19 +52,12 @@ Config::ParseLine(Tokenizer &tokenizer, Error &error)
         listen = value;
         return true;
     } else if (strcmp(key, "connect") == 0) {
-        const char *value = tokenizer.NextString(error);
-        if (value == nullptr || *value == 0) {
-            if (!error.IsDefined())
-                error.Set(config_domain, "missing value");
-            return false;
-        }
-
         if (action.IsDefined()) {
             error.Format(config_domain, "duplicate '%s'", key);
             return false;
         }
 
-        return action.connect.Lookup(value, "qmqp", SOCK_STREAM, error);
+        return action.ParseConnect(tokenizer, error);
     } else {
         error.Format(config_domain, "unknown option '%s'", key);
         return false;
