@@ -3,22 +3,11 @@
  */
 
 #include "QmqpRelayConnection.hxx"
+#include "Mail.hxx"
 #include "djb/NetstringParser.hxx"
 #include "Config.hxx"
 #include "util/ConstBuffer.hxx"
 #include "util/Error.hxx"
-
-#include <vector>
-
-struct QmqpMail {
-    ConstBuffer<char> message;
-    ConstBuffer<char> tail;
-
-    ConstBuffer<char> sender;
-    std::vector<ConstBuffer<char>> recipients;
-
-    bool Parse(ConstBuffer<char> input);
-};
 
 template<typename T>
 static inline constexpr ConstBuffer<T>

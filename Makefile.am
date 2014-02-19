@@ -30,6 +30,7 @@ src_cm4all_qrelay_SOURCES = \
 	src/io/TextFile.cxx src/io/TextFile.hxx \
 	src/Instance.hxx \
 	src/Logger.hxx \
+	src/Mail.hxx \
 	src/QmqpRelayServer.hxx \
 	src/QmqpRelayConnection.cxx src/QmqpRelayConnection.hxx \
 	src/Main.cxx
