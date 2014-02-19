@@ -64,7 +64,16 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
                 delete this;
         });
 
-    connect.Connect(config.GetAction().connect);
+    Error error;
+    const Config::Action *action = config.GetAction(mail, error);
+    if (action == nullptr) {
+        logger(error.GetMessage());
+        if (SendResponse("Drule error"))
+            delete this;
+        return;
+    }
+
+    connect.Connect(action->connect);
 }
 
 void

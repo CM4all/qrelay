@@ -8,10 +8,16 @@
 #include "net/SocketAddress.hxx"
 
 #include <string>
+#include <list>
 
 class Error;
 class Tokenizer;
 class TextFile;
+struct QmqpMail;
+
+enum class TriBool {
+    FALSE, TRUE, ERROR,
+};
 
 struct Config {
     struct Action {
@@ -26,15 +32,35 @@ struct Config {
         }
 
         bool ParseConnect(Tokenizer &tokenizer, Error &error);
+        bool Parse(Tokenizer &tokenizer, Error &error);
+    };
+
+    struct Condition {
+        std::string recipient;
+
+        bool IsDefined() const {
+            return !recipient.empty();
+        }
+
+        TriBool Match(const QmqpMail &mail, Error &error) const;
+
+        bool Parse(Tokenizer &tokenizer, Error &error);
+    };
+
+    struct Rule {
+        Condition condition;
+        Action action;
+
+        bool Parse(Tokenizer &tokenizer, Error &error);
     };
 
     std::string listen;
 
+    std::list<Rule> rules;
+
     Action action;
 
-    const Action &GetAction() const {
-        return action;
-    }
+    const Action *GetAction(const QmqpMail &mail, Error &error) const;
 
     bool ParseLine(Tokenizer &tokenizer, Error &error);
     bool LoadFile(TextFile &file, Error &error);
