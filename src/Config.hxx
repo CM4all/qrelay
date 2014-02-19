@@ -17,7 +17,7 @@ struct Config {
     struct Action {
         SocketAddress connect;
 
-        void Clear() {
+        Action() {
             connect.Clear();
         }
 
@@ -29,10 +29,6 @@ struct Config {
     std::string listen;
 
     Action action;
-
-    Config() {
-        action.Clear();
-    }
 
     const Action &GetAction() const {
         return action;
