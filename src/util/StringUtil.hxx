@@ -40,7 +40,7 @@ gcc_pure
 static inline char *
 StripLeft(char *p)
 {
-    return const_cast<char *>(static_cast<const char *>(p));
+    return const_cast<char *>(StripLeft(static_cast<const char *>(p)));
 }
 
 void
