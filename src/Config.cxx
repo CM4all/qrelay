@@ -25,7 +25,11 @@ Config::Action::ParseConnect(Tokenizer &tokenizer, Error &error)
         return false;
     }
 
-    return connect.Lookup(value, "qmqp", SOCK_STREAM, error);
+    if (!connect.Lookup(value, "qmqp", SOCK_STREAM, error))
+        return false;
+
+    type = Type::CONNECT;
+    return true;
 }
 
 bool

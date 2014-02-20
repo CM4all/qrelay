@@ -21,14 +21,23 @@ enum class TriBool {
 
 struct Config {
     struct Action {
+        enum class Type {
+            UNDEFINED,
+
+            /**
+             * Connect to another QMQP server and relay to it.
+             */
+            CONNECT,
+        };
+
+        Type type;
+
         SocketAddress connect;
 
-        Action() {
-            connect.Clear();
-        }
+        Action():type(Type::UNDEFINED) {}
 
         bool IsDefined() const {
-            return connect.IsDefined();
+            return type != Type::UNDEFINED;
         }
 
         bool ParseConnect(Tokenizer &tokenizer, Error &error);

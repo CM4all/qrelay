@@ -73,7 +73,15 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
         return;
     }
 
-    connect.Connect(action->connect);
+    switch (action->type) {
+    case Config::Action::Type::UNDEFINED:
+        assert(false);
+        gcc_unreachable();
+
+    case Config::Action::Type::CONNECT:
+        connect.Connect(action->connect);
+        break;
+    }
 }
 
 void
