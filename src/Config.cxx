@@ -44,12 +44,19 @@ Config::Action::Parse(Tokenizer &tokenizer, Error &error)
         return false;
     }
 
-    if (strcmp(action, "connect") != 0) {
+    if (strcmp(action, "connect") == 0) {
+        return ParseConnect(tokenizer, error);
+    } else if (strcmp(action, "discard") == 0) {
+        type = Type::DISCARD;
+        return true;
+    } else if (strcmp(action, "reject") == 0) {
+        type = Type::REJECT;
+        return true;
+    } else {
         error.Format(config_domain, "unknown action: %s", action);
         return false;
     }
 
-    return ParseConnect(tokenizer, error);
 }
 
 TriBool

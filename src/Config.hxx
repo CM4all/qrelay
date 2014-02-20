@@ -25,6 +25,16 @@ struct Config {
             UNDEFINED,
 
             /**
+             * Discard the email, pretending it was accepted.
+             */
+            DISCARD,
+
+            /**
+             * Reject the email with a permanent error.
+             */
+            REJECT,
+
+            /**
              * Connect to another QMQP server and relay to it.
              */
             CONNECT,

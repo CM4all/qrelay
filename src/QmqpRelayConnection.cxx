@@ -78,6 +78,16 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
         assert(false);
         gcc_unreachable();
 
+    case Config::Action::Type::DISCARD:
+        if (SendResponse("Kdiscarded"))
+            delete this;
+        break;
+
+    case Config::Action::Type::REJECT:
+        if (SendResponse("Drejected"))
+            delete this;
+        break;
+
     case Config::Action::Type::CONNECT:
         connect.Connect(action->connect);
         break;
