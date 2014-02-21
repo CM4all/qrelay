@@ -15,12 +15,18 @@
 class Error;
 
 class WriteBuffer {
+    friend class MultiWriteBuffer;
+
     const uint8_t *buffer, *end;
 
 public:
     WriteBuffer() = default;
     WriteBuffer(const void *_buffer, size_t size)
         :buffer((const uint8_t *)_buffer), end(buffer + size) {}
+
+    const void *GetData() const {
+        return buffer;
+    }
 
     size_t GetSize() const {
         return end - buffer;
@@ -36,9 +42,11 @@ public:
 };
 
 class MultiWriteBuffer {
+    static constexpr size_t MAX_BUFFERS = 8;
+
     unsigned i, n;
 
-    std::array<WriteBuffer, 8> buffers;
+    std::array<WriteBuffer, MAX_BUFFERS> buffers;
 
 public:
     MultiWriteBuffer():i(0), n(0) {}
