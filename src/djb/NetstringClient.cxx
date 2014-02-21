@@ -17,28 +17,38 @@ static constexpr timeval recv_timeout{60, 0};
 static constexpr timeval busy_timeout{5, 0};
 
 NetstringClient::NetstringClient(size_t max_size)
-    :fd(-1), event([this](int, short events){ OnEvent(events); }),
+    :out_fd(-1), in_fd(-1),
+     event([this](int, short events){ OnEvent(events); }),
      input(max_size) {}
 
 NetstringClient::~NetstringClient()
 {
-    if (fd >= 0) {
+    if (out_fd >= 0 || in_fd >= 0)
         event.Delete();
-        close(fd);
-    }
+
+    if (out_fd >= 0)
+        close(out_fd);
+
+    if (in_fd >= 0 && in_fd != out_fd)
+        close(in_fd);
 }
 
 void
-NetstringClient::Request(int _fd, const void *data, size_t size)
+NetstringClient::Request(int _out_fd, int _in_fd,
+                         const void *data, size_t size)
 {
-    assert(fd < 0);
+    assert(in_fd < 0);
+    assert(out_fd < 0);
     assert(on_response);
     assert(on_error);
-    assert(_fd >= 0);
+    assert(_in_fd >= 0);
+    assert(_out_fd >= 0);
 
-    fd = _fd;
+    out_fd = _out_fd;
+    in_fd = _in_fd;
+
     output = NetstringOutput(data, size);
-    event.SetAdd(fd, EV_WRITE|EV_TIMEOUT|EV_PERSIST, &send_timeout);
+    event.SetAdd(out_fd, EV_WRITE|EV_TIMEOUT|EV_PERSIST, &send_timeout);
 }
 
 void
@@ -48,7 +58,7 @@ NetstringClient::OnEvent(short events)
         on_error(Error(timeout_domain, "Connect timeout"));
     } else if (events & EV_WRITE) {
         Error error;
-        switch (output.Write(fd, error)) {
+        switch (output.Write(out_fd, error)) {
         case NetstringOutput::Result::MORE:
             event.Add(&send_timeout);
             break;
@@ -59,12 +69,12 @@ NetstringClient::OnEvent(short events)
 
         case NetstringOutput::Result::FINISHED:
             event.Delete();
-            event.SetAdd(fd, EV_READ|EV_TIMEOUT|EV_PERSIST, &recv_timeout);
+            event.SetAdd(in_fd, EV_READ|EV_TIMEOUT|EV_PERSIST, &recv_timeout);
             break;
         }
     } else if (events & EV_READ) {
         Error error;
-        switch (input.Receive(fd, error)) {
+        switch (input.Receive(in_fd, error)) {
         case NetstringInput::Result::MORE:
             event.Add(&busy_timeout);
             break;

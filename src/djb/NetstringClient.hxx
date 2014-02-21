@@ -17,7 +17,7 @@
  * netstring.
  */
 class NetstringClient final {
-    int fd;
+    int out_fd, in_fd;
 
     Event event;
 
@@ -41,7 +41,7 @@ public:
         on_error = std::forward<T>(t);
     }
 
-    void Request(int _fd, const void *data, size_t size);
+    void Request(int _out_fd, int _in_fd, const void *data, size_t size);
 
 private:
     void OnEvent(short events);

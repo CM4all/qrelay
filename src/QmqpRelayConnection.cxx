@@ -105,7 +105,7 @@ QmqpRelayConnection::OnConnect(int fd, const void *data, size_t size)
                 delete this;
         });
 
-    client.Request(fd, data, size);
+    client.Request(fd, fd, data, size);
 }
 
 void
