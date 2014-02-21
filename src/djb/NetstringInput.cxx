@@ -10,7 +10,6 @@
 #include "util/Error.hxx"
 #include "util/Domain.hxx"
 
-#include <sys/socket.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
@@ -40,9 +39,8 @@ OnlyDigits(const char *p, size_t size)
 inline NetstringInput::Result
 NetstringInput::ReceiveHeader(int fd, Error &error)
 {
-    ssize_t nbytes = recv(fd, header_buffer + header_position,
-                          sizeof(header_buffer) - header_position,
-                          MSG_DONTWAIT);
+    ssize_t nbytes = read(fd, header_buffer + header_position,
+                          sizeof(header_buffer) - header_position);
     if (nbytes < 0) {
         switch (errno) {
         case EAGAIN:
@@ -53,7 +51,7 @@ NetstringInput::ReceiveHeader(int fd, Error &error)
             return Result::CLOSED;
 
         default:
-            error.SetErrno("recv() failed");
+            error.SetErrno("read() failed");
             return Result::ERROR;
         }
     }
@@ -128,9 +126,8 @@ NetstringInput::ValueData(size_t nbytes, Error &error)
 inline NetstringInput::Result
 NetstringInput::ReceiveValue(int fd, Error &error)
 {
-    ssize_t nbytes = recv(fd, value_buffer + value_position,
-                          value_size + 1 - value_position,
-                          MSG_DONTWAIT);
+    ssize_t nbytes = read(fd, value_buffer + value_position,
+                          value_size + 1 - value_position);
     if (nbytes < 0) {
         switch (errno) {
         case EAGAIN:
@@ -141,7 +138,7 @@ NetstringInput::ReceiveValue(int fd, Error &error)
             return Result::CLOSED;
 
         default:
-            error.SetErrno("recv() failed");
+            error.SetErrno("read() failed");
             return Result::ERROR;
         }
     }
