@@ -7,7 +7,7 @@
 #ifndef NETSTRING_OUTPUT_HXX
 #define NETSTRING_OUTPUT_HXX
 
-#include "net/SendBuffer.hxx"
+#include "io/WriteBuffer.hxx"
 
 #include <cstddef>
 #include <cassert>
@@ -16,7 +16,7 @@
 class Error;
 
 class NetstringOutput {
-    MultiSendBuffer buffers;
+    MultiWriteBuffer buffers;
 
     char header_buffer[32];
 
@@ -24,10 +24,10 @@ public:
     NetstringOutput() = default;
     NetstringOutput(const void *data, size_t size);
 
-    typedef MultiSendBuffer::Result Result;
+    typedef MultiWriteBuffer::Result Result;
 
-    Result Send(int fd, Error &error) {
-        return buffers.Send(fd, error);
+    Result Write(int fd, Error &error) {
+        return buffers.Write(fd, error);
     }
 };
 

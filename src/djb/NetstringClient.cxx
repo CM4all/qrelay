@@ -48,7 +48,7 @@ NetstringClient::OnEvent(short events)
         on_error(Error(timeout_domain, "Connect timeout"));
     } else if (events & EV_WRITE) {
         Error error;
-        switch (output.Send(fd, error)) {
+        switch (output.Write(fd, error)) {
         case NetstringOutput::Result::MORE:
             event.Add(&send_timeout);
             break;

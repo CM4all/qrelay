@@ -4,8 +4,8 @@
  * author: Max Kellermann <mk@cm4all.com>
  */
 
-#ifndef SEND_BUFFER_HXX
-#define SEND_BUFFER_HXX
+#ifndef WRITE_BUFFER_HXX
+#define WRITE_BUFFER_HXX
 
 #include <array>
 #include <cstddef>
@@ -14,12 +14,12 @@
 
 class Error;
 
-class SendBuffer {
+class WriteBuffer {
     const uint8_t *buffer, *end;
 
 public:
-    SendBuffer() = default;
-    SendBuffer(const void *_buffer, size_t size)
+    WriteBuffer() = default;
+    WriteBuffer(const void *_buffer, size_t size)
         :buffer((const uint8_t *)_buffer), end(buffer + size) {}
 
     enum class Result {
@@ -28,26 +28,26 @@ public:
         FINISHED,
     };
 
-    Result Send(int fd, Error &error);
+    Result Write(int fd, Error &error);
 };
 
-class MultiSendBuffer {
+class MultiWriteBuffer {
     unsigned i, n;
 
-    std::array<SendBuffer, 8> buffers;
+    std::array<WriteBuffer, 8> buffers;
 
 public:
-    MultiSendBuffer():i(0), n(0) {}
+    MultiWriteBuffer():i(0), n(0) {}
 
-    typedef SendBuffer::Result Result;
+    typedef WriteBuffer::Result Result;
 
     void Push(const void *buffer, size_t size) {
         assert(n < buffers.size());
 
-        buffers[n++] = SendBuffer(buffer, size);
+        buffers[n++] = WriteBuffer(buffer, size);
     }
 
-    Result Send(int fd, Error &error);
+    Result Write(int fd, Error &error);
 };
 
 #endif

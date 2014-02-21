@@ -4,14 +4,14 @@
  * author: Max Kellermann <mk@cm4all.com>
  */
 
-#include "SendBuffer.hxx"
+#include "WriteBuffer.hxx"
 #include "util/Error.hxx"
 
 #include <unistd.h>
 #include <errno.h>
 
-SendBuffer::Result
-SendBuffer::Send(int fd, Error &error)
+WriteBuffer::Result
+WriteBuffer::Write(int fd, Error &error)
 {
     size_t size = end - buffer;
 
@@ -23,7 +23,7 @@ SendBuffer::Send(int fd, Error &error)
             return Result::MORE;
 
         default:
-            error.SetErrno("Failed to send");
+            error.SetErrno("Failed to write");
             return Result::ERROR;
         }
     }
@@ -36,13 +36,13 @@ SendBuffer::Send(int fd, Error &error)
         : Result::MORE;
 }
 
-MultiSendBuffer::Result
-MultiSendBuffer::Send(int fd, Error &error)
+MultiWriteBuffer::Result
+MultiWriteBuffer::Write(int fd, Error &error)
 {
     while (true) {
         assert(i < n);
-        SendBuffer &buffer = buffers[i];
-        switch (Result result = buffer.Send(fd, error)) {
+        WriteBuffer &buffer = buffers[i];
+        switch (Result result = buffer.Write(fd, error)) {
         case Result::MORE:
         case Result::ERROR:
             return result;
