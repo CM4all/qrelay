@@ -11,6 +11,7 @@
 
 #include "Event.hxx"
 #include "NetstringInput.hxx"
+#include "NetstringOutput.hxx"
 
 #include <cstddef>
 
@@ -20,6 +21,7 @@ class NetstringServer {
     Event event;
 
     NetstringInput input;
+    NetstringOutput output;
 
 public:
     NetstringServer(int _fd);
@@ -40,8 +42,6 @@ protected:
     virtual void OnDisconnect() = 0;
 
 private:
-    bool Send(const void *data, size_t size, int flags);
-
     void OnEvent(short events);
 };
 

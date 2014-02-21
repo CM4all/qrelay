@@ -30,44 +30,26 @@ NetstringServer::~NetstringServer()
 }
 
 bool
-NetstringServer::Send(const void *data, size_t size, int flags)
-{
-    ssize_t nbytes = send(fd, data, size, flags);
-    if (gcc_likely(nbytes == (ssize_t)size))
-        return true;
-
-    if (gcc_likely(nbytes < 0)) {
-        switch (errno) {
-        case ECONNRESET:
-            OnDisconnect();
-            return false;
-
-        default:
-            {
-                Error error;
-                error.SetErrno("send() failed");
-                OnError(std::move(error));
-                return false;
-            }
-        }
-    }
-
-    OnError(Error(netstring_domain, "short write"));
-    return false;
-}
-
-bool
 NetstringServer::SendResponse(const void *data, size_t size)
 {
-    char header[32];
-    sprintf(header, "%zu:", size);
+    output = NetstringOutput(data, size);
 
-    if (!Send(header, strlen(header), MSG_DONTWAIT|MSG_MORE) ||
-        !Send(data, size, MSG_DONTWAIT|MSG_MORE) ||
-        !Send(",", 1, MSG_DONTWAIT))
+    Error error;
+    switch (output.Write(fd, error)) {
+    case NetstringOutput::Result::MORE:
+        OnError(Error(netstring_domain, "short write"));
         return false;
 
-    return true;
+    case NetstringOutput::Result::ERROR:
+        OnError(std::move(error));
+        return false;
+
+    case NetstringOutput::Result::FINISHED:
+        return true;
+    }
+
+    assert(false);
+    gcc_unreachable();
 }
 
 bool
