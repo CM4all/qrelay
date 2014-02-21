@@ -9,6 +9,7 @@
 #include "djb/NetstringClient.hxx"
 #include "net/ConnectSocket.hxx"
 #include "Logger.hxx"
+#include "Config.hxx"
 
 struct Config;
 class Error;
@@ -29,7 +30,8 @@ public:
          client(256) {}
 
 protected:
-    void OnConnect(int fd, const void *data, size_t size);
+    void Exec(const Config::Action &action, void *data, size_t size);
+    void OnConnect(int out_fd, int in_fd, const void *data, size_t size);
     void OnResponse(const void *data, size_t size);
 
     virtual void OnRequest(void *data, size_t size) override;

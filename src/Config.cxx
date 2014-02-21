@@ -46,6 +46,29 @@ Config::Action::Parse(Tokenizer &tokenizer, Error &error)
 
     if (strcmp(action, "connect") == 0) {
         return ParseConnect(tokenizer, error);
+    } else if (strcmp(action, "exec") == 0) {
+        const char *p = tokenizer.NextString(error);
+        if (p == nullptr) {
+            if (!error.IsDefined())
+                error.Set(config_domain, "missing program");
+            return false;
+        }
+
+        type = Type::EXEC;
+
+        unsigned n = 0;
+
+        do {
+            if (++n > MAX_EXEC) {
+                error.Set(config_domain, "too many arguments");
+                return false;
+            }
+
+            exec.emplace_back(p);
+            p = tokenizer.NextString(error);
+        } while (p != nullptr);
+
+        return !error.IsDefined();
     } else if (strcmp(action, "discard") == 0) {
         type = Type::DISCARD;
         return true;

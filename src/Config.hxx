@@ -21,6 +21,8 @@ enum class TriBool {
 
 struct Config {
     struct Action {
+        static constexpr unsigned MAX_EXEC = 32;
+
         enum class Type {
             UNDEFINED,
 
@@ -38,11 +40,18 @@ struct Config {
              * Connect to another QMQP server and relay to it.
              */
             CONNECT,
+
+            /**
+             * Execute a program that talks QMQP on stdin/stdout.
+             */
+            EXEC,
         };
 
         Type type;
 
         SocketAddress connect;
+
+        std::list<std::string> exec;
 
         Action():type(Type::UNDEFINED) {}
 
