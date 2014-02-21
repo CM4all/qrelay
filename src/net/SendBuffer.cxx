@@ -29,7 +29,7 @@ SendBuffer::Send(int fd, Error &error)
         }
     }
 
-    buffer += size;
+    buffer += nbytes;
     assert(buffer <= end);
 
     return buffer == end
