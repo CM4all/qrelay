@@ -2,6 +2,7 @@ cm4all-qrelay (0.2) unstable; urgency=low
 
   * load settings from /etc/cm4all/qrelay.conf
   * conditional rules for routing some recipients to a different server
+  * new actions "discard", "reject"
 
  --   
 
