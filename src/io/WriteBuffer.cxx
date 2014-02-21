@@ -13,9 +13,7 @@
 WriteBuffer::Result
 WriteBuffer::Write(int fd, Error &error)
 {
-    size_t size = end - buffer;
-
-    ssize_t nbytes = write(fd, buffer, size);
+    ssize_t nbytes = write(fd, buffer, GetSize());
     if (nbytes < 0) {
         switch (errno) {
         case EAGAIN:

@@ -22,6 +22,10 @@ public:
     WriteBuffer(const void *_buffer, size_t size)
         :buffer((const uint8_t *)_buffer), end(buffer + size) {}
 
+    size_t GetSize() const {
+        return end - buffer;
+    }
+
     enum class Result {
         MORE,
         ERROR,
