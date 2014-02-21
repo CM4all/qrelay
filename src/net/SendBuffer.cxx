@@ -7,7 +7,6 @@
 #include "SendBuffer.hxx"
 #include "util/Error.hxx"
 
-#include <sys/socket.h>
 #include <unistd.h>
 #include <errno.h>
 
@@ -16,7 +15,7 @@ SendBuffer::Send(int fd, Error &error)
 {
     size_t size = end - buffer;
 
-    ssize_t nbytes = send(fd, buffer, size, MSG_DONTWAIT);
+    ssize_t nbytes = write(fd, buffer, size);
     if (nbytes < 0) {
         switch (errno) {
         case EAGAIN:
