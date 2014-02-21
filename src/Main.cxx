@@ -35,6 +35,8 @@ Run(const Config &config)
 {
     EventBase event_base;
 
+    signal(SIGPIPE, SIG_IGN);
+
     QuitHandler quit_handler(event_base);
     const SignalEvent sigterm_event(SIGTERM, quit_handler),
         sigint_event(SIGINT, quit_handler),
