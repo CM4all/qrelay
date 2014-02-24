@@ -185,6 +185,13 @@ Config::ParseLine(Tokenizer &tokenizer, Error &error)
 
         listen = value;
         return true;
+    } else if (strcmp(key, "default") == 0) {
+        if (action.IsDefined()) {
+            error.Format(config_domain, "duplicate '%s'", key);
+            return false;
+        }
+
+        return action.Parse(tokenizer, error);
     } else if (strcmp(key, "connect") == 0) {
         if (action.IsDefined()) {
             error.Format(config_domain, "duplicate '%s'", key);
