@@ -42,3 +42,18 @@ src_cm4all_qrelay_LDADD = $(AM_LDADD) \
 	-lboost_program_options \
 	$(LIBCM4ALL_DAEMON_LIBS) \
 	$(LIBEVENT_LIBS)
+
+#
+# documentation
+#
+
+MOSTLYCLEANFILES = doc/qrelay.html
+
+if DOCUMENTATION
+doc/qrelay.html: doc/qrelay.xml
+	$(XMLTO) -o $(@D) html-nochunks $<
+
+all-local: doc/qrelay.html
+
+doc_DATA = doc/qrelay.html
+endif

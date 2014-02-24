@@ -1,0 +1,152 @@
+<?xml version='1.0' encoding="UTF-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "docbook/dtd/xml/4.2/docbookx.dtd">
+
+<book lang="en">
+  <title>qrelay</title>
+
+  <bookinfo>
+    <author>
+      <firstname>Max</firstname>
+      <surname>Kellermann</surname>
+      <email>mk@cm4all.com</email>
+    </author>
+  </bookinfo>
+
+  <preface>
+    <title>
+      What is <filename>qrelay</filename>?
+    </title>
+
+    <para>
+      <filename>qrelay</filename> is a QMQP server that receives
+      emails on a socket and forwards them to another QMQP server.
+    </para>
+  </preface>
+
+  <chapter>
+    <title>Installation and Configuration</title>
+
+    <section>
+      <title>Installation</title>
+
+      <programlisting>apt-get install cm4all-qrelay</programlisting>
+    </section>
+
+    <section>
+      <title>Configuration</title>
+
+      <para>
+        The file <filename>/etc/cm4all/qrelay.conf</filename> contains
+        the <filename>qrelay</filename> configuration.  It should
+        start with a <command>listen</command> directive that tells
+        <filename>qrelay</filename> which socket path to listen on.
+        Example:
+      </para>
+
+      <programlisting>listen "/var/run/cm4all/qrelay.sock"</programlisting>
+
+      <para>
+        To use this socket from within a container, move it to a
+        dedicated directory and bind-mount this directory into the
+        container.  Mounting just the socket doesn't work because a
+        daemon restart must create a new socket, but the bind mount
+        cannot be refreshed.
+      </para>
+
+      <para>
+        The next line contains the keyword <command>default</command>
+        which specifies what to do with incoming emails.  It is
+        followed by one of the following actions:
+      </para>
+
+      <informaltable>
+        <tgroup cols="2">
+          <tbody>
+
+            <row>
+              <entry>
+                <command>connect</command>
+                <parameter>"ADDRESS"</parameter>
+              </entry>
+
+              <entry>
+                Connect to this address and relay the email via QMQP.
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <command>exec</command>
+                <parameter>"PROGRAM"</parameter>
+                <parameter>"ARG ..."</parameter>
+              </entry>
+
+              <entry>
+                Execute the program and submit the email via QMQP on
+                standard input.  Read the QMQP response from standard
+                output.
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <command>discard</command>
+              </entry>
+
+              <entry>
+                Discard the email, pretending delivery was successful.
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <command>reject</command>
+              </entry>
+
+              <entry>
+                Reject the email with a permanent error.
+              </entry>
+            </row>
+
+          </tbody>
+        </tgroup>
+      </informaltable>
+
+      <para>
+        The <command>rule</command> keyword introduces a rule for
+        routing emails to other destinations based on the configured
+        condition.  Syntax:
+      </para>
+
+      <programlisting><command>rule</command> <parameter>CONDITION</parameter> <parameter>ACTION</parameter></programlisting>
+
+      <para>
+        Where condition is:
+      </para>
+
+      <informaltable>
+        <tgroup cols="2">
+          <tbody>
+
+            <row>
+              <entry>
+                <command>exclusive_recipient</command>
+                <parameter>"ADDRESS"</parameter>
+              </entry>
+
+              <entry>
+                The evenlope recipient is this address.  If there is
+                more than one recipient, all of them must match,
+                otherwise <filename>qrelay</filename> aborts delivery
+                permanently.
+              </entry>
+            </row>
+
+          </tbody>
+        </tgroup>
+      </informaltable>
+
+    </section>
+  </chapter>
+</book>

@@ -19,3 +19,12 @@ Depends: ${shlibs:Depends}, init-system-helpers
 Description: QMQP relay daemon
  qrelay is a daemon that accepts QMQP on a UNIX domain socket and
  relays it to another QMQP daemon.
+
+Package: cm4all-qrelay-doc
+Section: non-free/doc
+Architecture: all
+Description: QMQP relay daemon, documentation
+ qrelay is a daemon that accepts QMQP on a UNIX domain socket and
+ relays it to another QMQP daemon.
+ .
+ This package contains documentation.

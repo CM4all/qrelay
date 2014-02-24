@@ -4,6 +4,7 @@ cm4all-qrelay (0.2) unstable; urgency=low
   * conditional rules for routing some recipients to a different server
   * new actions "discard", "reject", "exec"
   * rename "connect" to "default connect", allows other actions
+  * documentation
 
  --   
 
