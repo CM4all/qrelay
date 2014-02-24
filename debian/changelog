@@ -6,7 +6,7 @@ cm4all-qrelay (0.2) unstable; urgency=low
   * rename "connect" to "default connect", allows other actions
   * documentation
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Mon, 24 Feb 2014 16:58:20 -0000
 
 cm4all-qrelay (0.1) unstable; urgency=low
 
