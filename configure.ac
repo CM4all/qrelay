@@ -43,6 +43,7 @@ if test "$am_cv_CC_dependencies_compiler_type" = "gcc3"; then
 	AM_CXXFLAGS="$AM_CXXFLAGS -Wredundant-decls -Wno-long-long -Wundef"
 	AM_CXXFLAGS="$AM_CXXFLAGS -Wunused"
 	AM_CXXFLAGS="$AM_CXXFLAGS -pedantic"
+	AM_CXXFLAGS="$AM_CXXFLAGS -fno-exceptions -fno-rtti"
 fi
 
 dnl
