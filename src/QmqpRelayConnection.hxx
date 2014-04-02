@@ -26,6 +26,8 @@ class QmqpRelayConnection final : public NetstringServer {
     NetstringGenerator generator;
     ConstBuffer<void> tail;
 
+    char received_buffer[256];
+
     ConnectSocket connect;
     NetstringClient client;
 

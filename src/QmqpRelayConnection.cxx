@@ -9,6 +9,7 @@
 
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/socket.h>
 
 void
 QmqpRelayConnection::OnRequest(void *data, size_t size)
@@ -139,6 +140,15 @@ QmqpRelayConnection::OnConnect(int out_fd, int in_fd)
             if (SendResponse("Zrelay failed"))
                 delete this;
         });
+
+    struct ucred cred;
+    socklen_t len = sizeof (cred);
+    if (getsockopt(GetFD(), SOL_SOCKET, SO_PEERCRED, &cred, &len) == 0) {
+        int length = sprintf(received_buffer,
+                             "Received: from PID=%u UID=%u with QMQP\r\n",
+                             unsigned(cred.pid), unsigned(cred.uid));
+        request.emplace_front(received_buffer, length);
+    }
 
     generator(request, false);
     request.push_back(tail);

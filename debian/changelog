@@ -2,6 +2,7 @@ cm4all-qrelay (0.3) unstable; urgency=low
 
   * allow reusing the listener socket (SO_REUSEADDR)
   * allow port specification in "connect" setting
+  * insert "Received" header with client process id and user id
 
  --   
 

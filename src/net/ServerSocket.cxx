@@ -58,6 +58,9 @@ Listen(const SocketAddress &address, Error &error)
         return -1;
     }
 
+    setsockopt(fd, SOL_SOCKET, SO_PASSCRED,
+               (const char *)&reuse, sizeof(reuse));
+
     return fd;
 }
 
