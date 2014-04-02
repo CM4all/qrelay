@@ -30,6 +30,10 @@ public:
     ~NetstringServer();
 
 protected:
+    int GetFD() const {
+        return fd;
+    }
+
     bool SendResponse(const void *data, size_t size);
     bool SendResponse(const char *data);
 
