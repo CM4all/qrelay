@@ -38,6 +38,14 @@ Listen(const SocketAddress &address, Error &error)
         return -1;
     }
 
+    const int reuse = 1;
+    if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR,
+                   (const char *)&reuse, sizeof(reuse)) < 0) {
+        error.SetErrno("Failed to set SO_REUSEADDR");
+        close(fd);
+        return -1;
+    }
+
     if (bind(fd, address, address.GetSize()) < 0) {
         error.SetErrno("Failed to bind");
         close(fd);
