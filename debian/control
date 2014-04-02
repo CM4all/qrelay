@@ -4,7 +4,8 @@ Priority: extra
 Maintainer: Max Kellermann <mk@cm4all.com>
 Build-Depends: debhelper (>= 9), dh-autoreconf, dh-systemd,
  autoconf (>= 2.60), automake (>= 1.11),
- g++ (>= 4.6), libc6-dev (>= 2.13),
+ clang (>= 3.4) | cm4all-thirdparty-clang (>= 3.4),
+ libc6-dev (>= 2.13),
  libevent-dev (>= 2.0.19),
  libcm4all-inline-dev (>= 0.3.4),
  libcm4all-daemon-dev (>= 0.4.1),
