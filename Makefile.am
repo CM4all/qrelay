@@ -14,6 +14,7 @@ src_cm4all_qrelay_SOURCES = \
 	src/net/TemplateServerSocket.hxx \
 	src/net/ConnectSocket.cxx src/net/ConnectSocket.hxx \
 	src/io/WriteBuffer.cxx src/io/WriteBuffer.hxx \
+	src/io/MultiWriteBuffer.cxx src/io/MultiWriteBuffer.hxx \
 	src/djb/NetstringError.cxx src/djb/NetstringError.hxx \
 	src/djb/NetstringParser.cxx src/djb/NetstringParser.hxx \
 	src/djb/NetstringServer.cxx src/djb/NetstringServer.hxx \

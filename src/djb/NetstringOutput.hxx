@@ -7,11 +7,9 @@
 #ifndef NETSTRING_OUTPUT_HXX
 #define NETSTRING_OUTPUT_HXX
 
-#include "io/WriteBuffer.hxx"
+#include "io/MultiWriteBuffer.hxx"
 
 #include <cstddef>
-#include <cassert>
-#include <cstdint>
 
 class Error;
 
