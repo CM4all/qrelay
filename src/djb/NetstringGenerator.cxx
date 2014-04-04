@@ -19,9 +19,11 @@ GetTotalSize(const L &list)
 }
 
 void
-NetstringGenerator::operator()(std::list<ConstBuffer<void>> &list)
+NetstringGenerator::operator()(std::list<ConstBuffer<void>> &list, bool comma)
 {
     list.emplace_front(header_buffer, sprintf(header_buffer, "%zu:",
                                               GetTotalSize(list)));
-    list.emplace_back(",", 1);
+
+    if (comma)
+        list.emplace_back(",", 1);
 }

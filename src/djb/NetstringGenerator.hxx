@@ -13,7 +13,10 @@ class NetstringGenerator {
     char header_buffer[32];
 
 public:
-    void operator()(std::list<ConstBuffer<void>> &list);
+    /**
+     * @param comma generate the trailing comma?
+     */
+    void operator()(std::list<ConstBuffer<void>> &list, bool comma=true);
 };
 
 #endif
