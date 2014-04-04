@@ -5,7 +5,6 @@
 #include "QmqpRelayConnection.hxx"
 #include "Mail.hxx"
 #include "Config.hxx"
-#include "util/ConstBuffer.hxx"
 #include "util/Error.hxx"
 
 #include <unistd.h>
@@ -14,6 +13,8 @@
 void
 QmqpRelayConnection::OnRequest(void *data, size_t size)
 {
+    assert(request.empty());
+
     QmqpMail mail;
     if (!mail.Parse(ConstBuffer<char>::FromVoid({data, size}))) {
         if (SendResponse("Dmalformed input"))
@@ -21,9 +22,11 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
         return;
     }
 
+    tail = mail.tail.ToVoid();
+    request.push_back(mail.message.ToVoid());
+
     connect.OnConnect(std::bind(&QmqpRelayConnection::OnConnect, this,
-                                std::placeholders::_1, std::placeholders::_1,
-                                data, size));
+                                std::placeholders::_1, std::placeholders::_1));
     connect.OnError([this](Error &&error){
             logger(error.GetMessage());
             if (SendResponse("Zconnect failed"))
@@ -59,14 +62,13 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
         break;
 
     case Config::Action::Type::EXEC:
-        Exec(*action, data, size);
+        Exec(*action);
         break;
     }
 }
 
 void
-QmqpRelayConnection::Exec(const Config::Action &action,
-                          void *data, size_t size)
+QmqpRelayConnection::Exec(const Config::Action &action)
 {
     assert(action.type == Config::Action::Type::EXEC);
     assert(!action.exec.empty());
@@ -124,12 +126,11 @@ QmqpRelayConnection::Exec(const Config::Action &action,
     close(stdin_pipe[0]);
     close(stdout_pipe[1]);
 
-    OnConnect(stdin_pipe[1], stdout_pipe[0], data, size);
+    OnConnect(stdin_pipe[1], stdout_pipe[0]);
 }
 
 void
-QmqpRelayConnection::OnConnect(int out_fd, int in_fd,
-                               const void *data, size_t size)
+QmqpRelayConnection::OnConnect(int out_fd, int in_fd)
 {
     client.OnResponse(std::bind(&QmqpRelayConnection::OnResponse, this,
                                 std::placeholders::_1,
@@ -139,7 +140,10 @@ QmqpRelayConnection::OnConnect(int out_fd, int in_fd,
                 delete this;
         });
 
-    client.Request(out_fd, in_fd, data, size);
+    generator(request, false);
+    request.push_back(tail);
+
+    client.Request(out_fd, in_fd, std::move(request));
 }
 
 void
