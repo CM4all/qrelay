@@ -19,21 +19,18 @@ QmqpMail::Parse(ConstBuffer<char> _input)
 {
     Range<const char *> input(_input.begin(), _input.end());
 
-    auto value = ParseNetstring(input);
-    if (value.IsNull())
+    message = ParseNetstring(input);
+    if (message.IsNull())
         return false;
 
-    message = ConstBuffer<char>::FromVoid(value);
     tail = MakeConstBuffer<char>(input.begin() - 1, input.end());
 
-    value = ParseNetstring(input);
-    if (value.IsNull())
+    sender = ParseNetstring(input);
+    if (sender.IsNull())
         return false;
 
-    sender = ConstBuffer<char>::FromVoid(value);
-
     do {
-        value = ParseNetstring(input);
+        auto value = ParseNetstring(input);
         if (value.IsNull())
             return false;
 
