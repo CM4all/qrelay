@@ -8,6 +8,8 @@
 #include "Error.hxx"
 #include "util/Error.hxx"
 
+#include <socket/resolver.h>
+
 #include <assert.h>
 #include <string.h>
 #include <sys/un.h>
@@ -29,7 +31,7 @@ SocketAddress::SetLocal(const char *path)
 }
 
 bool
-SocketAddress::Lookup(const char *host, const char *service, int socktype,
+SocketAddress::Lookup(const char *host, int default_port, int socktype,
                       Error &error)
 {
     struct addrinfo hints;
@@ -38,7 +40,7 @@ SocketAddress::Lookup(const char *host, const char *service, int socktype,
     hints.ai_socktype = socktype;
 
     struct addrinfo *ai;
-    int result = getaddrinfo(host, service, &hints, &ai);
+    int result = socket_resolve_host_port(host, default_port, &hints, &ai);
     if (result != 0) {
         error.Format(netdb_domain, "Failed to look up '%s': %s",
                      host, gai_strerror(result));

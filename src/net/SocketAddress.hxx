@@ -49,7 +49,7 @@ public:
      */
     void SetLocal(const char *path);
 
-    bool Lookup(const char *host, const char *service, int socktype,
+    bool Lookup(const char *host, int default_port, int socktype,
                 Error &error);
 };
 

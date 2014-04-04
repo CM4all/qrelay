@@ -37,10 +37,12 @@ src_cm4all_qrelay_SOURCES = \
 	src/Main.cxx
 src_cm4all_qrelay_CPPFLAGS = $(AM_CPPFLAGS) \
 	$(LIBCM4ALL_INLINE_CFLAGS) \
+	$(LIBCM4ALL_SOCKET_CFLAGS) \
 	$(LIBCM4ALL_DAEMON_CFLAGS) \
 	$(LIBEVENT_CFLAGS)
 src_cm4all_qrelay_LDADD = $(AM_LDADD) \
 	-lboost_program_options \
+	$(LIBCM4ALL_SOCKET_LIBS) \
 	$(LIBCM4ALL_DAEMON_LIBS) \
 	$(LIBEVENT_LIBS)
 
