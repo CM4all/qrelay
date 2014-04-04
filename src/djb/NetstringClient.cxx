@@ -5,6 +5,7 @@
 #include "NetstringClient.hxx"
 #include "NetstringError.hxx"
 #include "net/Error.hxx"
+#include "util/ConstBuffer.hxx"
 #include "util/HugeAllocator.hxx"
 #include "util/Error.hxx"
 
@@ -37,6 +38,13 @@ void
 NetstringClient::Request(int _out_fd, int _in_fd,
                          const void *data, size_t size)
 {
+    Request(_out_fd, _in_fd, std::list<ConstBuffer<void>>{{data, size}});
+}
+
+void
+NetstringClient::Request(int _out_fd, int _in_fd,
+                         std::list<ConstBuffer<void>> &&data)
+{
     assert(in_fd < 0);
     assert(out_fd < 0);
     assert(on_response);
@@ -47,7 +55,10 @@ NetstringClient::Request(int _out_fd, int _in_fd,
     out_fd = _out_fd;
     in_fd = _in_fd;
 
-    output = NetstringOutput(data, size);
+    generator(data);
+    for (const auto &i : data)
+        write.Push(i.data, i.size);
+
     event.SetAdd(out_fd, EV_WRITE|EV_TIMEOUT|EV_PERSIST, &send_timeout);
 }
 
@@ -58,16 +69,16 @@ NetstringClient::OnEvent(short events)
         on_error(Error(timeout_domain, "Connect timeout"));
     } else if (events & EV_WRITE) {
         Error error;
-        switch (output.Write(out_fd, error)) {
-        case NetstringOutput::Result::MORE:
+        switch (write.Write(out_fd, error)) {
+        case MultiWriteBuffer::Result::MORE:
             event.Add(&send_timeout);
             break;
 
-        case NetstringOutput::Result::ERROR:
+        case MultiWriteBuffer::Result::ERROR:
             on_error(std::move(error));
             break;
 
-        case NetstringOutput::Result::FINISHED:
+        case MultiWriteBuffer::Result::FINISHED:
             event.Delete();
             event.SetAdd(in_fd, EV_READ|EV_TIMEOUT|EV_PERSIST, &recv_timeout);
             break;

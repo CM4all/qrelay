@@ -6,10 +6,14 @@
 #define NETSTRING_CLIENT_HXX
 
 #include "Event.hxx"
-#include "NetstringOutput.hxx"
+#include "NetstringGenerator.hxx"
 #include "NetstringInput.hxx"
+#include "io/MultiWriteBuffer.hxx"
 
+#include <list>
 #include <functional>
+
+template<typename T> struct ConstBuffer;
 
 /**
  * A client that sends a netstring
@@ -21,7 +25,9 @@ class NetstringClient final {
 
     Event event;
 
-    NetstringOutput output;
+    NetstringGenerator generator;
+    MultiWriteBuffer write;
+
     NetstringInput input;
 
     std::function<void(const void *, size_t)> on_response;
@@ -42,6 +48,8 @@ public:
     }
 
     void Request(int _out_fd, int _in_fd, const void *data, size_t size);
+    void Request(int _out_fd, int _in_fd,
+                 std::list<ConstBuffer<void>> &&data);
 
 private:
     void OnEvent(short events);
