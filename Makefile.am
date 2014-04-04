@@ -20,7 +20,6 @@ src_cm4all_qrelay_SOURCES = \
 	src/djb/NetstringServer.cxx src/djb/NetstringServer.hxx \
 	src/djb/NetstringClient.cxx src/djb/NetstringClient.hxx \
 	src/djb/NetstringInput.cxx src/djb/NetstringInput.hxx \
-	src/djb/NetstringOutput.cxx src/djb/NetstringOutput.hxx \
 	src/djb/NetstringGenerator.cxx src/djb/NetstringGenerator.hxx \
 	src/util/CharUtil.hxx \
 	src/util/StringUtil.cxx src/util/StringUtil.hxx \
