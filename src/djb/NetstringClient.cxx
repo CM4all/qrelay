@@ -36,13 +36,6 @@ NetstringClient::~NetstringClient()
 
 void
 NetstringClient::Request(int _out_fd, int _in_fd,
-                         const void *data, size_t size)
-{
-    Request(_out_fd, _in_fd, std::list<ConstBuffer<void>>{{data, size}});
-}
-
-void
-NetstringClient::Request(int _out_fd, int _in_fd,
                          std::list<ConstBuffer<void>> &&data)
 {
     assert(in_fd < 0);

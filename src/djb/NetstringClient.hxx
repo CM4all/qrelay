@@ -47,7 +47,6 @@ public:
         on_error = std::forward<T>(t);
     }
 
-    void Request(int _out_fd, int _in_fd, const void *data, size_t size);
     void Request(int _out_fd, int _in_fd,
                  std::list<ConstBuffer<void>> &&data);
 
