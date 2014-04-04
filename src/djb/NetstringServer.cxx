@@ -8,6 +8,7 @@
 
 #include "NetstringServer.hxx"
 #include "NetstringError.hxx"
+#include "util/ConstBuffer.hxx"
 #include "util/HugeAllocator.hxx"
 #include "util/Error.hxx"
 
@@ -32,19 +33,22 @@ NetstringServer::~NetstringServer()
 bool
 NetstringServer::SendResponse(const void *data, size_t size)
 {
-    output = NetstringOutput(data, size);
+    std::list<ConstBuffer<void>> list{{data, size}};
+    generator(list);
+    for (const auto &i : list)
+        write.Push(i.data, i.size);
 
     Error error;
-    switch (output.Write(fd, error)) {
-    case NetstringOutput::Result::MORE:
+    switch (write.Write(fd, error)) {
+    case MultiWriteBuffer::Result::MORE:
         OnError(Error(netstring_domain, "short write"));
         return false;
 
-    case NetstringOutput::Result::ERROR:
+    case MultiWriteBuffer::Result::ERROR:
         OnError(std::move(error));
         return false;
 
-    case NetstringOutput::Result::FINISHED:
+    case MultiWriteBuffer::Result::FINISHED:
         return true;
     }
 

@@ -11,7 +11,8 @@
 
 #include "Event.hxx"
 #include "NetstringInput.hxx"
-#include "NetstringOutput.hxx"
+#include "NetstringGenerator.hxx"
+#include "io/MultiWriteBuffer.hxx"
 
 #include <cstddef>
 
@@ -21,7 +22,8 @@ class NetstringServer {
     Event event;
 
     NetstringInput input;
-    NetstringOutput output;
+    NetstringGenerator generator;
+    MultiWriteBuffer write;
 
 public:
     NetstringServer(int _fd);
