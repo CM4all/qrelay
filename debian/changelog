@@ -4,7 +4,7 @@ cm4all-qrelay (0.3) unstable; urgency=low
   * allow port specification in "connect" setting
   * insert "Received" header with client process id and user id
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Fri, 04 Apr 2014 18:30:52 -0000
 
 cm4all-qrelay (0.2) unstable; urgency=low
 
