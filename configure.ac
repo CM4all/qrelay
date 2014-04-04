@@ -17,7 +17,7 @@ dnl Checks for libraries.
 PKG_CHECK_MODULES([LIBEVENT], [libevent >= 2.0.19],,
 	[AC_MSG_ERROR([libevent not found])])
 
-PKG_CHECK_MODULES([LIBCM4ALL_DAEMON], [libcm4all-daemon >= 0.4.1],,
+PKG_CHECK_MODULES([LIBCM4ALL_DAEMON], [libcm4all-daemon >= 0.4.2],,
 	[AC_MSG_ERROR([libcm4all-daemon not found])])
 
 PKG_CHECK_MODULES([LIBCM4ALL_INLINE], [libcm4all-inline >= 0.3.4],,
