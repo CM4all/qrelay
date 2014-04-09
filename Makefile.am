@@ -26,6 +26,7 @@ src_cm4all_qrelay_SOURCES = \
 	src/util/Tokenizer.cxx src/util/Tokenizer.hxx \
 	src/util/Range.hxx \
 	src/util/ConstBuffer.hxx \
+	src/util/Domain.hxx \
 	src/util/Error.cxx src/util/Error.hxx \
 	src/util/HugeAllocator.cxx src/util/HugeAllocator.hxx \
 	src/io/TextFile.cxx src/io/TextFile.hxx \
