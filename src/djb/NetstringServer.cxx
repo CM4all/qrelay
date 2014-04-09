@@ -90,6 +90,4 @@ NetstringServer::OnEvent(short events)
         OnRequest(input.GetValue(), input.GetSize());
         break;
     }
-
-    return;
 }
