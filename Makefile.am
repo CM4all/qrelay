@@ -52,6 +52,7 @@ libutil_a_CPPFLAGS = $(AM_CPPFLAGS) \
 
 libnet_a_SOURCES = \
 	src/net/Error.cxx src/net/Error.hxx \
+	src/net/SocketAddress.hxx \
 	src/net/StaticSocketAddress.cxx src/net/StaticSocketAddress.hxx \
 	src/net/ServerSocket.cxx src/net/ServerSocket.hxx \
 	src/net/TemplateServerSocket.hxx \

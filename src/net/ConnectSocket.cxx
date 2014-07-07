@@ -5,7 +5,7 @@
  */
 
 #include "ConnectSocket.hxx"
-#include "StaticSocketAddress.hxx"
+#include "SocketAddress.hxx"
 #include "Error.hxx"
 #include "event/Callback.hxx"
 #include "util/Error.hxx"
@@ -32,7 +32,7 @@ ConnectSocket::~ConnectSocket()
 }
 
 static int
-Connect(const StaticSocketAddress &address, Error &error)
+Connect(const SocketAddress address, Error &error)
 {
     int fd = socket(address.GetFamily(),
                     SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK,
@@ -52,7 +52,7 @@ Connect(const StaticSocketAddress &address, Error &error)
 }
 
 bool
-ConnectSocket::Connect(const StaticSocketAddress &address)
+ConnectSocket::Connect(const SocketAddress address)
 {
     assert(fd < 0);
     assert(on_connect);

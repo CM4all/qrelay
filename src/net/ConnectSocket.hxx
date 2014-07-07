@@ -13,7 +13,7 @@
 
 struct sockaddr;
 class Error;
-class StaticSocketAddress;
+class SocketAddress;
 
 class ConnectSocket {
     int fd;
@@ -37,7 +37,7 @@ public:
         on_error = std::forward<T>(t);
     }
 
-    bool Connect(const StaticSocketAddress &address);
+    bool Connect(SocketAddress address);
 
 private:
     void OnEvent(evutil_socket_t, short events);

@@ -29,7 +29,7 @@ ServerSocket::~ServerSocket()
 }
 
 static int
-Listen(const StaticSocketAddress &address, Error &error)
+Listen(const SocketAddress address, Error &error)
 {
     int fd = socket(address.GetFamily(),
                     SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK,
@@ -66,7 +66,7 @@ Listen(const StaticSocketAddress &address, Error &error)
 }
 
 bool
-ServerSocket::Listen(const StaticSocketAddress &address, Error &error)
+ServerSocket::Listen(const SocketAddress address, Error &error)
 {
     assert(fd < 0);
 
