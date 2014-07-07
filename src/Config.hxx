@@ -5,7 +5,7 @@
 #ifndef QRELAY_CONFIG_HXX
 #define QRELAY_CONFIG_HXX
 
-#include "net/SocketAddress.hxx"
+#include "net/StaticSocketAddress.hxx"
 
 #include <string>
 #include <list>
@@ -49,7 +49,7 @@ struct Config {
 
         Type type;
 
-        SocketAddress connect;
+        StaticSocketAddress connect;
 
         std::list<std::string> exec;
 

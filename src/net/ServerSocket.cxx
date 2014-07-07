@@ -5,7 +5,7 @@
  */
 
 #include "ServerSocket.hxx"
-#include "SocketAddress.hxx"
+#include "StaticSocketAddress.hxx"
 #include "event/Callback.hxx"
 #include "util/Error.hxx"
 
@@ -29,7 +29,7 @@ ServerSocket::~ServerSocket()
 }
 
 static int
-Listen(const SocketAddress &address, Error &error)
+Listen(const StaticSocketAddress &address, Error &error)
 {
     int fd = socket(address.GetFamily(),
                     SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK,
@@ -66,7 +66,7 @@ Listen(const SocketAddress &address, Error &error)
 }
 
 bool
-ServerSocket::Listen(const SocketAddress &address, Error &error)
+ServerSocket::Listen(const StaticSocketAddress &address, Error &error)
 {
     assert(fd < 0);
 
@@ -87,7 +87,7 @@ ServerSocket::ListenPath(const char *path, Error &error)
 
     unlink(path);
 
-    SocketAddress address;
+    StaticSocketAddress address;
     address.SetLocal(path);
 
     return Listen(address, error);
