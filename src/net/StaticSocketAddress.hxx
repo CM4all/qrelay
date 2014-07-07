@@ -45,6 +45,7 @@ public:
     }
 
     void Clear() {
+        size = 0;
         address.ss_family = AF_UNSPEC;
     }
 
