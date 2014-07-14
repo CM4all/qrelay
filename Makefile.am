@@ -56,7 +56,8 @@ libnet_a_SOURCES = \
 	src/net/StaticSocketAddress.cxx src/net/StaticSocketAddress.hxx \
 	src/net/ServerSocket.cxx src/net/ServerSocket.hxx \
 	src/net/TemplateServerSocket.hxx \
-	src/net/ConnectSocket.cxx src/net/ConnectSocket.hxx
+	src/net/ConnectSocket.cxx src/net/ConnectSocket.hxx \
+	src/net/SocketDescriptor.cxx src/net/SocketDescriptor.hxx
 libnet_a_CPPFLAGS = $(AM_CPPFLAGS) \
 	$(LIBCM4ALL_SOCKET_CFLAGS) \
 	$(LIBCM4ALL_DAEMON_CFLAGS) \

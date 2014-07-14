@@ -127,11 +127,12 @@ QmqpRelayConnection::Exec(const Config::Action &action)
     close(stdin_pipe[0]);
     close(stdout_pipe[1]);
 
-    OnConnect(stdin_pipe[1], stdout_pipe[0]);
+    OnConnect(SocketDescriptor(stdin_pipe[1]),
+              SocketDescriptor(stdout_pipe[0]));
 }
 
 void
-QmqpRelayConnection::OnConnect(int out_fd, int in_fd)
+QmqpRelayConnection::OnConnect(SocketDescriptor out_fd, SocketDescriptor in_fd)
 {
     client.OnResponse(std::bind(&QmqpRelayConnection::OnResponse, this,
                                 std::placeholders::_1,
@@ -153,7 +154,7 @@ QmqpRelayConnection::OnConnect(int out_fd, int in_fd)
     generator(request, false);
     request.push_back(tail);
 
-    client.Request(out_fd, in_fd, std::move(request));
+    client.Request(out_fd.Get(), in_fd.Get(), std::move(request));
 }
 
 void

@@ -41,7 +41,7 @@ public:
 
 protected:
     void Exec(const Config::Action &action);
-    void OnConnect(int out_fd, int in_fd);
+    void OnConnect(SocketDescriptor out_fd, SocketDescriptor in_fd);
     void OnResponse(const void *data, size_t size);
 
     virtual void OnRequest(void *data, size_t size) override;

@@ -5,6 +5,7 @@
  */
 
 #include "ConnectSocket.hxx"
+#include "SocketDescriptor.hxx"
 #include "SocketAddress.hxx"
 #include "Error.hxx"
 #include "event/Callback.hxx"
@@ -25,27 +26,26 @@ ConnectSocket::ConnectSocket()
 
 ConnectSocket::~ConnectSocket()
 {
-    if (fd >= 0) {
+    if (fd.IsDefined()) {
         event.Delete();
-        close(fd);
+        fd.Close();
     }
 }
 
-static int
+static SocketDescriptor
 Connect(const SocketAddress address, Error &error)
 {
-    int fd = socket(address.GetFamily(),
-                    SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK,
-                    0);
-    if (fd < 0) {
-        error.SetErrno("Failed to create socket");
-        return -1;
-    }
+    SocketDescriptor fd;
+    if (!fd.Create(address.GetFamily(),
+                   SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK,
+                   0,
+                   error))
+        return SocketDescriptor();
 
-    if (connect(fd, address, address.GetSize()) < 0 && errno != EINPROGRESS) {
+    if (!fd.Connect(address) && errno != EINPROGRESS) {
         error.SetErrno("Failed to connect");
-        close(fd);
-        return -1;
+        fd.Close();
+        return SocketDescriptor();
     }
 
     return fd;
@@ -54,18 +54,18 @@ Connect(const SocketAddress address, Error &error)
 bool
 ConnectSocket::Connect(const SocketAddress address)
 {
-    assert(fd < 0);
+    assert(!fd.IsDefined());
     assert(on_connect);
     assert(on_error);
 
     Error error;
     fd = ::Connect(address, error);
-    if (fd < 0) {
+    if (!fd.IsDefined()) {
         on_error(std::move(error));
         return false;
     }
 
-    event.Set(fd, EV_WRITE|EV_TIMEOUT,
+    event.Set(fd.Get(), EV_WRITE|EV_TIMEOUT,
               MakeEventCallback(ConnectSocket, OnEvent), this);
     event.Add(connect_timeout);
     return true;
@@ -79,12 +79,7 @@ ConnectSocket::OnEvent(evutil_socket_t, short events)
         return;
     }
 
-    int s_err = 0;
-    socklen_t s_err_size = sizeof(s_err);
-
-    if (getsockopt(fd, SOL_SOCKET, SO_ERROR, (char*)&s_err, &s_err_size) < 0)
-        s_err = errno;
-
+    int s_err = fd.GetError();
     if (s_err != 0) {
         Error error;
         error.SetErrno(s_err, "Failed to connect");
@@ -92,8 +87,5 @@ ConnectSocket::OnEvent(evutil_socket_t, short events)
         return;
     }
 
-    const int fd2 = fd;
-    fd = -1;
-
-    on_connect(fd2);
+    on_connect(std::exchange(fd, SocketDescriptor()));
 }
