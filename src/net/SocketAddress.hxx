@@ -26,6 +26,10 @@ public:
         return address;
     }
 
+    const struct sockaddr *GetAddress() const {
+        return address;
+    }
+
     constexpr socklen_t GetSize() const {
         return size;
     }

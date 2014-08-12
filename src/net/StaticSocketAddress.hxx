@@ -19,6 +19,10 @@ class StaticSocketAddress {
 public:
     StaticSocketAddress() = default;
 
+    const struct sockaddr *GetAddress() const {
+        return reinterpret_cast<const struct sockaddr *>(&address);
+    }
+
     constexpr socklen_t GetSize() const {
         return size;
     }
