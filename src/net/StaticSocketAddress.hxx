@@ -19,7 +19,7 @@ class StaticSocketAddress {
 public:
     StaticSocketAddress() = default;
 
-    constexpr size_t GetSize() const {
+    constexpr socklen_t GetSize() const {
         return size;
     }
 
