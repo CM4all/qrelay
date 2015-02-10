@@ -13,7 +13,9 @@ struct sockaddr;
 class Error;
 
 class StaticSocketAddress {
-    socklen_t size;
+    typedef SocketAddress::size_type size_type;
+
+    size_type size;
     struct sockaddr_storage address;
 
 public:
@@ -23,7 +25,7 @@ public:
         return reinterpret_cast<const struct sockaddr *>(&address);
     }
 
-    constexpr socklen_t GetSize() const {
+    constexpr size_type GetSize() const {
         return size;
     }
 

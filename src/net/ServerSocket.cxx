@@ -47,7 +47,7 @@ Listen(const SocketAddress address, Error &error)
         return -1;
     }
 
-    if (bind(fd, address, address.GetSize()) < 0) {
+    if (bind(fd, address.GetAddress(), address.GetSize()) < 0) {
         error.SetErrno("Failed to bind");
         close(fd);
         return -1;
