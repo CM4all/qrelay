@@ -7,6 +7,8 @@
 #ifndef EVENT_HXX
 #define EVENT_HXX
 
+#include "Base.hxx"
+
 #include <inline/compiler.h>
 
 #include <event.h>
@@ -16,6 +18,11 @@ class Event {
 
 public:
     Event() = default;
+
+    Event(EventBase &base, evutil_socket_t fd, short mask,
+          event_callback_fn callback, void *ctx) {
+        Set(base, fd, mask, callback, ctx);
+    }
 
     Event(evutil_socket_t fd, short mask,
           event_callback_fn callback, void *ctx) {
@@ -59,6 +66,11 @@ public:
     gcc_pure
     void *GetCallbackArg() const {
         return event_get_callback_arg(&event);
+    }
+
+    void Set(EventBase &base, evutil_socket_t fd, short mask,
+             event_callback_fn callback, void *ctx) {
+        ::event_assign(&event, base.Get(), fd, mask, callback, ctx);
     }
 
     void Set(evutil_socket_t fd, short mask,

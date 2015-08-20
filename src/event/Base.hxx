@@ -38,6 +38,10 @@ public:
     EventBase(const EventBase &other) = delete;
     EventBase &operator=(const EventBase &other) = delete;
 
+    struct event_base *Get() {
+        return event_base;
+    }
+
     void Reinit() {
         event_reinit(event_base);
     }
