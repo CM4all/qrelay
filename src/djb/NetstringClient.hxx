@@ -8,7 +8,7 @@
 #include "NetstringGenerator.hxx"
 #include "NetstringInput.hxx"
 #include "io/MultiWriteBuffer.hxx"
-#include "event/Event.hxx"
+#include "event/FunctionEvent.hxx"
 
 #include <list>
 #include <functional>
@@ -23,7 +23,7 @@ template<typename T> struct ConstBuffer;
 class NetstringClient final {
     int out_fd, in_fd;
 
-    Event event;
+    FunctionEvent event;
 
     NetstringGenerator generator;
     MultiWriteBuffer write;

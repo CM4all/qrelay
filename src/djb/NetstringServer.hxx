@@ -12,14 +12,14 @@
 #include "NetstringInput.hxx"
 #include "NetstringGenerator.hxx"
 #include "io/MultiWriteBuffer.hxx"
-#include "event/Event.hxx"
+#include "event/FunctionEvent.hxx"
 
 #include <cstddef>
 
 class NetstringServer {
     const int fd;
 
-    Event event;
+    FunctionEvent event;
 
     NetstringInput input;
     NetstringGenerator generator;
