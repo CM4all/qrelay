@@ -8,7 +8,9 @@ bin_PROGRAMS = src/cm4all-qrelay
 src_cm4all_qrelay_SOURCES = \
 	src/Config.cxx src/Config.hxx \
 	src/CommandLine.cxx src/CommandLine.hxx \
-	src/Event.cxx src/Event.hxx \
+	src/event/Base.hxx \
+	src/event/Event.cxx src/event/Event.hxx \
+	src/event/SignalEvent.cxx src/event/SignalEvent.hxx \
 	src/net/Error.cxx src/net/Error.hxx \
 	src/net/SocketAddress.cxx src/net/SocketAddress.hxx \
 	src/net/ServerSocket.cxx src/net/ServerSocket.hxx \

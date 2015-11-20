@@ -4,7 +4,8 @@
 
 #include "Config.hxx"
 #include "CommandLine.hxx"
-#include "Event.hxx"
+#include "event/Base.hxx"
+#include "event/SignalEvent.hxx"
 #include "Instance.hxx"
 #include "util/Error.hxx"
 

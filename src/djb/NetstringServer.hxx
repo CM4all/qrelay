@@ -9,10 +9,10 @@
 #ifndef NETSTRING_SERVER_HXX
 #define NETSTRING_SERVER_HXX
 
-#include "Event.hxx"
 #include "NetstringInput.hxx"
 #include "NetstringGenerator.hxx"
 #include "io/MultiWriteBuffer.hxx"
+#include "event/Event.hxx"
 
 #include <cstddef>
 

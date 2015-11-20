@@ -5,10 +5,10 @@
 #ifndef NETSTRING_CLIENT_HXX
 #define NETSTRING_CLIENT_HXX
 
-#include "Event.hxx"
 #include "NetstringGenerator.hxx"
 #include "NetstringInput.hxx"
 #include "io/MultiWriteBuffer.hxx"
+#include "event/Event.hxx"
 
 #include <list>
 #include <functional>

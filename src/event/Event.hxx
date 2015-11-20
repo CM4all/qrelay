@@ -4,33 +4,12 @@
  * author: Max Kellermann <mk@cm4all.com>
  */
 
-#ifndef SNOWBALL_EVENT_HXX
-#define SNOWBALL_EVENT_HXX
+#ifndef EVENT_HXX
+#define EVENT_HXX
 
 #include <functional>
 
 #include <event.h>
-
-class EventBase {
-    struct event_base *event_base;
-
-public:
-    EventBase():event_base(::event_init()) {}
-    ~EventBase() {
-        ::event_base_free(event_base);
-    }
-
-    EventBase(const EventBase &other) = delete;
-    EventBase &operator=(const EventBase &other) = delete;
-
-    void Dispatch() {
-        ::event_base_dispatch(event_base);
-    }
-
-    void Break() {
-        ::event_base_loopbreak(event_base);
-    }
-};
 
 class Event {
     struct event event;
@@ -91,30 +70,6 @@ public:
 
     bool IsTimerPending() const {
         return IsPending(EV_TIMEOUT);
-    }
-
-private:
-    static void Callback(int fd, short event, void *ctx);
-};
-
-class SignalEvent {
-    struct event event;
-
-    const std::function<void()> handler;
-
-public:
-    SignalEvent(int sig, std::function<void()> _handler)
-        :handler(_handler) {
-        ::evsignal_set(&event, sig, Callback, this);
-        ::evsignal_add(&event, nullptr);
-    }
-
-    ~SignalEvent() {
-        Delete();
-    }
-
-    void Delete() {
-        ::evsignal_del(&event);
     }
 
 private:

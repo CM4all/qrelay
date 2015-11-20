@@ -7,7 +7,7 @@
 #ifndef SERVER_SOCKET_HXX
 #define SERVER_SOCKET_HXX
 
-#include "Event.hxx"
+#include "event/Event.hxx"
 
 struct sockaddr;
 class Error;

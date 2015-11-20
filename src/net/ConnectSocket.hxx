@@ -7,7 +7,7 @@
 #ifndef CONNECT_SOCKET_HXX
 #define CONNECT_SOCKET_HXX
 
-#include "Event.hxx"
+#include "event/Event.hxx"
 
 #include <functional>
 
