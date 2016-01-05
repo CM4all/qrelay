@@ -25,6 +25,26 @@ public:
     Event(const Event &other) = delete;
     Event &operator=(const Event &other) = delete;
 
+    gcc_pure
+    evutil_socket_t GetFd() const {
+        return event_get_fd(&event);
+    }
+
+    gcc_pure
+    short GetEvents() const {
+        return event_get_events(&event);
+    }
+
+    gcc_pure
+    event_callback_fn GetCallback() const {
+        return event_get_callback(&event);
+    }
+
+    gcc_pure
+    void *GetCallbackArg() const {
+        return event_get_callback_arg(&event);
+    }
+
     void Set(evutil_socket_t fd, short mask,
              event_callback_fn callback, void *ctx) {
         ::event_set(&event, fd, mask, callback, ctx);
