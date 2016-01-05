@@ -7,6 +7,7 @@
 #include "ConnectSocket.hxx"
 #include "SocketAddress.hxx"
 #include "Error.hxx"
+#include "event/Callback.hxx"
 #include "util/Error.hxx"
 
 #include <daemon/log.h>
@@ -18,7 +19,7 @@
 static constexpr timeval connect_timeout{10, 0};
 
 ConnectSocket::ConnectSocket()
-    :fd(-1), event([this](int, short events){ OnEvent(events); })
+    :fd(-1)
 {
 }
 
@@ -64,12 +65,14 @@ ConnectSocket::Connect(const SocketAddress &address)
         return false;
     }
 
-    event.SetAdd(fd, EV_WRITE|EV_TIMEOUT, &connect_timeout);
+    event.Set(fd, EV_WRITE|EV_TIMEOUT,
+              MakeEventCallback(ConnectSocket, OnEvent), this);
+    event.Add(connect_timeout);
     return true;
 }
 
 void
-ConnectSocket::OnEvent(short events)
+ConnectSocket::OnEvent(evutil_socket_t, short events)
 {
     if (events & EV_TIMEOUT) {
         on_error(Error(timeout_domain, "Connect timeout"));

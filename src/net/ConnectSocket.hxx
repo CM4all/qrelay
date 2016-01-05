@@ -7,7 +7,7 @@
 #ifndef CONNECT_SOCKET_HXX
 #define CONNECT_SOCKET_HXX
 
-#include "event/FunctionEvent.hxx"
+#include "event/Event.hxx"
 
 #include <functional>
 
@@ -18,7 +18,7 @@ class SocketAddress;
 class ConnectSocket {
     int fd;
 
-    FunctionEvent event;
+    Event event;
 
     std::function<void(int)> on_connect;
     std::function<void(Error &&)> on_error;
@@ -40,7 +40,7 @@ public:
     bool Connect(const SocketAddress &address);
 
 private:
-    void OnEvent(short events);
+    void OnEvent(evutil_socket_t, short events);
 };
 
 #endif

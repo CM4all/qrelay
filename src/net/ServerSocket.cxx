@@ -6,6 +6,7 @@
 
 #include "ServerSocket.hxx"
 #include "SocketAddress.hxx"
+#include "event/Callback.hxx"
 #include "util/Error.hxx"
 
 #include <daemon/log.h>
@@ -15,7 +16,7 @@
 #include <errno.h>
 
 ServerSocket::ServerSocket()
-    :fd(-1), event([this](int, short){ OnEvent(); })
+    :fd(-1)
 {
 }
 
@@ -73,7 +74,9 @@ ServerSocket::Listen(const SocketAddress &address, Error &error)
     if (fd < 0)
         return false;
 
-    event.SetAdd(fd, EV_READ|EV_PERSIST);
+    event.Set(fd, EV_READ|EV_PERSIST,
+              MakeSimpleEventCallback(ServerSocket, OnEvent), this);
+    event.Add();
     return true;
 }
 

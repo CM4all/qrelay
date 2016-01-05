@@ -5,6 +5,7 @@
 #include "NetstringClient.hxx"
 #include "NetstringError.hxx"
 #include "net/Error.hxx"
+#include "event/Callback.hxx"
 #include "util/ConstBuffer.hxx"
 #include "util/HugeAllocator.hxx"
 #include "util/Error.hxx"
@@ -19,7 +20,6 @@ static constexpr timeval busy_timeout{5, 0};
 
 NetstringClient::NetstringClient(size_t max_size)
     :out_fd(-1), in_fd(-1),
-     event([this](int, short events){ OnEvent(events); }),
      input(max_size) {}
 
 NetstringClient::~NetstringClient()
@@ -52,11 +52,13 @@ NetstringClient::Request(int _out_fd, int _in_fd,
     for (const auto &i : data)
         write.Push(i.data, i.size);
 
-    event.SetAdd(out_fd, EV_WRITE|EV_TIMEOUT|EV_PERSIST, &send_timeout);
+    event.Set(out_fd, EV_WRITE|EV_TIMEOUT|EV_PERSIST,
+              MakeEventCallback(NetstringClient, OnEvent), this);
+    event.Add(send_timeout);
 }
 
 void
-NetstringClient::OnEvent(short events)
+NetstringClient::OnEvent(evutil_socket_t, short events)
 {
     if (events & EV_TIMEOUT) {
         on_error(Error(timeout_domain, "Connect timeout"));
@@ -73,7 +75,9 @@ NetstringClient::OnEvent(short events)
 
         case MultiWriteBuffer::Result::FINISHED:
             event.Delete();
-            event.SetAdd(in_fd, EV_READ|EV_TIMEOUT|EV_PERSIST, &recv_timeout);
+            event.Set(in_fd, EV_READ|EV_TIMEOUT|EV_PERSIST,
+                      MakeEventCallback(NetstringClient, OnEvent), this);
+            event.Add(recv_timeout);
             break;
         }
     } else if (events & EV_READ) {

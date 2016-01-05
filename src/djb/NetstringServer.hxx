@@ -12,14 +12,14 @@
 #include "NetstringInput.hxx"
 #include "NetstringGenerator.hxx"
 #include "io/MultiWriteBuffer.hxx"
-#include "event/FunctionEvent.hxx"
+#include "event/Event.hxx"
 
 #include <cstddef>
 
 class NetstringServer {
     const int fd;
 
-    FunctionEvent event;
+    Event event;
 
     NetstringInput input;
     NetstringGenerator generator;
@@ -48,7 +48,7 @@ protected:
     virtual void OnDisconnect() = 0;
 
 private:
-    void OnEvent(short events);
+    void OnEvent(evutil_socket_t, short events);
 };
 
 #endif

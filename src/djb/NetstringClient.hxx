@@ -8,7 +8,7 @@
 #include "NetstringGenerator.hxx"
 #include "NetstringInput.hxx"
 #include "io/MultiWriteBuffer.hxx"
-#include "event/FunctionEvent.hxx"
+#include "event/Event.hxx"
 
 #include <list>
 #include <functional>
@@ -23,7 +23,7 @@ template<typename T> struct ConstBuffer;
 class NetstringClient final {
     int out_fd, in_fd;
 
-    FunctionEvent event;
+    Event event;
 
     NetstringGenerator generator;
     MultiWriteBuffer write;
@@ -51,7 +51,7 @@ public:
                  std::list<ConstBuffer<void>> &&data);
 
 private:
-    void OnEvent(short events);
+    void OnEvent(evutil_socket_t, short events);
 };
 
 #endif
