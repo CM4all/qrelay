@@ -9,8 +9,6 @@
 
 #include <inline/compiler.h>
 
-#include <functional>
-
 #include <event.h>
 
 class Event {
