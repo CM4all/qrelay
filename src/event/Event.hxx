@@ -7,6 +7,8 @@
 #ifndef EVENT_HXX
 #define EVENT_HXX
 
+#include <inline/compiler.h>
+
 #include <functional>
 
 #include <event.h>
@@ -46,10 +48,12 @@ public:
         ::event_del(&event);
     }
 
+    gcc_pure
     bool IsPending(short events) const {
         return ::event_pending(&event, events, nullptr);
     }
 
+    gcc_pure
     bool IsTimerPending() const {
         return IsPending(EV_TIMEOUT);
     }
