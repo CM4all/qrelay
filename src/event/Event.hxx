@@ -70,6 +70,10 @@ public:
         ::event_del(&event);
     }
 
+    void MakeActive(short events) {
+        event_active(&event, events, 0);
+    }
+
     gcc_pure
     bool IsPending(short events) const {
         return ::event_pending(&event, events, nullptr);
