@@ -56,8 +56,9 @@ libutil_a_CPPFLAGS = $(AM_CPPFLAGS) \
 
 libevent_a_SOURCES = \
 	src/event/Base.hxx \
-	src/event/Event.hxx \
 	src/event/Callback.hxx \
+	src/event/Duration.hxx \
+	src/event/Event.hxx \
 	src/event/SignalEvent.cxx src/event/SignalEvent.hxx
 libevent_a_CPPFLAGS = $(AM_CPPFLAGS) \
 	$(LIBCM4ALL_INLINE_CFLAGS) \
