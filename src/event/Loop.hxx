@@ -7,7 +7,11 @@
 #ifndef EVENT_BASE_HXX
 #define EVENT_BASE_HXX
 
+#include "DeferEvent.hxx"
+
 #include <event.h>
+
+#include <assert.h>
 
 class EventLoop {
     struct event_base *const event_base;
@@ -26,10 +30,20 @@ class EventLoop {
         return ::event_init();
     }
 
+    boost::intrusive::list<DeferEvent,
+                           boost::intrusive::member_hook<DeferEvent,
+                                                         DeferEvent::SiblingsHook,
+                                                         &DeferEvent::siblings>,
+                           boost::intrusive::constant_time_size<false>> defer;
+
+    bool quit;
+
 public:
     EventLoop():event_base(Create()) {}
 
     ~EventLoop() {
+        assert(defer.empty());
+
         ::event_base_free(event_base);
     }
 
@@ -45,22 +59,28 @@ public:
     }
 
     void Dispatch() {
-        ::event_base_dispatch(event_base);
+        quit = false;
+
+        RunDeferred();
+        while (Loop(EVLOOP_ONCE) && !quit)
+            RunDeferred();
     }
 
     bool LoopNonBlock() {
-        return Loop(EVLOOP_NONBLOCK);
+        return RunDeferred() && Loop(EVLOOP_NONBLOCK) && RunDeferred();
     }
 
     bool LoopOnce() {
-        return Loop(EVLOOP_ONCE);
+        return RunDeferred() && Loop(EVLOOP_ONCE) && RunDeferred();
     }
 
     bool LoopOnceNonBlock() {
-        return Loop(EVLOOP_ONCE|EVLOOP_NONBLOCK);
+        return RunDeferred() && Loop(EVLOOP_ONCE|EVLOOP_NONBLOCK) &&
+            RunDeferred();
     }
 
     void Break() {
+        quit = true;
         ::event_base_loopbreak(event_base);
     }
 
@@ -68,10 +88,15 @@ public:
         event_base_dump_events(event_base, file);
     }
 
+    void Defer(DeferEvent &e);
+    void CancelDefer(DeferEvent &e);
+
 private:
     bool Loop(int flags) {
         return ::event_base_loop(event_base, flags) == 0;
     }
+
+    bool RunDeferred();
 };
 
 #endif

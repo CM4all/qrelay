@@ -55,10 +55,11 @@ libutil_a_CPPFLAGS = $(AM_CPPFLAGS) \
 	$(LIBCM4ALL_INLINE_CFLAGS)
 
 libevent_a_SOURCES = \
-	src/event/Loop.hxx \
+	src/event/Loop.cxx src/event/Loop.hxx \
 	src/event/Callback.hxx \
 	src/event/Duration.hxx \
 	src/event/Event.hxx \
+	src/event/DeferEvent.cxx src/event/DeferEvent.hxx \
 	src/event/SignalEvent.cxx src/event/SignalEvent.hxx \
 	src/event/TimerEvent.hxx
 libevent_a_CPPFLAGS = $(AM_CPPFLAGS) \
