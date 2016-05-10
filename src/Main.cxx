@@ -4,7 +4,7 @@
 
 #include "Config.hxx"
 #include "CommandLine.hxx"
-#include "event/Base.hxx"
+#include "event/Loop.hxx"
 #include "event/SignalEvent.hxx"
 #include "Instance.hxx"
 #include "util/Error.hxx"
@@ -20,25 +20,25 @@ using std::endl;
 #include <sys/prctl.h>
 
 class QuitHandler {
-    EventBase &base;
+    EventLoop &event_loop;
 
 public:
-    QuitHandler(EventBase &_base):base(_base) {}
+    explicit QuitHandler(EventLoop &_event_loop):event_loop(_event_loop) {}
 
     void operator()() {
         cerr << "quit" << endl;
-        base.Break();
+        event_loop.Break();
     }
 };
 
 static int
 Run(const Config &config)
 {
-    EventBase event_base;
+    EventLoop event_loop;
 
     signal(SIGPIPE, SIG_IGN);
 
-    QuitHandler quit_handler(event_base);
+    QuitHandler quit_handler(event_loop);
     const SignalEvent sigterm_event(SIGTERM, quit_handler),
         sigint_event(SIGINT, quit_handler),
         sigquit_event(SIGQUIT, quit_handler);
@@ -54,7 +54,7 @@ Run(const Config &config)
     if (daemonize() < 0)
         return EXIT_FAILURE;
 
-    event_base.Dispatch();
+    event_loop.Dispatch();
 
     return EXIT_SUCCESS;
 }
