@@ -6,6 +6,7 @@
 #define BENG_PROXY_TIMER_EVENT_HXX
 
 #include "Event.hxx"
+#include "util/BindMethod.hxx"
 
 /**
  * Invoke an event callback after a certain amount of time.
@@ -13,37 +14,11 @@
 class TimerEvent {
     Event event;
 
+    BoundMethod<void()> callback;
+
 public:
-    TimerEvent() = default;
-
-    TimerEvent(EventLoop &loop, event_callback_fn callback, void *ctx)
-        :event(loop, -1, 0, callback, ctx) {}
-
-    TimerEvent(event_callback_fn callback, void *ctx) {
-        event.SetTimer(callback, ctx);
-    }
-
-    void Init(EventLoop &loop, event_callback_fn callback, void *ctx) {
-        event.Set(loop, -1, 0, callback, ctx);
-    }
-
-    void Init(event_callback_fn callback, void *ctx) {
-        event.SetTimer(callback, ctx);
-    }
-
-    void Deinit() {
-        Cancel();
-    }
-
-    /**
-     * Check if the event was initialized.  Calling this method is
-     * only legal if it really was initialized or if the memory is
-     * zeroed (e.g. an uninitialized global/static variable).
-     */
-    gcc_pure
-    bool IsInitialized() const {
-        return event.IsInitialized();
-    }
+    TimerEvent(EventLoop &loop, BoundMethod<void()> _callback)
+        :event(loop, -1, 0, Callback, this), callback(_callback) {}
 
     bool IsPending() const {
         return event.IsTimerPending();
@@ -55,6 +30,14 @@ public:
 
     void Cancel() {
         event.Delete();
+    }
+
+private:
+    static void Callback(gcc_unused evutil_socket_t fd,
+                         gcc_unused short events,
+                         void *ctx) {
+        auto &event = *(TimerEvent *)ctx;
+        event.callback();
     }
 };
 
