@@ -22,10 +22,21 @@ using std::endl;
 class QuitHandler {
     EventLoop &event_loop;
 
-public:
-    explicit QuitHandler(EventLoop &_event_loop):event_loop(_event_loop) {}
+    SignalEvent sigterm_event, sigint_event, sigquit_event;
 
-    void operator()() {
+public:
+    explicit QuitHandler(EventLoop &_event_loop)
+        :event_loop(_event_loop),
+         sigterm_event(event_loop, SIGTERM, BIND_THIS_METHOD(OnSignal)),
+         sigint_event(event_loop, SIGINT, BIND_THIS_METHOD(OnSignal)),
+         sigquit_event(event_loop, SIGQUIT, BIND_THIS_METHOD(OnSignal)) {
+        sigterm_event.Add();
+        sigint_event.Add();
+        sigquit_event.Add();
+    }
+
+private:
+    void OnSignal(int) {
         cerr << "quit" << endl;
         event_loop.Break();
     }
@@ -39,9 +50,6 @@ Run(const Config &config)
     signal(SIGPIPE, SIG_IGN);
 
     QuitHandler quit_handler(event_loop);
-    const SignalEvent sigterm_event(SIGTERM, quit_handler),
-        sigint_event(SIGINT, quit_handler),
-        sigquit_event(SIGQUIT, quit_handler);
 
     Instance instance(config);
 

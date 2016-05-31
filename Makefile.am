@@ -61,7 +61,7 @@ libevent_a_SOURCES = \
 	src/event/Duration.hxx \
 	src/event/Event.hxx \
 	src/event/DeferEvent.cxx src/event/DeferEvent.hxx \
-	src/event/SignalEvent.cxx src/event/SignalEvent.hxx \
+	src/event/SignalEvent.hxx \
 	src/event/TimerEvent.hxx
 libevent_a_CPPFLAGS = $(AM_CPPFLAGS) \
 	$(LIBCM4ALL_INLINE_CFLAGS) \

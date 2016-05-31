@@ -1,38 +1,39 @@
 /*
- * C++ wrappers for libevent.
- *
  * author: Max Kellermann <mk@cm4all.com>
  */
 
 #ifndef SIGNAL_EVENT_HXX
 #define SIGNAL_EVENT_HXX
 
-#include <functional>
-
-#include <event.h>
+#include "Event.hxx"
+#include "util/BindMethod.hxx"
 
 class SignalEvent {
-    struct event event;
+    Event event;
 
-    const std::function<void()> handler;
+    typedef BoundMethod<void(int)> Callback;
+    Callback callback;
 
 public:
-    SignalEvent(int sig, std::function<void()> _handler)
-        :handler(_handler) {
-        ::evsignal_set(&event, sig, Callback, this);
-        ::evsignal_add(&event, nullptr);
-    }
+    SignalEvent(EventLoop &loop, int sig, Callback _callback)
+        :event(loop, sig, EV_SIGNAL|EV_PERSIST, SignalCallback, this),
+         callback(_callback) {}
 
-    ~SignalEvent() {
-        Delete();
+    void Add(const struct timeval *timeout=nullptr) {
+        event.Add(timeout);
     }
 
     void Delete() {
-        ::evsignal_del(&event);
+        event.Delete();
     }
 
 private:
-    static void Callback(int fd, short event, void *ctx);
+    static void SignalCallback(evutil_socket_t fd,
+                               gcc_unused short events,
+                               void *ctx) {
+        auto &event = *(SignalEvent *)ctx;
+        event.callback(fd);
+    }
 };
 
 #endif
