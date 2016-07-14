@@ -11,7 +11,6 @@ src_cm4all_qrelay_SOURCES = \
 	src/event/Base.hxx \
 	src/event/Event.hxx \
 	src/event/Callback.hxx \
-	src/event/FunctionEvent.cxx src/event/FunctionEvent.hxx \
 	src/event/SignalEvent.cxx src/event/SignalEvent.hxx \
 	src/net/Error.cxx src/net/Error.hxx \
 	src/net/SocketAddress.cxx src/net/SocketAddress.hxx \
