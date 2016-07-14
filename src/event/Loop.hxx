@@ -7,8 +7,6 @@
 #ifndef EVENT_BASE_HXX
 #define EVENT_BASE_HXX
 
-#include <functional>
-
 #include <event.h>
 
 class EventLoop {
