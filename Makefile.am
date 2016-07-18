@@ -43,6 +43,7 @@ src_cm4all_qrelay_LDADD = $(AM_LDADD) \
 noinst_LIBRARIES = libutil.a libevent.a
 
 libutil_a_SOURCES = \
+	src/util/BindMethod.hxx \
 	src/util/CharUtil.hxx \
 	src/util/StringUtil.cxx src/util/StringUtil.hxx \
 	src/util/Tokenizer.cxx src/util/Tokenizer.hxx \
