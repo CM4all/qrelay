@@ -34,20 +34,19 @@ AC_SUBST(AM_CXXFLAGS)
 AC_SUBST(AM_CPPFLAGS)
 AC_SUBST(AM_LDFLAGS)
 
-AM_CXXFLAGS="-std=gnu++0x -Wall"
+AM_CXXFLAGS="-std=gnu++0x"
 AM_CPPFLAGS=""
 AM_LDFLAGS="-Wl,--as-needed"
 
-if test "$am_cv_CC_dependencies_compiler_type" = "gcc3"; then
-	AM_CXXFLAGS="$AM_CXXFLAGS -Wextra"
-	AM_CXXFLAGS="$AM_CXXFLAGS -Wwrite-strings -Wcast-qual -Wcast-align -Wfloat-equal"
-	AM_CXXFLAGS="$AM_CXXFLAGS -Wshadow -Wpointer-arith -Wsign-compare"
-	AM_CXXFLAGS="$AM_CXXFLAGS -Wmissing-declarations -Wmissing-noreturn -Wmissing-format-attribute"
-	AM_CXXFLAGS="$AM_CXXFLAGS -Wredundant-decls -Wno-long-long -Wundef"
-	AM_CXXFLAGS="$AM_CXXFLAGS -Wunused"
-	AM_CXXFLAGS="$AM_CXXFLAGS -pedantic"
-	AM_CXXFLAGS="$AM_CXXFLAGS -fno-exceptions -fno-rtti"
-fi
+AM_CXXFLAGS="$AM_CXXFLAGS -Wall"
+AM_CXXFLAGS="$AM_CXXFLAGS -Wextra"
+AM_CXXFLAGS="$AM_CXXFLAGS -Wwrite-strings -Wcast-qual -Wcast-align -Wfloat-equal"
+AM_CXXFLAGS="$AM_CXXFLAGS -Wshadow -Wpointer-arith -Wsign-compare"
+AM_CXXFLAGS="$AM_CXXFLAGS -Wmissing-declarations -Wmissing-noreturn -Wmissing-format-attribute"
+AM_CXXFLAGS="$AM_CXXFLAGS -Wredundant-decls -Wno-long-long -Wundef"
+AM_CXXFLAGS="$AM_CXXFLAGS -Wunused"
+AM_CXXFLAGS="$AM_CXXFLAGS -pedantic"
+AM_CXXFLAGS="$AM_CXXFLAGS -fno-exceptions -fno-rtti"
 
 dnl
 dnl Compile-time options
