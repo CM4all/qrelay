@@ -17,7 +17,7 @@ src_cm4all_qrelay_SOURCES = \
 	src/djb/NetstringInput.cxx src/djb/NetstringInput.hxx \
 	src/djb/NetstringGenerator.cxx src/djb/NetstringGenerator.hxx \
 	src/io/TextFile.cxx src/io/TextFile.hxx \
-	src/Instance.hxx \
+	src/Instance.cxx src/Instance.hxx \
 	src/Logger.hxx \
 	src/Mail.cxx src/Mail.hxx \
 	src/QmqpRelayServer.hxx \
@@ -65,6 +65,7 @@ libnet_a_CPPFLAGS = $(AM_CPPFLAGS) \
 
 libevent_a_SOURCES = \
 	src/event/Loop.cxx src/event/Loop.hxx \
+	src/event/ShutdownListener.cxx src/event/ShutdownListener.hxx \
 	src/event/Callback.hxx \
 	src/event/Duration.hxx \
 	src/event/Event.hxx \

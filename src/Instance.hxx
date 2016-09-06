@@ -8,23 +8,27 @@
 #include "Logger.hxx"
 #include "QmqpRelayServer.hxx"
 #include "event/Loop.hxx"
+#include "event/ShutdownListener.hxx"
 
 struct Config;
 
 class Instance {
     EventLoop event_loop;
+    ShutdownListener shutdown_listener;
 
 public:
     Logger logger;
 
     QmqpRelayServer qmqp_relay_server;
 
-    explicit Instance(const Config &config)
-        :qmqp_relay_server(event_loop, config, logger, event_loop) {}
+    explicit Instance(const Config &config);
 
     EventLoop &GetEventLoop() {
         return event_loop;
     }
+
+private:
+    void ShutdownCallback();
 };
 
 #endif
