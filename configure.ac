@@ -79,11 +79,20 @@ AC_ARG_ENABLE(debug,
 AM_CONDITIONAL(TEST, test x$enable_test = xyes)
 
 if test x$enable_debug = xyes; then
-	AM_CXXFLAGS="$AM_CXXFLAGS -Werror -pedantic-errors"
+	:
 else
 	AM_CXXFLAGS="$AM_CXXFLAGS -ffunction-sections -fdata-sections"
 	AM_CPPFLAGS="$AM_CPPFLAGS -DNDEBUG"
 	AM_LDFLAGS="$AM_LDFLAGS -Wl,-gc-sections"
+fi
+
+AC_ARG_ENABLE(werror,
+	AS_HELP_STRING([--enable-werror],
+		[treat warnings as errors]),,
+	enable_werror=$enable_debug)
+
+if test x$enable_werror = xyes; then
+	AM_CXXFLAGS="$AM_CXXFLAGS -Werror -pedantic-errors"
 fi
 
 dnl
