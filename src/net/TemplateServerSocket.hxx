@@ -27,7 +27,7 @@ struct ApplyTuple {
 template<class C>
 struct ApplyTuple<C, 0> {
     template<typename T, typename... P>
-    static C *Create(int fd, T &&tuple, P&&... params) {
+    static C *Create(int fd, T &&, P&&... params) {
         return new C(std::forward<P>(params)..., fd);
     }
 };
