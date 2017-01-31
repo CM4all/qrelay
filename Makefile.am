@@ -8,11 +8,6 @@ bin_PROGRAMS = src/cm4all-qrelay
 src_cm4all_qrelay_SOURCES = \
 	src/Config.cxx src/Config.hxx \
 	src/CommandLine.cxx src/CommandLine.hxx \
-	src/net/Error.cxx src/net/Error.hxx \
-	src/net/SocketAddress.cxx src/net/SocketAddress.hxx \
-	src/net/ServerSocket.cxx src/net/ServerSocket.hxx \
-	src/net/TemplateServerSocket.hxx \
-	src/net/ConnectSocket.cxx src/net/ConnectSocket.hxx \
 	src/io/WriteBuffer.cxx src/io/WriteBuffer.hxx \
 	src/io/MultiWriteBuffer.cxx src/io/MultiWriteBuffer.hxx \
 	src/djb/NetstringError.cxx src/djb/NetstringError.hxx \
@@ -34,13 +29,13 @@ src_cm4all_qrelay_CPPFLAGS = $(AM_CPPFLAGS) \
 	$(LIBCM4ALL_DAEMON_CFLAGS) \
 	$(LIBEVENT_CFLAGS)
 src_cm4all_qrelay_LDADD = $(AM_LDADD) \
-	libevent.a libutil.a \
+	libevent.a libnet.a libutil.a \
 	$(BOOST_PROGRAM_OPTIONS_LIB) \
 	$(LIBCM4ALL_SOCKET_LIBS) \
 	$(LIBCM4ALL_DAEMON_LIBS) \
 	$(LIBEVENT_LIBS)
 
-noinst_LIBRARIES = libutil.a libevent.a
+noinst_LIBRARIES = libutil.a libnet.a libevent.a
 
 libutil_a_SOURCES = \
 	src/util/BindMethod.hxx \
@@ -53,6 +48,17 @@ libutil_a_SOURCES = \
 	src/util/Error.cxx src/util/Error.hxx \
 	src/util/HugeAllocator.cxx src/util/HugeAllocator.hxx
 libutil_a_CPPFLAGS = $(AM_CPPFLAGS) \
+	$(LIBCM4ALL_INLINE_CFLAGS)
+
+libnet_a_SOURCES = \
+	src/net/Error.cxx src/net/Error.hxx \
+	src/net/SocketAddress.cxx src/net/SocketAddress.hxx \
+	src/net/ServerSocket.cxx src/net/ServerSocket.hxx \
+	src/net/TemplateServerSocket.hxx \
+	src/net/ConnectSocket.cxx src/net/ConnectSocket.hxx
+libnet_a_CPPFLAGS = $(AM_CPPFLAGS) \
+	$(LIBCM4ALL_SOCKET_CFLAGS) \
+	$(LIBCM4ALL_DAEMON_CFLAGS) \
 	$(LIBCM4ALL_INLINE_CFLAGS)
 
 libevent_a_SOURCES = \
