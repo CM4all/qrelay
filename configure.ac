@@ -1,6 +1,6 @@
 AC_PREREQ(2.60)
 AC_INIT(CM4all qrelay, 0.4, mk@cm4all.com, cm4all-snowball)
-AC_COPYRIGHT(Copyright 2014 Content Management AG)
+AC_COPYRIGHT(Copyright 2014-2016 Content Management AG)
 AC_CONFIG_SRCDIR(src/Main.cxx)
 AC_CONFIG_AUX_DIR(build)
 AM_INIT_AUTOMAKE([foreign 1.11 subdir-objects silent-rules])
