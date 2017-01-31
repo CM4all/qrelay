@@ -8,10 +8,6 @@ bin_PROGRAMS = src/cm4all-qrelay
 src_cm4all_qrelay_SOURCES = \
 	src/Config.cxx src/Config.hxx \
 	src/CommandLine.cxx src/CommandLine.hxx \
-	src/event/Base.hxx \
-	src/event/Event.hxx \
-	src/event/Callback.hxx \
-	src/event/SignalEvent.cxx src/event/SignalEvent.hxx \
 	src/net/Error.cxx src/net/Error.hxx \
 	src/net/SocketAddress.cxx src/net/SocketAddress.hxx \
 	src/net/ServerSocket.cxx src/net/ServerSocket.hxx \
@@ -25,14 +21,6 @@ src_cm4all_qrelay_SOURCES = \
 	src/djb/NetstringClient.cxx src/djb/NetstringClient.hxx \
 	src/djb/NetstringInput.cxx src/djb/NetstringInput.hxx \
 	src/djb/NetstringGenerator.cxx src/djb/NetstringGenerator.hxx \
-	src/util/CharUtil.hxx \
-	src/util/StringUtil.cxx src/util/StringUtil.hxx \
-	src/util/Tokenizer.cxx src/util/Tokenizer.hxx \
-	src/util/Range.hxx \
-	src/util/ConstBuffer.hxx \
-	src/util/Domain.hxx \
-	src/util/Error.cxx src/util/Error.hxx \
-	src/util/HugeAllocator.cxx src/util/HugeAllocator.hxx \
 	src/io/TextFile.cxx src/io/TextFile.hxx \
 	src/Instance.hxx \
 	src/Logger.hxx \
@@ -46,10 +34,34 @@ src_cm4all_qrelay_CPPFLAGS = $(AM_CPPFLAGS) \
 	$(LIBCM4ALL_DAEMON_CFLAGS) \
 	$(LIBEVENT_CFLAGS)
 src_cm4all_qrelay_LDADD = $(AM_LDADD) \
+	libevent.a libutil.a \
 	$(BOOST_PROGRAM_OPTIONS_LIB) \
 	$(LIBCM4ALL_SOCKET_LIBS) \
 	$(LIBCM4ALL_DAEMON_LIBS) \
 	$(LIBEVENT_LIBS)
+
+noinst_LIBRARIES = libutil.a libevent.a
+
+libutil_a_SOURCES = \
+	src/util/CharUtil.hxx \
+	src/util/StringUtil.cxx src/util/StringUtil.hxx \
+	src/util/Tokenizer.cxx src/util/Tokenizer.hxx \
+	src/util/Range.hxx \
+	src/util/ConstBuffer.hxx \
+	src/util/Domain.hxx \
+	src/util/Error.cxx src/util/Error.hxx \
+	src/util/HugeAllocator.cxx src/util/HugeAllocator.hxx
+libutil_a_CPPFLAGS = $(AM_CPPFLAGS) \
+	$(LIBCM4ALL_INLINE_CFLAGS)
+
+libevent_a_SOURCES = \
+	src/event/Base.hxx \
+	src/event/Event.hxx \
+	src/event/Callback.hxx \
+	src/event/SignalEvent.cxx src/event/SignalEvent.hxx
+libevent_a_CPPFLAGS = $(AM_CPPFLAGS) \
+	$(LIBCM4ALL_INLINE_CFLAGS) \
+	$(LIBEVENT_CFLAGS)
 
 #
 # documentation

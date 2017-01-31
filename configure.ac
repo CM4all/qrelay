@@ -12,6 +12,7 @@ dnl Checks for programs.
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
 AC_PROG_CXX
+AC_PROG_RANLIB
 
 dnl Checks for libraries.
 
