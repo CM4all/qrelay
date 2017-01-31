@@ -1,3 +1,4 @@
+ACLOCAL_AMFLAGS = -I m4
 AUTOMAKE_OPTIONS = foreign 1.11 subdir-objects
 
 AM_CPPFLAGS += \
@@ -42,7 +43,7 @@ src_cm4all_qrelay_CPPFLAGS = $(AM_CPPFLAGS) \
 	$(LIBCM4ALL_DAEMON_CFLAGS) \
 	$(LIBEVENT_CFLAGS)
 src_cm4all_qrelay_LDADD = $(AM_LDADD) \
-	-lboost_program_options \
+	$(BOOST_PROGRAM_OPTIONS_LIB) \
 	$(LIBCM4ALL_SOCKET_LIBS) \
 	$(LIBCM4ALL_DAEMON_LIBS) \
 	$(LIBEVENT_LIBS)

@@ -2,6 +2,7 @@ AC_PREREQ(2.60)
 AC_INIT(CM4all qrelay, 0.4, mk@cm4all.com, cm4all-snowball)
 AC_COPYRIGHT(Copyright 2014-2016 Content Management AG)
 AC_CONFIG_SRCDIR(src/Main.cxx)
+AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR(build)
 AM_INIT_AUTOMAKE([foreign 1.11 subdir-objects silent-rules])
 AM_SILENT_RULES
@@ -13,6 +14,9 @@ AC_PROG_INSTALL
 AC_PROG_CXX
 
 dnl Checks for libraries.
+
+AX_BOOST_BASE([1.54], [], AC_MSG_ERROR([Boost not found]))
+AX_BOOST_PROGRAM_OPTIONS
 
 PKG_CHECK_MODULES([LIBEVENT], [libevent >= 2.0.19],,
 	[AC_MSG_ERROR([libevent not found])])
