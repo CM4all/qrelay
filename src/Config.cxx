@@ -37,16 +37,16 @@ Config::Action::Parse(Tokenizer &tokenizer, Error &error)
 {
     assert(!IsDefined());
 
-    const char *action = tokenizer.NextWord(error);
-    if (action == nullptr || *action == 0) {
+    const char *a = tokenizer.NextWord(error);
+    if (a == nullptr || *a == 0) {
         if (!error.IsDefined())
             error.Set(config_domain, "missing action");
         return false;
     }
 
-    if (strcmp(action, "connect") == 0) {
+    if (strcmp(a, "connect") == 0) {
         return ParseConnect(tokenizer, error);
-    } else if (strcmp(action, "exec") == 0) {
+    } else if (strcmp(a, "exec") == 0) {
         const char *p = tokenizer.NextString(error);
         if (p == nullptr) {
             if (!error.IsDefined())
@@ -69,14 +69,14 @@ Config::Action::Parse(Tokenizer &tokenizer, Error &error)
         } while (p != nullptr);
 
         return !error.IsDefined();
-    } else if (strcmp(action, "discard") == 0) {
+    } else if (strcmp(a, "discard") == 0) {
         type = Type::DISCARD;
         return true;
-    } else if (strcmp(action, "reject") == 0) {
+    } else if (strcmp(a, "reject") == 0) {
         type = Type::REJECT;
         return true;
     } else {
-        error.Format(config_domain, "unknown action: %s", action);
+        error.Format(config_domain, "unknown action: %s", a);
         return false;
     }
 
