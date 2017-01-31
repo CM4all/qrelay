@@ -46,7 +46,6 @@ AM_CXXFLAGS="$AM_CXXFLAGS -Wmissing-declarations -Wmissing-noreturn -Wmissing-fo
 AM_CXXFLAGS="$AM_CXXFLAGS -Wredundant-decls -Wno-long-long -Wundef"
 AM_CXXFLAGS="$AM_CXXFLAGS -Wunused"
 AM_CXXFLAGS="$AM_CXXFLAGS -pedantic"
-AM_CXXFLAGS="$AM_CXXFLAGS -fno-exceptions -fno-rtti"
 
 dnl
 dnl Compile-time options
