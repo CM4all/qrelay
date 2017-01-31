@@ -19,8 +19,15 @@
 
 static constexpr timeval connect_timeout{10, 0};
 
-ConnectSocket::ConnectSocket()
-    :fd(-1)
+void
+ConnectSocketHandler::OnSocketConnectTimeout()
+{
+    /* default implementation falls back to OnSocketConnectError() */
+    OnSocketConnectError(Error(timeout_domain, "Connect timeout"));
+}
+
+ConnectSocket::ConnectSocket(ConnectSocketHandler &_handler)
+    :handler(_handler), fd(-1)
 {
 }
 
@@ -55,13 +62,11 @@ bool
 ConnectSocket::Connect(const SocketAddress address)
 {
     assert(!fd.IsDefined());
-    assert(on_connect);
-    assert(on_error);
 
     Error error;
     fd = ::Connect(address, error);
     if (!fd.IsDefined()) {
-        on_error(std::move(error));
+        handler.OnSocketConnectError(std::move(error));
         return false;
     }
 
@@ -75,7 +80,7 @@ void
 ConnectSocket::OnEvent(evutil_socket_t, short events)
 {
     if (events & EV_TIMEOUT) {
-        on_error(Error(timeout_domain, "Connect timeout"));
+        handler.OnSocketConnectTimeout();
         return;
     }
 
@@ -83,9 +88,9 @@ ConnectSocket::OnEvent(evutil_socket_t, short events)
     if (s_err != 0) {
         Error error;
         error.SetErrno(s_err, "Failed to connect");
-        on_error(std::move(error));
+        handler.OnSocketConnectError(std::move(error));
         return;
     }
 
-    on_connect(std::exchange(fd, SocketDescriptor()));
+    handler.OnSocketConnectSuccess(std::exchange(fd, SocketDescriptor()));
 }

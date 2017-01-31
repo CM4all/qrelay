@@ -18,7 +18,7 @@
 struct Config;
 class Error;
 
-class QmqpRelayConnection final : public NetstringServer {
+class QmqpRelayConnection final : public NetstringServer, ConnectSocketHandler {
     const Config &config;
     Logger logger;
 
@@ -37,6 +37,7 @@ public:
         :NetstringServer(_fd),
          config(_config),
          logger(parent_logger, "connection"),
+         connect(*this),
          client(256) {}
 
 protected:
@@ -47,6 +48,11 @@ protected:
     virtual void OnRequest(void *data, size_t size) override;
     virtual void OnError(Error &&error) override;
     virtual void OnDisconnect() override;
+
+private:
+    /* virtual methods from class ConnectSocketHandler */
+    void OnSocketConnectSuccess(SocketDescriptor &&fd) override;
+    void OnSocketConnectError(Error &&error) override;
 };
 
 #endif

@@ -26,14 +26,6 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
     tail = mail.tail.ToVoid();
     request.push_back(mail.message.ToVoid());
 
-    connect.OnConnect(std::bind(&QmqpRelayConnection::OnConnect, this,
-                                std::placeholders::_1, std::placeholders::_1));
-    connect.OnError([this](Error &&error){
-            logger(error.GetMessage());
-            if (SendResponse("Zconnect failed"))
-                delete this;
-        });
-
     Error error;
     const Config::Action *action = config.GetAction(mail, error);
     if (action == nullptr) {
@@ -175,4 +167,18 @@ void
 QmqpRelayConnection::OnDisconnect()
 {
     delete this;
+}
+
+void
+QmqpRelayConnection::OnSocketConnectSuccess(SocketDescriptor &&fd)
+{
+    OnConnect(SocketDescriptor(fd.Get()), SocketDescriptor(fd.Get()));
+}
+
+void
+QmqpRelayConnection::OnSocketConnectError(Error &&error)
+{
+    logger(error.GetMessage());
+    if (SendResponse("Zconnect failed"))
+        delete this;
 }

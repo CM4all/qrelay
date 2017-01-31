@@ -10,33 +10,26 @@
 #include "SocketDescriptor.hxx"
 #include "event/Event.hxx"
 
-#include <functional>
-
-struct sockaddr;
 class Error;
 class SocketAddress;
 
+class ConnectSocketHandler {
+public:
+    virtual void OnSocketConnectSuccess(SocketDescriptor &&fd) = 0;
+    virtual void OnSocketConnectTimeout();
+    virtual void OnSocketConnectError(Error &&error) = 0;
+};
+
 class ConnectSocket {
+    ConnectSocketHandler &handler;
+
     SocketDescriptor fd;
 
     Event event;
 
-    std::function<void(SocketDescriptor)> on_connect;
-    std::function<void(Error &&)> on_error;
-
 public:
-    ConnectSocket();
+    explicit ConnectSocket(ConnectSocketHandler &_handler);
     ~ConnectSocket();
-
-    template<typename T>
-    void OnConnect(T &&t) {
-        on_connect = std::forward<T>(t);
-    }
-
-    template<typename T>
-    void OnError(T &&t) {
-        on_error = std::forward<T>(t);
-    }
 
     bool Connect(SocketAddress address);
 
