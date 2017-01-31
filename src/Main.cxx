@@ -51,7 +51,7 @@ Run(const Config &config)
 
     QuitHandler quit_handler(event_loop);
 
-    Instance instance(config);
+    Instance instance(config, event_loop);
 
     Error error;
     if (!instance.qmqp_relay_server.ListenPath(config.listen.c_str(), error)) {

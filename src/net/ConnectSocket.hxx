@@ -8,7 +8,7 @@
 #define CONNECT_SOCKET_HXX
 
 #include "SocketDescriptor.hxx"
-#include "event/Event.hxx"
+#include "event/SocketEvent.hxx"
 
 class Error;
 class SocketAddress;
@@ -25,16 +25,17 @@ class ConnectSocket {
 
     SocketDescriptor fd;
 
-    Event event;
+    SocketEvent event;
 
 public:
-    explicit ConnectSocket(ConnectSocketHandler &_handler);
+    explicit ConnectSocket(EventLoop &_event_loop,
+                           ConnectSocketHandler &_handler);
     ~ConnectSocket();
 
     bool Connect(SocketAddress address);
 
 private:
-    void OnEvent(evutil_socket_t, short events);
+    void OnEvent(short events);
 };
 
 #endif

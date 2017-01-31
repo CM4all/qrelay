@@ -12,6 +12,6 @@
 struct Config;
 
 typedef TemplateServerSocket<QmqpRelayConnection,
-                             const Config &, Logger> QmqpRelayServer;
+                             const Config &, Logger, EventLoop &> QmqpRelayServer;
 
 #endif

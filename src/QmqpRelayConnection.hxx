@@ -33,11 +33,12 @@ class QmqpRelayConnection final : public NetstringServer, ConnectSocketHandler {
 
 public:
     QmqpRelayConnection(const Config &_config, const Logger &parent_logger,
+                        EventLoop &event_loop,
                         int _fd)
         :NetstringServer(_fd),
          config(_config),
          logger(parent_logger, "connection"),
-         connect(*this),
+         connect(event_loop, *this),
          client(256) {}
 
 protected:

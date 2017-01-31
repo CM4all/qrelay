@@ -26,8 +26,10 @@ ConnectSocketHandler::OnSocketConnectTimeout()
     OnSocketConnectError(Error(timeout_domain, "Connect timeout"));
 }
 
-ConnectSocket::ConnectSocket(ConnectSocketHandler &_handler)
-    :handler(_handler), fd(-1)
+ConnectSocket::ConnectSocket(EventLoop &_event_loop,
+                             ConnectSocketHandler &_handler)
+    :handler(_handler), fd(-1),
+     event(_event_loop, BIND_THIS_METHOD(OnEvent))
 {
 }
 
@@ -70,14 +72,13 @@ ConnectSocket::Connect(const SocketAddress address)
         return false;
     }
 
-    event.Set(fd.Get(), EV_WRITE|EV_TIMEOUT,
-              MakeEventCallback(ConnectSocket, OnEvent), this);
+    event.Set(fd.Get(), EV_WRITE|EV_TIMEOUT);
     event.Add(connect_timeout);
     return true;
 }
 
 void
-ConnectSocket::OnEvent(evutil_socket_t, short events)
+ConnectSocket::OnEvent(short events)
 {
     if (events & EV_TIMEOUT) {
         handler.OnSocketConnectTimeout();
