@@ -45,7 +45,7 @@ public:
         :ServerSocket(event_loop), params(std::forward<P>(_params)...) {}
 
 protected:
-    virtual void OnAccept(SocketDescriptor &&_fd, SocketAddress) override {
+    void OnAccept(SocketDescriptor &&_fd, SocketAddress) override {
         CreateConnection(std::move(_fd));
     };
 

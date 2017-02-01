@@ -46,9 +46,9 @@ protected:
     void OnConnect(int out_fd, int in_fd);
     void OnResponse(const void *data, size_t size);
 
-    virtual void OnRequest(void *data, size_t size) override;
-    virtual void OnError(Error &&error) override;
-    virtual void OnDisconnect() override;
+    void OnRequest(void *data, size_t size) override;
+    void OnError(Error &&error) override;
+    void OnDisconnect() override;
 
 private:
     /* virtual methods from class ConnectSocketHandler */
