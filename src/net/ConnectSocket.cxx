@@ -28,7 +28,7 @@ ConnectSocketHandler::OnSocketConnectTimeout()
 
 ConnectSocket::ConnectSocket(EventLoop &_event_loop,
                              ConnectSocketHandler &_handler)
-    :handler(_handler), fd(-1),
+    :handler(_handler),
      event(_event_loop, BIND_THIS_METHOD(OnEvent))
 {
 }
