@@ -28,9 +28,8 @@ public:
         assert(fd >= 0);
     }
 
-    SocketDescriptor(SocketDescriptor &&other):fd(other.fd) {
-        other.fd = -1;
-    }
+    SocketDescriptor(SocketDescriptor &&other)
+        :fd(std::exchange(other.fd, -1)) {}
 
     ~SocketDescriptor();
 
