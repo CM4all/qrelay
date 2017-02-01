@@ -22,10 +22,8 @@ ServerSocket::ServerSocket(EventLoop &event_loop)
 
 ServerSocket::~ServerSocket()
 {
-    if (fd.IsDefined()) {
+    if (fd.IsDefined())
         event.Delete();
-        fd.Close();
-    }
 }
 
 static SocketDescriptor
