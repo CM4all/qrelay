@@ -50,6 +50,11 @@ Listen(const SocketAddress address, Error &error)
     }
 
     switch (address.GetFamily()) {
+    case AF_INET:
+    case AF_INET6:
+        fd.SetTcpFastOpen();
+        break;
+
     case AF_LOCAL:
         fd.SetBoolOption(SOL_SOCKET, SO_PASSCRED, true);
         break;

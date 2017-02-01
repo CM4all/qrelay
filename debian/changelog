@@ -1,6 +1,7 @@
 cm4all-qrelay (0.4) unstable; urgency=low
 
   * disable the "V6ONLY" flag on IPv6 wildcard listeners
+  * enable TCP Fast Open
 
  --   
 
