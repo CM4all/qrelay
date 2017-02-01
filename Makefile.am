@@ -16,6 +16,7 @@ cm4all_qrelay_SOURCES = \
 	src/djb/NetstringInput.cxx src/djb/NetstringInput.hxx \
 	src/djb/NetstringGenerator.cxx src/djb/NetstringGenerator.hxx \
 	src/io/TextFile.cxx src/io/TextFile.hxx \
+	src/system/SetupProcess.cxx src/system/SetupProcess.hxx \
 	src/system/Error.hxx \
 	src/Instance.cxx src/Instance.hxx \
 	src/Logger.hxx \

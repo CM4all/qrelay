@@ -5,6 +5,7 @@
 #include "Config.hxx"
 #include "CommandLine.hxx"
 #include "Instance.hxx"
+#include "system/SetupProcess.hxx"
 #include "util/OstreamException.hxx"
 
 #include <daemon/daemonize.h>
@@ -20,8 +21,6 @@ using std::endl;
 static int
 Run(const Config &config)
 {
-    signal(SIGPIPE, SIG_IGN);
-
     Instance instance(config);
 
     instance.qmqp_relay_server.Listen(config.listen);
@@ -41,8 +40,7 @@ try {
 
     const auto config = ParseCommandLine(argc, argv);
 
-    /* timer slack 500ms - we don't care for timer correctness */
-    prctl(PR_SET_TIMERSLACK, 500000000, 0, 0, 0);
+    SetupProcess();
 
     const int result = Run(config);
 
