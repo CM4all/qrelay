@@ -41,6 +41,9 @@ Listen(const SocketAddress address, Error &error)
         return SocketDescriptor();
     }
 
+    if (address.IsV6Any())
+        fd.SetV6Only(false);
+
     if (!fd.Bind(address)) {
         error.SetErrno("Failed to bind");
         return SocketDescriptor();
