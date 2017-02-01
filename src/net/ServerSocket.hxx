@@ -26,6 +26,20 @@ public:
     bool Listen(SocketAddress address, Error &error);
     bool ListenPath(const char *path, Error &error);
 
+    StaticSocketAddress GetLocalAddress() const;
+
+    bool SetTcpDeferAccept(const int &seconds) {
+        return fd.SetTcpDeferAccept(seconds);
+    }
+
+    void AddEvent() {
+        event.Add();
+    }
+
+    void RemoveEvent() {
+        event.Delete();
+    }
+
 protected:
     virtual void OnAccept(int fd) = 0;
 

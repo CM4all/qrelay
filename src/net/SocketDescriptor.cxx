@@ -4,6 +4,7 @@
 
 #include "SocketDescriptor.hxx"
 #include "SocketAddress.hxx"
+#include "StaticSocketAddress.hxx"
 #include "util/Error.hxx"
 
 #include <errno.h>
@@ -126,4 +127,17 @@ SocketDescriptor::GetError()
                       (char *)&s_err, &s_err_size) == 0
         ? s_err
         : errno;
+}
+
+StaticSocketAddress
+SocketDescriptor::GetLocalAddress() const
+{
+    assert(IsDefined());
+
+    StaticSocketAddress result;
+    result.size = result.GetCapacity();
+    if (getsockname(fd, result, &result.size) < 0)
+        result.Clear();
+
+    return result;
 }

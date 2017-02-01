@@ -5,6 +5,7 @@
  */
 
 #include "ServerSocket.hxx"
+#include "StaticSocketAddress.hxx"
 #include "AllocatedSocketAddress.hxx"
 #include "util/Error.hxx"
 
@@ -93,6 +94,12 @@ ServerSocket::ListenPath(const char *path, Error &error)
     address.SetLocal(path);
 
     return Listen(address, error);
+}
+
+StaticSocketAddress
+ServerSocket::GetLocalAddress() const
+{
+    return fd.GetLocalAddress();
 }
 
 void
