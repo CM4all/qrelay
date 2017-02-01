@@ -5,6 +5,7 @@
 #include "Config.hxx"
 #include "CommandLine.hxx"
 #include "Instance.hxx"
+#include "util/OstreamException.hxx"
 
 #include <daemon/daemonize.h>
 
@@ -50,6 +51,6 @@ try {
     cerr << "exiting" << endl;
     return result;
 } catch (const std::exception &e) {
-    cerr << "error: " << e.what() << endl;
+    cerr << "error: " << e << endl;
     return EXIT_FAILURE;
 }
