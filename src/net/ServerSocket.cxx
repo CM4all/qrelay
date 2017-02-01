@@ -49,12 +49,16 @@ Listen(const SocketAddress address, Error &error)
         return SocketDescriptor();
     }
 
+    switch (address.GetFamily()) {
+    case AF_LOCAL:
+        fd.SetBoolOption(SOL_SOCKET, SO_PASSCRED, true);
+        break;
+    }
+
     if (listen(fd.Get(), 64) < 0) {
         error.SetErrno("Failed to listen");
         return SocketDescriptor();
     }
-
-    fd.SetBoolOption(SOL_SOCKET, SO_PASSCRED, true);
 
     return fd;
 }
