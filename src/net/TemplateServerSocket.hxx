@@ -47,13 +47,13 @@ public:
         :ServerSocket(event_loop), params(std::forward<P>(_params)...) {}
 
 protected:
-    virtual void OnAccept(SocketDescriptor &&fd, SocketAddress) override {
-        CreateConnection(std::move(fd));
+    virtual void OnAccept(SocketDescriptor &&_fd, SocketAddress) override {
+        CreateConnection(std::move(_fd));
     };
 
 private:
-    C *CreateConnection(SocketDescriptor &&fd) {
-        return ApplyTuple<C, std::tuple_size<Tuple>::value>::template Create<Tuple &>(std::move(fd), params);
+    C *CreateConnection(SocketDescriptor &&_fd) {
+        return ApplyTuple<C, std::tuple_size<Tuple>::value>::template Create<Tuple &>(std::move(_fd), params);
     }
 };
 
