@@ -29,7 +29,6 @@ ParseCommandLine(int argc, char **argv)
         ("config", po::value<std::string>()->required(),
          "load this configuration file")
         ("no-daemon", "don't daemonize")
-        ("pidfile", po::value<std::string>(), "create a pid file")
         ("user", po::value<std::string>(), "switch to another user id")
         ;
 
@@ -45,12 +44,6 @@ ParseCommandLine(int argc, char **argv)
 
     if (vm.count("no-daemon"))
         daemon_config.detach = false;
-
-    if (vm.count("pidfile")) {
-        static std::string buffer;
-        buffer = vm["pidfile"].as<std::string>();
-        daemon_config.pidfile = buffer.c_str();
-    }
 
     if (vm.count("user")) {
         const std::string user = vm["user"].as<std::string>();
