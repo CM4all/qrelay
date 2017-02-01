@@ -1,8 +1,5 @@
 #!/usr/bin/make -f
 
-export CC = clang
-export CXX = clang++
-
 %:
 	dh $@ --with=autoreconf --parallel --with=systemd
 

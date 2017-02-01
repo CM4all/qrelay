@@ -11,6 +11,5 @@ autoconf
 	--prefix=/usr/local/stow/cm4all-qrelay \
 	--enable-debug \
 	--enable-silent-rules \
-	CXX=clang++ \
 	CXXFLAGS="-O0 -ggdb" \
 	"$@"
