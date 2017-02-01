@@ -7,8 +7,6 @@
 
 #include <stdio.h>
 
-class Error;
-
 /**
  * Read a file line-by-line.
  */
@@ -36,8 +34,6 @@ public:
     }
 
     char *ReadLine();
-
-    void PrefixError(Error &error);
 };
 
 #endif

@@ -5,9 +5,6 @@
 #include "TextFile.hxx"
 #include "system/Error.hxx"
 #include "util/StringUtil.hxx"
-#include "util/Error.hxx"
-
-#include <string.h>
 
 TextFile::TextFile(const char *_path)
     :path(_path), file(fopen(_path, "rt")), no(0)
@@ -27,10 +24,4 @@ TextFile::ReadLine()
 
     ++no;
     return line;
-}
-
-void
-TextFile::PrefixError(Error &error)
-{
-    error.FormatPrefix("%s line %u: ", path, no);
 }
