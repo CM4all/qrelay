@@ -44,8 +44,6 @@ libutil_a_SOURCES = \
 	src/util/Tokenizer.cxx src/util/Tokenizer.hxx \
 	src/util/Range.hxx \
 	src/util/ConstBuffer.hxx \
-	src/util/Domain.hxx \
-	src/util/Error.cxx src/util/Error.hxx \
 	src/util/RuntimeError.hxx \
 	src/util/OstreamException.hxx \
 	src/util/HugeAllocator.cxx src/util/HugeAllocator.hxx
