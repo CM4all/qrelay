@@ -5,7 +5,7 @@
  */
 
 #include "ServerSocket.hxx"
-#include "StaticSocketAddress.hxx"
+#include "AllocatedSocketAddress.hxx"
 #include "util/Error.hxx"
 
 #include <daemon/log.h>
@@ -89,7 +89,7 @@ ServerSocket::ListenPath(const char *path, Error &error)
 
     unlink(path);
 
-    StaticSocketAddress address;
+    AllocatedSocketAddress address;
     address.SetLocal(path);
 
     return Listen(address, error);
