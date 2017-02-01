@@ -19,7 +19,7 @@ Vcs-git: git.intern.cm-ag:/srv/git/master/qrelay.git
 
 Package: cm4all-qrelay
 Architecture: any
-Depends: ${shlibs:Depends}, init-system-helpers
+Depends: ${shlibs:Depends}, systemd-sysv
 Description: QMQP relay daemon
  qrelay is a daemon that accepts QMQP on a UNIX domain socket and
  relays it to another QMQP daemon.
