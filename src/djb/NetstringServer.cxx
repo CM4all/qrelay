@@ -18,9 +18,9 @@
 
 static constexpr timeval busy_timeout{5, 0};
 
-NetstringServer::NetstringServer(EventLoop &event_loop, int _fd)
-    :fd(_fd),
-     event(event_loop, fd, EV_READ|EV_TIMEOUT|EV_PERSIST,
+NetstringServer::NetstringServer(EventLoop &event_loop, SocketDescriptor &&_fd)
+    :fd(std::move(_fd)),
+     event(event_loop, fd.Get(), EV_READ|EV_TIMEOUT|EV_PERSIST,
            BIND_THIS_METHOD(OnEvent)),
      input(16 * 1024 * 1024) {
     event.Add(busy_timeout);
@@ -29,7 +29,6 @@ NetstringServer::NetstringServer(EventLoop &event_loop, int _fd)
 NetstringServer::~NetstringServer()
 {
     event.Delete();
-    close(fd);
 }
 
 bool
@@ -41,7 +40,7 @@ NetstringServer::SendResponse(const void *data, size_t size)
         write.Push(i.data, i.size);
 
     Error error;
-    switch (write.Write(fd, error)) {
+    switch (write.Write(fd.Get(), error)) {
     case MultiWriteBuffer::Result::MORE:
         OnError(Error(netstring_domain, "short write"));
         return false;
@@ -73,7 +72,7 @@ NetstringServer::OnEvent(short events)
     }
 
     Error error;
-    NetstringInput::Result result = input.Receive(fd, error);
+    NetstringInput::Result result = input.Receive(fd.Get(), error);
     switch (result) {
     case NetstringInput::Result::MORE:
         event.Add(&busy_timeout);

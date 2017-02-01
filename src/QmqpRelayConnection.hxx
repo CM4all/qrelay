@@ -34,8 +34,8 @@ class QmqpRelayConnection final : public NetstringServer, ConnectSocketHandler {
 public:
     QmqpRelayConnection(const Config &_config, const Logger &parent_logger,
                         EventLoop &event_loop,
-                        int _fd)
-        :NetstringServer(event_loop, _fd),
+                        SocketDescriptor &&_fd)
+        :NetstringServer(event_loop, std::move(_fd)),
          config(_config),
          logger(parent_logger, "connection"),
          connect(event_loop, *this),

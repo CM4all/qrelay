@@ -16,8 +16,8 @@ class SocketAddress;
 template<class C, std::size_t i>
 struct ApplyTuple {
     template<typename T, typename... P>
-    static C *Create(int fd, T &&tuple, P&&... params) {
-        return ApplyTuple<C, i - 1>::Create(fd,
+    static C *Create(SocketDescriptor &&fd, T &&tuple, P&&... params) {
+        return ApplyTuple<C, i - 1>::Create(std::move(fd),
                                             std::forward<T>(tuple),
                                             std::get<i - 1>(std::forward<T>(tuple)),
                                             std::forward<P>(params)...);
@@ -27,8 +27,8 @@ struct ApplyTuple {
 template<class C>
 struct ApplyTuple<C, 0> {
     template<typename T, typename... P>
-    static C *Create(int fd, T &&, P&&... params) {
-        return new C(std::forward<P>(params)..., fd);
+    static C *Create(SocketDescriptor &&fd, T &&, P&&... params) {
+        return new C(std::forward<P>(params)..., std::move(fd));
     }
 };
 
@@ -47,13 +47,13 @@ public:
         :ServerSocket(event_loop), params(std::forward<P>(_params)...) {}
 
 protected:
-    virtual void OnAccept(int fd) override {
-        CreateConnection(fd);
+    virtual void OnAccept(SocketDescriptor &&fd, SocketAddress) override {
+        CreateConnection(std::move(fd));
     };
 
 private:
-    C *CreateConnection(int fd) {
-        return ApplyTuple<C, std::tuple_size<Tuple>::value>::template Create<Tuple &>(fd, params);
+    C *CreateConnection(SocketDescriptor &&fd) {
+        return ApplyTuple<C, std::tuple_size<Tuple>::value>::template Create<Tuple &>(std::move(fd), params);
     }
 };
 

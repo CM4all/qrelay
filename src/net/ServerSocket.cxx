@@ -105,15 +105,12 @@ ServerSocket::GetLocalAddress() const
 void
 ServerSocket::OnEvent(short)
 {
-    sockaddr_storage address;
-    socklen_t address_size = sizeof(address);
-
-    int result = accept4(fd.Get(), (sockaddr *)&address, &address_size,
-                         SOCK_CLOEXEC|SOCK_NONBLOCK);
-    if (result < 0) {
+    StaticSocketAddress remote_address;
+    auto remote_fd = fd.Accept(remote_address);
+    if (!remote_fd.IsDefined()) {
         daemon_log(1, "accept() failed: %s\n", strerror(errno));
         return;
     }
 
-    OnAccept(result);
+    OnAccept(std::move(remote_fd), remote_address);
 }

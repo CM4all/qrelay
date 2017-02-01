@@ -41,7 +41,12 @@ public:
     }
 
 protected:
-    virtual void OnAccept(int fd) = 0;
+    /**
+     * A new incoming connection has been established.
+     *
+     * @param fd the socket owned by the callee
+     */
+    virtual void OnAccept(SocketDescriptor &&fd, SocketAddress address) = 0;
 
 private:
     void OnEvent(short events);

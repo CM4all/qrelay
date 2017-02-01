@@ -12,12 +12,13 @@
 #include "NetstringInput.hxx"
 #include "NetstringGenerator.hxx"
 #include "io/MultiWriteBuffer.hxx"
+#include "net/SocketDescriptor.hxx"
 #include "event/SocketEvent.hxx"
 
 #include <cstddef>
 
 class NetstringServer {
-    const int fd;
+    SocketDescriptor fd;
 
     SocketEvent event;
 
@@ -26,12 +27,12 @@ class NetstringServer {
     MultiWriteBuffer write;
 
 public:
-    NetstringServer(EventLoop &event_loop, int _fd);
+    NetstringServer(EventLoop &event_loop, SocketDescriptor &&_fd);
     ~NetstringServer();
 
 protected:
     int GetFD() const {
-        return fd;
+        return fd.Get();
     }
 
     bool SendResponse(const void *data, size_t size);
