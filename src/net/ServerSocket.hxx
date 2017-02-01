@@ -7,6 +7,7 @@
 #ifndef SERVER_SOCKET_HXX
 #define SERVER_SOCKET_HXX
 
+#include "SocketDescriptor.hxx"
 #include "event/SocketEvent.hxx"
 
 struct sockaddr;
@@ -14,7 +15,7 @@ class Error;
 class SocketAddress;
 
 class ServerSocket {
-    int fd;
+    SocketDescriptor fd;
 
     SocketEvent event;
 

@@ -15,51 +15,43 @@
 #include <errno.h>
 
 ServerSocket::ServerSocket(EventLoop &event_loop)
-    :fd(-1), event(event_loop, BIND_THIS_METHOD(OnEvent))
+    :event(event_loop, BIND_THIS_METHOD(OnEvent))
 {
 }
 
 ServerSocket::~ServerSocket()
 {
-    if (fd >= 0) {
+    if (fd.IsDefined()) {
         event.Delete();
-        close(fd);
+        fd.Close();
     }
 }
 
-static int
+static SocketDescriptor
 Listen(const SocketAddress address, Error &error)
 {
-    int fd = socket(address.GetFamily(),
-                    SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK,
-                    0);
-    if (fd < 0) {
-        error.SetErrno("Failed to create socket");
-        return -1;
-    }
+    SocketDescriptor fd;
+    if (!fd.Create(address.GetFamily(),
+                   SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK,
+                   0, error))
+        return SocketDescriptor();
 
-    const int reuse = 1;
-    if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR,
-                   (const char *)&reuse, sizeof(reuse)) < 0) {
+    if (!fd.SetReuseAddress(true)) {
         error.SetErrno("Failed to set SO_REUSEADDR");
-        close(fd);
-        return -1;
+        return SocketDescriptor();
     }
 
-    if (bind(fd, address.GetAddress(), address.GetSize()) < 0) {
+    if (!fd.Bind(address)) {
         error.SetErrno("Failed to bind");
-        close(fd);
-        return -1;
+        return SocketDescriptor();
     }
 
-    if (listen(fd, 64) < 0) {
+    if (listen(fd.Get(), 64) < 0) {
         error.SetErrno("Failed to listen");
-        close(fd);
-        return -1;
+        return SocketDescriptor();
     }
 
-    setsockopt(fd, SOL_SOCKET, SO_PASSCRED,
-               (const char *)&reuse, sizeof(reuse));
+    fd.SetBoolOption(SOL_SOCKET, SO_PASSCRED, true);
 
     return fd;
 }
@@ -67,13 +59,13 @@ Listen(const SocketAddress address, Error &error)
 bool
 ServerSocket::Listen(const SocketAddress address, Error &error)
 {
-    assert(fd < 0);
+    assert(!fd.IsDefined());
 
     fd = ::Listen(address, error);
-    if (fd < 0)
+    if (!fd.IsDefined())
         return false;
 
-    event.Set(fd, EV_READ|EV_PERSIST);
+    event.Set(fd.Get(), EV_READ|EV_PERSIST);
     event.Add();
     return true;
 }
@@ -81,7 +73,7 @@ ServerSocket::Listen(const SocketAddress address, Error &error)
 bool
 ServerSocket::ListenPath(const char *path, Error &error)
 {
-    assert(fd < 0);
+    assert(!fd.IsDefined());
 
     unlink(path);
 
@@ -97,7 +89,7 @@ ServerSocket::OnEvent(short)
     sockaddr_storage address;
     socklen_t address_size = sizeof(address);
 
-    int result = accept4(fd, (sockaddr *)&address, &address_size,
+    int result = accept4(fd.Get(), (sockaddr *)&address, &address_size,
                          SOCK_CLOEXEC|SOCK_NONBLOCK);
     if (result < 0) {
         daemon_log(1, "accept() failed: %s\n", strerror(errno));
