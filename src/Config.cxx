@@ -6,6 +6,7 @@
 #include "net/Resolver.hxx"
 #include "net/AddressInfo.hxx"
 #include "util/Tokenizer.hxx"
+#include "util/RuntimeError.hxx"
 #include "util/Error.hxx"
 #include "util/Domain.hxx"
 #include "io/TextFile.hxx"
@@ -215,19 +216,25 @@ Config::LoadFile(TextFile &file, Error &error)
 {
     char *line;
     while ((line = file.ReadLine()) != nullptr) {
-        Tokenizer tokenizer(line);
-        if (tokenizer.IsEnd() || tokenizer.CurrentChar() == '#')
-            continue;
+        try {
+            Tokenizer tokenizer(line);
+            if (tokenizer.IsEnd() || tokenizer.CurrentChar() == '#')
+                continue;
 
-        if (!ParseLine(tokenizer, error)) {
-            file.PrefixError(error);
-            return false;
-        }
+            if (!ParseLine(tokenizer, error)) {
+                file.PrefixError(error);
+                return false;
+            }
 
-        if (!tokenizer.IsEnd()) {
-            error.Set(config_domain, "too many arguments");
-            file.PrefixError(error);
-            return false;
+            if (!tokenizer.IsEnd()) {
+                error.Set(config_domain, "too many arguments");
+                file.PrefixError(error);
+                return false;
+            }
+        } catch (const std::runtime_error &) {
+            std::throw_with_nested(FormatRuntimeError("%s line %u",
+                                                      file.GetPath(),
+                                                      file.GetLineNumber()));
         }
     }
 
