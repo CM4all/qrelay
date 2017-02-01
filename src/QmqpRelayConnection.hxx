@@ -47,7 +47,7 @@ protected:
     void OnResponse(const void *data, size_t size);
 
     void OnRequest(void *data, size_t size) override;
-    void OnError(Error &&error) override;
+    void OnError(std::exception_ptr ep) override;
     void OnDisconnect() override;
 
 private:

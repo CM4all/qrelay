@@ -15,6 +15,7 @@
 #include "net/SocketDescriptor.hxx"
 #include "event/SocketEvent.hxx"
 
+#include <exception>
 #include <cstddef>
 
 class NetstringServer {
@@ -45,7 +46,7 @@ protected:
      * convenience, the netstring is null-terminated and writable
      */
     virtual void OnRequest(void *data, size_t size) = 0;
-    virtual void OnError(Error &&error) = 0;
+    virtual void OnError(std::exception_ptr ep) = 0;
     virtual void OnDisconnect() = 0;
 
 private:

@@ -12,9 +12,9 @@
 #include "util/HugeAllocator.hxx"
 #include "util/Error.hxx"
 
-#include <unistd.h>
+#include <stdexcept>
+
 #include <string.h>
-#include <errno.h>
 
 static constexpr timeval busy_timeout{5, 0};
 
@@ -33,7 +33,7 @@ NetstringServer::~NetstringServer()
 
 bool
 NetstringServer::SendResponse(const void *data, size_t size)
-{
+try {
     std::list<ConstBuffer<void>> list{{data, size}};
     generator(list);
     for (const auto &i : list)
@@ -42,12 +42,10 @@ NetstringServer::SendResponse(const void *data, size_t size)
     Error error;
     switch (write.Write(fd.Get(), error)) {
     case MultiWriteBuffer::Result::MORE:
-        OnError(Error(netstring_domain, "short write"));
-        return false;
+        throw std::runtime_error("short write");
 
     case MultiWriteBuffer::Result::ERROR:
-        OnError(std::move(error));
-        return false;
+        throw std::runtime_error(error.GetMessage());
 
     case MultiWriteBuffer::Result::FINISHED:
         return true;
@@ -55,6 +53,9 @@ NetstringServer::SendResponse(const void *data, size_t size)
 
     assert(false);
     gcc_unreachable();
+} catch (const std::runtime_error &) {
+    OnError(std::current_exception());
+    return false;
 }
 
 bool
@@ -65,7 +66,7 @@ NetstringServer::SendResponse(const char *data)
 
 void
 NetstringServer::OnEvent(short events)
-{
+try {
     if (events & EV_TIMEOUT) {
         OnDisconnect();
         return;
@@ -79,8 +80,7 @@ NetstringServer::OnEvent(short events)
         break;
 
     case NetstringInput::Result::ERROR:
-        OnError(std::move(error));
-        break;
+        throw std::runtime_error(error.GetMessage());
 
     case NetstringInput::Result::CLOSED:
         OnDisconnect();
@@ -91,4 +91,6 @@ NetstringServer::OnEvent(short events)
         OnRequest(input.GetValue(), input.GetSize());
         break;
     }
+} catch (const std::runtime_error &) {
+    OnError(std::current_exception());
 }

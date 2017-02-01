@@ -5,7 +5,7 @@
 #include "QmqpRelayConnection.hxx"
 #include "Mail.hxx"
 #include "Config.hxx"
-#include "util/Error.hxx"
+#include "system/Error.hxx"
 #include "util/OstreamException.hxx"
 
 #include <unistd.h>
@@ -71,30 +71,26 @@ QmqpRelayConnection::Exec(const Config::Action &action)
     int stdin_pipe[2], stdout_pipe[2];
 
     if (pipe2(stdin_pipe, O_CLOEXEC|O_NONBLOCK) < 0) {
-        Error error;
-        error.SetErrno("pipe() failed");
-        OnError(std::move(error));
+        OnError(std::make_exception_ptr(MakeErrno("pipe() failed")));
         return;
     }
 
     if (pipe2(stdout_pipe, O_CLOEXEC|O_NONBLOCK) < 0) {
-        Error error;
-        error.SetErrno("pipe() failed");
+        const int e = errno;
         close(stdin_pipe[0]);
         close(stdin_pipe[1]);
-        OnError(std::move(error));
+        OnError(std::make_exception_ptr(MakeErrno(e, "pipe() failed")));
         return;
     }
 
     pid_t pid = fork();
     if (pid < 0) {
-        Error error;
-        error.SetErrno("fork() failed");
+        const int e = errno;
         close(stdin_pipe[0]);
         close(stdin_pipe[1]);
         close(stdout_pipe[0]);
         close(stdout_pipe[1]);
-        OnError(std::move(error));
+        OnError(std::make_exception_ptr(MakeErrno(e, "fork() failed")));
         return;
     }
 
@@ -158,9 +154,9 @@ QmqpRelayConnection::OnResponse(const void *data, size_t size)
 }
 
 void
-QmqpRelayConnection::OnError(Error &&error)
+QmqpRelayConnection::OnError(std::exception_ptr ep)
 {
-    logger(error.GetMessage());
+    logger(ep);
     delete this;
 }
 
