@@ -43,8 +43,8 @@ class TemplateServerSocket : public ServerSocket {
 
 public:
     template<typename... P>
-    TemplateServerSocket(P&&... _params)
-        :params(std::forward<P>(_params)...) {}
+    TemplateServerSocket(EventLoop &event_loop, P&&... _params)
+        :ServerSocket(event_loop), params(std::forward<P>(_params)...) {}
 
 protected:
     virtual void OnAccept(int fd) override {

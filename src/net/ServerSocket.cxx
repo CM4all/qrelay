@@ -15,8 +15,8 @@
 #include <string.h>
 #include <errno.h>
 
-ServerSocket::ServerSocket()
-    :fd(-1)
+ServerSocket::ServerSocket(EventLoop &event_loop)
+    :fd(-1), event(event_loop, BIND_THIS_METHOD(OnEvent))
 {
 }
 
@@ -74,8 +74,7 @@ ServerSocket::Listen(const SocketAddress address, Error &error)
     if (fd < 0)
         return false;
 
-    event.Set(fd, EV_READ|EV_PERSIST,
-              MakeSimpleEventCallback(ServerSocket, OnEvent), this);
+    event.Set(fd, EV_READ|EV_PERSIST);
     event.Add();
     return true;
 }
@@ -94,7 +93,7 @@ ServerSocket::ListenPath(const char *path, Error &error)
 }
 
 void
-ServerSocket::OnEvent()
+ServerSocket::OnEvent(short)
 {
     sockaddr_storage address;
     socklen_t address_size = sizeof(address);

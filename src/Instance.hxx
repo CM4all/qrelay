@@ -17,7 +17,7 @@ public:
     QmqpRelayServer qmqp_relay_server;
 
     Instance(const Config &config, EventLoop &event_loop)
-        :qmqp_relay_server(config, logger, event_loop) {}
+        :qmqp_relay_server(event_loop, config, logger, event_loop) {}
 };
 
 #endif
