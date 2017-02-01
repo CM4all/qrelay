@@ -247,11 +247,6 @@ Config::LoadFile(TextFile &file, Error &error)
 bool
 Config::LoadFile(const char *path, Error &error)
 {
-    TextFile *file = TextFile::Open(path, error);
-    if (file == nullptr)
-        return false;
-
-    const auto result = LoadFile(*file, error);
-    delete file;
-    return result;
+    TextFile file(path);
+    return LoadFile(file, error);
 }

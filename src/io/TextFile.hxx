@@ -20,15 +20,12 @@ class TextFile {
 
     char buffer[4096];
 
-    TextFile(const char *_path, FILE *_file)
-        :path(_path), file(_file), no(0) {}
-
 public:
+    explicit TextFile(const char *_path);
+
     ~TextFile() {
         fclose(file);
     }
-
-    static TextFile *Open(const char *path, Error &error);
 
     const char *GetPath() const {
         return path;
