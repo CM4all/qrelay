@@ -7,17 +7,24 @@
 
 #include "Logger.hxx"
 #include "QmqpRelayServer.hxx"
+#include "event/Loop.hxx"
 
 struct Config;
 
 class Instance {
+    EventLoop event_loop;
+
 public:
     Logger logger;
 
     QmqpRelayServer qmqp_relay_server;
 
-    Instance(const Config &config, EventLoop &event_loop)
+    explicit Instance(const Config &config)
         :qmqp_relay_server(event_loop, config, logger, event_loop) {}
+
+    EventLoop &GetEventLoop() {
+        return event_loop;
+    }
 };
 
 #endif

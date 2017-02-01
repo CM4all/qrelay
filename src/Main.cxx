@@ -4,7 +4,6 @@
 
 #include "Config.hxx"
 #include "CommandLine.hxx"
-#include "event/Loop.hxx"
 #include "event/SignalEvent.hxx"
 #include "Instance.hxx"
 #include "util/Error.hxx"
@@ -45,13 +44,11 @@ private:
 static int
 Run(const Config &config)
 {
-    EventLoop event_loop;
-
     signal(SIGPIPE, SIG_IGN);
 
-    QuitHandler quit_handler(event_loop);
+    Instance instance(config);
 
-    Instance instance(config, event_loop);
+    QuitHandler quit_handler(instance.GetEventLoop());
 
     Error error;
     if (!instance.qmqp_relay_server.ListenPath(config.listen.c_str(), error)) {
@@ -62,7 +59,7 @@ Run(const Config &config)
     if (daemonize() < 0)
         return EXIT_FAILURE;
 
-    event_loop.Dispatch();
+    instance.GetEventLoop().Dispatch();
 
     return EXIT_SUCCESS;
 }
