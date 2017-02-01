@@ -35,11 +35,11 @@ public:
     QmqpRelayConnection(const Config &_config, const Logger &parent_logger,
                         EventLoop &event_loop,
                         int _fd)
-        :NetstringServer(_fd),
+        :NetstringServer(event_loop, _fd),
          config(_config),
          logger(parent_logger, "connection"),
          connect(event_loop, *this),
-         client(256) {}
+         client(event_loop, 256) {}
 
 protected:
     void Exec(const Config::Action &action);

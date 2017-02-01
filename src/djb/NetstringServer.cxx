@@ -8,7 +8,6 @@
 
 #include "NetstringServer.hxx"
 #include "NetstringError.hxx"
-#include "event/Callback.hxx"
 #include "util/ConstBuffer.hxx"
 #include "util/HugeAllocator.hxx"
 #include "util/Error.hxx"
@@ -19,11 +18,11 @@
 
 static constexpr timeval busy_timeout{5, 0};
 
-NetstringServer::NetstringServer(int _fd)
+NetstringServer::NetstringServer(EventLoop &event_loop, int _fd)
     :fd(_fd),
+     event(event_loop, fd, EV_READ|EV_TIMEOUT|EV_PERSIST,
+           BIND_THIS_METHOD(OnEvent)),
      input(16 * 1024 * 1024) {
-    event.Set(fd, EV_READ|EV_TIMEOUT|EV_PERSIST,
-              MakeEventCallback(NetstringServer, OnEvent), this);
     event.Add(busy_timeout);
 }
 
@@ -66,7 +65,7 @@ NetstringServer::SendResponse(const char *data)
 }
 
 void
-NetstringServer::OnEvent(evutil_socket_t, short events)
+NetstringServer::OnEvent(short events)
 {
     if (events & EV_TIMEOUT) {
         OnDisconnect();
