@@ -11,6 +11,7 @@
 
 #include <daemon/log.h>
 
+#include <sys/un.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
@@ -29,6 +30,13 @@ ServerSocket::~ServerSocket()
 static SocketDescriptor
 Listen(const SocketAddress address)
 {
+    if (address.GetFamily() == AF_UNIX) {
+        const struct sockaddr_un *sun = (const struct sockaddr_un *)address.GetAddress();
+        if (sun->sun_path[0] != '\0')
+            /* delete non-abstract socket files before reusing them */
+            unlink(sun->sun_path);
+    }
+
     SocketDescriptor fd;
     if (!fd.Create(address.GetFamily(),
                    SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK,
@@ -75,8 +83,6 @@ void
 ServerSocket::ListenPath(const char *path)
 {
     assert(!fd.IsDefined());
-
-    unlink(path);
 
     AllocatedSocketAddress address;
     address.SetLocal(path);
