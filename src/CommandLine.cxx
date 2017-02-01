@@ -4,7 +4,6 @@
 
 #include "CommandLine.hxx"
 #include "Config.hxx"
-#include "util/Error.hxx"
 
 #include <daemon/daemonize.h>
 
@@ -50,12 +49,6 @@ ParseCommandLine(int argc, char **argv)
     }
 
     Config config;
-
-    Error error;
-    if (!config.LoadFile(vm["config"].as<std::string>().c_str(), error)) {
-        cerr << error.GetMessage() << endl;
-        exit(EXIT_FAILURE);
-    }
-
+    config.LoadFile(vm["config"].as<std::string>().c_str());
     return config;
 }

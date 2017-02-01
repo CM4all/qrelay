@@ -55,8 +55,8 @@ struct Config {
             return type != Type::UNDEFINED;
         }
 
-        bool ParseConnect(Tokenizer &tokenizer, Error &error);
-        bool Parse(Tokenizer &tokenizer, Error &error);
+        void ParseConnect(Tokenizer &tokenizer);
+        void Parse(Tokenizer &tokenizer);
     };
 
     struct Condition {
@@ -71,14 +71,14 @@ struct Config {
          */
         bool Match(const QmqpMail &mail) const;
 
-        bool Parse(Tokenizer &tokenizer, Error &error);
+        void Parse(Tokenizer &tokenizer);
     };
 
     struct Rule {
         Condition condition;
         Action action;
 
-        bool Parse(Tokenizer &tokenizer, Error &error);
+        void Parse(Tokenizer &tokenizer);
     };
 
     std::string listen;
@@ -92,9 +92,9 @@ struct Config {
      */
     const Action *GetAction(const QmqpMail &mail) const;
 
-    bool ParseLine(Tokenizer &tokenizer, Error &error);
-    bool LoadFile(TextFile &file, Error &error);
-    bool LoadFile(const char *path, Error &error);
+    void ParseLine(Tokenizer &tokenizer);
+    void LoadFile(TextFile &file);
+    void LoadFile(const char *path);
 };
 
 #endif

@@ -7,8 +7,6 @@
 #include "net/AddressInfo.hxx"
 #include "util/Tokenizer.hxx"
 #include "util/RuntimeError.hxx"
-#include "util/Error.hxx"
-#include "util/Domain.hxx"
 #include "io/TextFile.hxx"
 #include "Mail.hxx"
 
@@ -16,19 +14,14 @@
 
 #include <string.h>
 
-static constexpr Domain config_domain("config");
-
-bool
-Config::Action::ParseConnect(Tokenizer &tokenizer, Error &error)
+void
+Config::Action::ParseConnect(Tokenizer &tokenizer)
 {
     assert(!IsDefined());
 
-    const char *value = tokenizer.NextString(error);
-    if (value == nullptr || *value == 0) {
-        if (!error.IsDefined())
-            error.Set(config_domain, "missing value");
-        return false;
-    }
+    const char *value = tokenizer.NextString();
+    if (value == nullptr || *value == 0)
+        throw std::runtime_error("missing value");
 
     struct addrinfo hints;
     memset(&hints, 0, sizeof(hints));
@@ -38,57 +31,42 @@ Config::Action::ParseConnect(Tokenizer &tokenizer, Error &error)
     const auto ai = Resolve(value, 628, &hints);
     connect = ai.front();
     type = Type::CONNECT;
-    return true;
 }
 
-bool
-Config::Action::Parse(Tokenizer &tokenizer, Error &error)
+void
+Config::Action::Parse(Tokenizer &tokenizer)
 {
     assert(!IsDefined());
 
-    const char *a = tokenizer.NextWord(error);
-    if (a == nullptr || *a == 0) {
-        if (!error.IsDefined())
-            error.Set(config_domain, "missing action");
-        return false;
-    }
+    const char *a = tokenizer.NextWord();
+    if (a == nullptr || *a == 0)
+        throw std::runtime_error("missing action");
 
     if (strcmp(a, "connect") == 0) {
-        return ParseConnect(tokenizer, error);
+        ParseConnect(tokenizer);
     } else if (strcmp(a, "exec") == 0) {
-        const char *p = tokenizer.NextString(error);
-        if (p == nullptr) {
-            if (!error.IsDefined())
-                error.Set(config_domain, "missing program");
-            return false;
-        }
+        const char *p = tokenizer.NextString();
+        if (p == nullptr)
+            throw std::runtime_error("missing program");
 
         type = Type::EXEC;
 
         unsigned n = 0;
 
         do {
-            if (++n > MAX_EXEC) {
-                error.Set(config_domain, "too many arguments");
-                return false;
-            }
+            if (++n > MAX_EXEC)
+                throw std::runtime_error("too many arguments");
 
             exec.emplace_back(p);
-            p = tokenizer.NextString(error);
+            p = tokenizer.NextString();
         } while (p != nullptr);
-
-        return !error.IsDefined();
     } else if (strcmp(a, "discard") == 0) {
         type = Type::DISCARD;
-        return true;
     } else if (strcmp(a, "reject") == 0) {
         type = Type::REJECT;
-        return true;
     } else {
-        error.Format(config_domain, "unknown action: %s", a);
-        return false;
+        throw FormatRuntimeError("unknown action: %s", a);
     }
-
 }
 
 bool
@@ -114,39 +92,30 @@ Config::Condition::Match(const QmqpMail &mail) const
     return true;
 }
 
-bool
-Config::Condition::Parse(Tokenizer &tokenizer, Error &error)
+void
+Config::Condition::Parse(Tokenizer &tokenizer)
 {
     assert(!IsDefined());
 
-    const char *op = tokenizer.NextWord(error);
-    if (op == nullptr || *op == 0) {
-        if (!error.IsDefined())
-            error.Set(config_domain, "missing operator");
-        return false;
-    }
+    const char *op = tokenizer.NextWord();
+    if (op == nullptr || *op == 0)
+        throw std::runtime_error("missing operator");
 
-    if (strcmp(op, "exclusive_recipient") != 0) {
-        error.Format(config_domain, "unknown operator: %s", op);
-        return false;
-    }
+    if (strcmp(op, "exclusive_recipient") != 0)
+        throw FormatRuntimeError("unknown operator: %s", op);
 
-    const char *value = tokenizer.NextString(error);
-    if (value == nullptr || *value == 0) {
-        if (!error.IsDefined())
-            error.Set(config_domain, "missing value");
-        return false;
-    }
+    const char *value = tokenizer.NextString();
+    if (value == nullptr || *value == 0)
+        throw std::runtime_error("missing value");
 
     recipient = value;
-    return true;
 }
 
-bool
-Config::Rule::Parse(Tokenizer &tokenizer, Error &error)
+void
+Config::Rule::Parse(Tokenizer &tokenizer)
 {
-    return condition.Parse(tokenizer, error) &&
-        action.Parse(tokenizer, error);
+    condition.Parse(tokenizer);
+    action.Parse(tokenizer);
 }
 
 const Config::Action *
@@ -160,59 +129,42 @@ Config::GetAction(const QmqpMail &mail) const
     return &action;
 }
 
-bool
-Config::ParseLine(Tokenizer &tokenizer, Error &error)
+void
+Config::ParseLine(Tokenizer &tokenizer)
 {
-    const char *key = tokenizer.NextWord(error);
-    if (key == nullptr) {
-        assert(error.IsDefined());
-        return false;
-    }
+    const char *key = tokenizer.NextWord();
+    assert(key != nullptr);
 
     if (strcmp(key, "listen") == 0) {
-        const char *value = tokenizer.NextString(error);
-        if (value == nullptr || *value == 0) {
-            if (!error.IsDefined())
-                error.Set(config_domain, "missing value");
-            return false;
-        }
+        const char *value = tokenizer.NextString();
+        if (value == nullptr || *value == 0)
+            throw std::runtime_error("missing value");
 
-        if (!listen.empty()) {
-            error.Format(config_domain, "duplicate '%s'", key);
-            return false;
-        }
+        if (!listen.empty())
+            throw FormatRuntimeError("duplicate '%s'", key);
 
         listen = value;
-        return true;
     } else if (strcmp(key, "default") == 0) {
-        if (action.IsDefined()) {
-            error.Format(config_domain, "duplicate '%s'", key);
-            return false;
-        }
+        if (action.IsDefined())
+            throw FormatRuntimeError("duplicate '%s'", key);
 
-        return action.Parse(tokenizer, error);
+        action.Parse(tokenizer);
     } else if (strcmp(key, "connect") == 0) {
-        if (action.IsDefined()) {
-            error.Format(config_domain, "duplicate '%s'", key);
-            return false;
-        }
+        if (action.IsDefined())
+            throw FormatRuntimeError("duplicate '%s'", key);
 
-        return action.ParseConnect(tokenizer, error);
+        action.ParseConnect(tokenizer);
     } else if (strcmp(key, "rule") == 0) {
         Rule rule;
-        if (!rule.Parse(tokenizer, error))
-            return false;
-
+        rule.Parse(tokenizer);
         rules.push_back(rule);
-        return true;
     } else {
-        error.Format(config_domain, "unknown option '%s'", key);
-        return false;
+        throw FormatRuntimeError("unknown option '%s'", key);
     }
 }
 
-bool
-Config::LoadFile(TextFile &file, Error &error)
+void
+Config::LoadFile(TextFile &file)
 {
     char *line;
     while ((line = file.ReadLine()) != nullptr) {
@@ -221,16 +173,10 @@ Config::LoadFile(TextFile &file, Error &error)
             if (tokenizer.IsEnd() || tokenizer.CurrentChar() == '#')
                 continue;
 
-            if (!ParseLine(tokenizer, error)) {
-                file.PrefixError(error);
-                return false;
-            }
+            ParseLine(tokenizer);
 
-            if (!tokenizer.IsEnd()) {
-                error.Set(config_domain, "too many arguments");
-                file.PrefixError(error);
-                return false;
-            }
+            if (!tokenizer.IsEnd())
+                throw std::runtime_error("too many arguments");
         } catch (const std::runtime_error &) {
             std::throw_with_nested(FormatRuntimeError("%s line %u",
                                                       file.GetPath(),
@@ -238,22 +184,16 @@ Config::LoadFile(TextFile &file, Error &error)
         }
     }
 
-    if (listen.empty()) {
-        error.Format(config_domain, "no 'listen' in %s", file.GetPath());
-        return false;
-    }
+    if (listen.empty())
+        throw FormatRuntimeError("no 'listen' in %s", file.GetPath());
 
-    if (!action.connect.IsDefined()) {
-        error.Format(config_domain, "no 'connect' in %s", file.GetPath());
-        return false;
-    }
-
-    return true;
+    if (!action.connect.IsDefined())
+        throw FormatRuntimeError("no 'connect' in %s", file.GetPath());
 }
 
-bool
-Config::LoadFile(const char *path, Error &error)
+void
+Config::LoadFile(const char *path)
 {
     TextFile file(path);
-    return LoadFile(file, error);
+    LoadFile(file);
 }

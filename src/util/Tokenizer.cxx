@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009-2014 Max Kellermann <max@duempel.org>
+ * Copyright (C) 2009-2017 Max Kellermann <max@duempel.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,10 +30,8 @@
 #include "Tokenizer.hxx"
 #include "CharUtil.hxx"
 #include "StringUtil.hxx"
-#include "Error.hxx"
-#include "Domain.hxx"
 
-static constexpr Domain tokenizer_domain("tokenizer");
+#include <stdexcept>
 
 static inline bool
 valid_word_first_char(char ch)
@@ -48,7 +46,7 @@ valid_word_char(char ch)
 }
 
 char *
-Tokenizer::NextWord(Error &error)
+Tokenizer::NextWord()
 {
 	char *const word = input;
 
@@ -57,10 +55,8 @@ Tokenizer::NextWord(Error &error)
 
 	/* check the first character */
 
-	if (!valid_word_first_char(*input)) {
-		error.Set(tokenizer_domain, "Letter expected");
-		return nullptr;
-	}
+	if (!valid_word_first_char(*input))
+		throw std::runtime_error("Letter expected");
 
 	/* now iterate over the other characters until we find a
 	   whitespace or end-of-string */
@@ -74,10 +70,8 @@ Tokenizer::NextWord(Error &error)
 			break;
 		}
 
-		if (!valid_word_char(*input)) {
-			error.Set(tokenizer_domain, "Invalid word character");
-			return nullptr;
-		}
+		if (!valid_word_char(*input))
+			throw std::runtime_error("Invalid word character");
 	}
 
 	/* end of string: the string is already null-terminated
@@ -93,7 +87,7 @@ valid_unquoted_char(char ch)
 }
 
 char *
-Tokenizer::NextUnquoted(Error &error)
+Tokenizer::NextUnquoted()
 {
 	char *const word = input;
 
@@ -102,10 +96,8 @@ Tokenizer::NextUnquoted(Error &error)
 
 	/* check the first character */
 
-	if (!valid_unquoted_char(*input)) {
-		error.Set(tokenizer_domain, "Invalid unquoted character");
-		return nullptr;
-	}
+	if (!valid_unquoted_char(*input))
+		throw std::runtime_error("Invalid unquoted character");
 
 	/* now iterate over the other characters until we find a
 	   whitespace or end-of-string */
@@ -119,11 +111,8 @@ Tokenizer::NextUnquoted(Error &error)
 			break;
 		}
 
-		if (!valid_unquoted_char(*input)) {
-			error.Set(tokenizer_domain,
-				  "Invalid unquoted character");
-			return nullptr;
-		}
+		if (!valid_unquoted_char(*input))
+			throw std::runtime_error("Invalid unquoted character");
 	}
 
 	/* end of string: the string is already null-terminated
@@ -133,7 +122,7 @@ Tokenizer::NextUnquoted(Error &error)
 }
 
 char *
-Tokenizer::NextString(Error &error)
+Tokenizer::NextString()
 {
 	char *const word = input, *dest = input;
 
@@ -143,10 +132,8 @@ Tokenizer::NextString(Error &error)
 
 	/* check for the opening " */
 
-	if (*input != '"') {
-		error.Set(tokenizer_domain, "'\"' expected");
-		return nullptr;
-	}
+	if (*input != '"')
+		throw std::runtime_error("'\"' expected");
 
 	++input;
 
@@ -163,8 +150,7 @@ Tokenizer::NextString(Error &error)
 			   difference between "end of line" and
 			   "error" */
 			--input;
-			error.Set(tokenizer_domain, "Missing closing '\"'");
-			return nullptr;
+			throw std::runtime_error("Missing closing '\"'");
 		}
 
 		/* copy one character */
@@ -175,11 +161,8 @@ Tokenizer::NextString(Error &error)
 	   line) */
 
 	++input;
-	if (!IsWhitespaceOrNull(*input)) {
-		error.Set(tokenizer_domain,
-			  "Space expected after closing '\"'");
-		return nullptr;
-	}
+	if (!IsWhitespaceOrNull(*input))
+		throw std::runtime_error("Space expected after closing '\"'");
 
 	/* finish the string and return it */
 
@@ -189,10 +172,10 @@ Tokenizer::NextString(Error &error)
 }
 
 char *
-Tokenizer::NextParam(Error &error)
+Tokenizer::NextParam()
 {
 	if (*input == '"')
-		return NextString(error);
+		return NextString();
 	else
-		return NextUnquoted(error);
+		return NextUnquoted();
 }
