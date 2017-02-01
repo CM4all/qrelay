@@ -34,6 +34,10 @@ public:
         return path;
     }
 
+    unsigned GetLineNumber() const {
+        return no;
+    }
+
     char *ReadLine();
 
     void PrefixError(Error &error);
