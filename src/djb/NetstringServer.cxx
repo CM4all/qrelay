@@ -72,15 +72,10 @@ try {
         return;
     }
 
-    Error error;
-    NetstringInput::Result result = input.Receive(fd.Get(), error);
-    switch (result) {
+    switch (input.Receive(fd.Get())) {
     case NetstringInput::Result::MORE:
         event.Add(&busy_timeout);
         break;
-
-    case NetstringInput::Result::ERROR:
-        throw std::runtime_error(error.GetMessage());
 
     case NetstringInput::Result::CLOSED:
         OnDisconnect();

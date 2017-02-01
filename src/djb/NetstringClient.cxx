@@ -73,14 +73,10 @@ try {
             break;
         }
     } else if (events & EV_READ) {
-        Error error;
-        switch (input.Receive(in_fd, error)) {
+        switch (input.Receive(in_fd)) {
         case NetstringInput::Result::MORE:
             event.Add(&busy_timeout);
             break;
-
-        case NetstringInput::Result::ERROR:
-            throw std::runtime_error(error.GetMessage());
 
         case NetstringInput::Result::CLOSED:
             throw std::runtime_error("Connection closed prematurely");

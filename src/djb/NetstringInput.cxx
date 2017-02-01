@@ -6,9 +6,9 @@
 
 #include "NetstringInput.hxx"
 #include "NetstringError.hxx"
+#include "system/Error.hxx"
+#include "util/RuntimeError.hxx"
 #include "util/HugeAllocator.hxx"
-#include "util/Error.hxx"
-#include "util/Domain.hxx"
 
 #include <unistd.h>
 #include <string.h>
@@ -37,7 +37,7 @@ OnlyDigits(const char *p, size_t size)
 }
 
 inline NetstringInput::Result
-NetstringInput::ReceiveHeader(int fd, Error &error)
+NetstringInput::ReceiveHeader(int fd)
 {
     ssize_t nbytes = read(fd, header_buffer + header_position,
                           sizeof(header_buffer) - header_position);
@@ -51,8 +51,7 @@ NetstringInput::ReceiveHeader(int fd, Error &error)
             return Result::CLOSED;
 
         default:
-            error.SetErrno("read() failed");
-            return Result::ERROR;
+            throw MakeErrno("read() failed");
         }
     }
 
@@ -64,10 +63,8 @@ NetstringInput::ReceiveHeader(int fd, Error &error)
     char *colon = (char *)memchr(header_buffer + 1, ':', header_position - 1);
     if (colon == nullptr) {
         if (header_position == sizeof(header_buffer) ||
-            !OnlyDigits(header_buffer, header_position)) {
-            error.Set(netstring_domain, "Malformed netstring");
-            return Result::ERROR;
-        }
+            !OnlyDigits(header_buffer, header_position))
+            throw std::runtime_error("Malformed netstring");
 
         return Result::MORE;
     }
@@ -75,35 +72,28 @@ NetstringInput::ReceiveHeader(int fd, Error &error)
     *colon = 0;
     char *endptr;
     value_size = strtoul(header_buffer, &endptr, 10);
-    if (endptr != colon) {
-        error.Set(netstring_domain, "Malformed netstring");
-        return Result::ERROR;
-    }
+    if (endptr != colon)
+        throw std::runtime_error("Malformed netstring");
 
-    if (value_size >= max_size) {
-        error.Format(netstring_domain, "Netstring is too large: %zu",
-                     value_size);
-        return Result::ERROR;
-    }
+    if (value_size >= max_size)
+        throw FormatRuntimeError("Netstring is too large: %zu", value_size);
 
     state = State::VALUE;
     value_position = 0;
 
     if (value_buffer == nullptr) {
         value_buffer = (uint8_t *)HugeAllocate(max_size);
-        if (value_buffer == nullptr) {
-            error.SetErrno();
-            return Result::ERROR;
-        }
+        if (value_buffer == nullptr)
+            throw MakeErrno();
     }
 
     size_t vbytes = header_position - (colon - header_buffer) - 1;
     memcpy(value_buffer, colon + 1, vbytes);
-    return ValueData(vbytes, error);
+    return ValueData(vbytes);
 }
 
 NetstringInput::Result
-NetstringInput::ValueData(size_t nbytes, Error &error)
+NetstringInput::ValueData(size_t nbytes)
 {
     assert(state == State::VALUE);
 
@@ -111,10 +101,8 @@ NetstringInput::ValueData(size_t nbytes, Error &error)
 
     if (value_position > value_size) {
         if (value_buffer[value_size] != ',' ||
-            value_position > value_size + 1) {
-            error.Set(netstring_domain, "Malformed netstring");
-            return Result::ERROR;
-        }
+            value_position > value_size + 1)
+            throw std::runtime_error("Malformed netstring");
 
         state = State::FINISHED;
         return Result::FINISHED;
@@ -124,7 +112,7 @@ NetstringInput::ValueData(size_t nbytes, Error &error)
 }
 
 inline NetstringInput::Result
-NetstringInput::ReceiveValue(int fd, Error &error)
+NetstringInput::ReceiveValue(int fd)
 {
     ssize_t nbytes = read(fd, value_buffer + value_position,
                           value_size + 1 - value_position);
@@ -138,19 +126,18 @@ NetstringInput::ReceiveValue(int fd, Error &error)
             return Result::CLOSED;
 
         default:
-            error.SetErrno("read() failed");
-            return Result::ERROR;
+            throw MakeErrno("read() failed");
         }
     }
 
     if (nbytes == 0)
         return Result::CLOSED;
 
-    return ValueData(nbytes, error);
+    return ValueData(nbytes);
 }
 
 NetstringInput::Result
-NetstringInput::Receive(int fd, Error &error)
+NetstringInput::Receive(int fd)
 {
     switch (state) {
     case State::FINISHED:
@@ -162,10 +149,10 @@ NetstringInput::Receive(int fd, Error &error)
         /* fall through */
 
     case State::HEADER:
-        return ReceiveHeader(fd, error);
+        return ReceiveHeader(fd);
 
     case State::VALUE:
-        return ReceiveValue(fd, error);
+        return ReceiveValue(fd);
     }
 
     gcc_unreachable();

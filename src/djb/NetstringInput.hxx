@@ -11,8 +11,6 @@
 #include <cassert>
 #include <cstdint>
 
-class Error;
-
 class NetstringInput {
     enum class State {
         HEADER,
@@ -40,12 +38,14 @@ public:
 
     enum class Result {
         MORE,
-        ERROR,
         CLOSED,
         FINISHED,
     };
 
-    Result Receive(int fd, Error &error);
+    /**
+     * Throws std::runtime_error on error.
+     */
+    Result Receive(int fd);
 
     void *GetValue() const {
         assert(state == State::FINISHED);
@@ -60,9 +60,9 @@ public:
     }
 
 private:
-    Result ReceiveHeader(int fd, Error &error);
-    Result ValueData(size_t nbytes, Error &error);
-    Result ReceiveValue(int fd, Error &error);
+    Result ReceiveHeader(int fd);
+    Result ValueData(size_t nbytes);
+    Result ReceiveValue(int fd);
 };
 
 #endif
