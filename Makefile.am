@@ -4,8 +4,8 @@ AUTOMAKE_OPTIONS = foreign 1.11 subdir-objects
 AM_CPPFLAGS += \
 	-I$(srcdir)/src
 
-bin_PROGRAMS = src/cm4all-qrelay
-src_cm4all_qrelay_SOURCES = \
+bin_PROGRAMS = cm4all-qrelay
+cm4all_qrelay_SOURCES = \
 	src/Config.cxx src/Config.hxx \
 	src/CommandLine.cxx src/CommandLine.hxx \
 	src/io/WriteBuffer.cxx src/io/WriteBuffer.hxx \
@@ -24,12 +24,12 @@ src_cm4all_qrelay_SOURCES = \
 	src/QmqpRelayServer.hxx \
 	src/QmqpRelayConnection.cxx src/QmqpRelayConnection.hxx \
 	src/Main.cxx
-src_cm4all_qrelay_CPPFLAGS = $(AM_CPPFLAGS) \
+cm4all_qrelay_CPPFLAGS = $(AM_CPPFLAGS) \
 	$(LIBCM4ALL_INLINE_CFLAGS) \
 	$(LIBCM4ALL_SOCKET_CFLAGS) \
 	$(LIBCM4ALL_DAEMON_CFLAGS) \
 	$(LIBEVENT_CFLAGS)
-src_cm4all_qrelay_LDADD = $(AM_LDADD) \
+cm4all_qrelay_LDADD = $(AM_LDADD) \
 	libevent.a libnet.a libutil.a \
 	$(BOOST_PROGRAM_OPTIONS_LIB) \
 	$(LIBCM4ALL_SOCKET_LIBS) \

@@ -5,7 +5,7 @@
 *.bc
 *.s
 
-src/cm4all-qrelay
+/cm4all-qrelay
 
 *.cache
 build
