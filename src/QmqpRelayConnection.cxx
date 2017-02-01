@@ -27,10 +27,11 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
     tail = mail.tail.ToVoid();
     request.push_back(mail.message.ToVoid());
 
-    Error error;
-    const Config::Action *action = config.GetAction(mail, error);
-    if (action == nullptr) {
-        logger(error.GetMessage());
+    const Config::Action *action;
+    try {
+        action = config.GetAction(mail);
+    } catch (const std::runtime_error &e) {
+        logger(e);
         if (SendResponse("Drule error"))
             delete this;
         return;

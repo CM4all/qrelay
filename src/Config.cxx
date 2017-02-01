@@ -11,6 +11,8 @@
 #include "io/TextFile.hxx"
 #include "Mail.hxx"
 
+#include <stdexcept>
+
 #include <string.h>
 
 static constexpr Domain config_domain("config");
@@ -88,8 +90,8 @@ Config::Action::Parse(Tokenizer &tokenizer, Error &error)
 
 }
 
-TriBool
-Config::Condition::Match(const QmqpMail &mail, Error &error) const
+bool
+Config::Condition::Match(const QmqpMail &mail) const
 {
     bool match_any = false, match_all = true;
 
@@ -103,14 +105,12 @@ Config::Condition::Match(const QmqpMail &mail, Error &error) const
     }
 
     if (!match_any)
-        return TriBool::FALSE;
+        return false;
 
-    if (!match_all) {
-        error.Set(config_domain, "partial recipient match");
-        return TriBool::ERROR;
-    }
+    if (!match_all)
+        throw std::runtime_error("partial recipient match");
 
-    return TriBool::TRUE;
+    return true;
 }
 
 bool
@@ -149,19 +149,11 @@ Config::Rule::Parse(Tokenizer &tokenizer, Error &error)
 }
 
 const Config::Action *
-Config::GetAction(const QmqpMail &mail, Error &error) const
+Config::GetAction(const QmqpMail &mail) const
 {
     for (const auto &rule : rules) {
-        switch (rule.condition.Match(mail, error)) {
-        case TriBool::FALSE:
-            break;
-
-        case TriBool::TRUE:
+        if (rule.condition.Match(mail))
             return &rule.action;
-
-        case TriBool::ERROR:
-            return nullptr;
-        }
     }
 
     return &action;

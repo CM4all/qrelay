@@ -15,10 +15,6 @@ class Tokenizer;
 class TextFile;
 struct QmqpMail;
 
-enum class TriBool {
-    FALSE, TRUE, ERROR,
-};
-
 struct Config {
     struct Action {
         static constexpr unsigned MAX_EXEC = 32;
@@ -70,7 +66,10 @@ struct Config {
             return !recipient.empty();
         }
 
-        TriBool Match(const QmqpMail &mail, Error &error) const;
+        /**
+         * Throws std::runtime_error on error.
+         */
+        bool Match(const QmqpMail &mail) const;
 
         bool Parse(Tokenizer &tokenizer, Error &error);
     };
@@ -88,7 +87,10 @@ struct Config {
 
     Action action;
 
-    const Action *GetAction(const QmqpMail &mail, Error &error) const;
+    /**
+     * Throws std::runtime_error on error.
+     */
+    const Action *GetAction(const QmqpMail &mail) const;
 
     bool ParseLine(Tokenizer &tokenizer, Error &error);
     bool LoadFile(TextFile &file, Error &error);
