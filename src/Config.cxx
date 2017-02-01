@@ -140,10 +140,10 @@ Config::ParseLine(Tokenizer &tokenizer)
         if (value == nullptr || *value == 0)
             throw std::runtime_error("missing value");
 
-        if (!listen.empty())
+        if (!listen.IsNull())
             throw FormatRuntimeError("duplicate '%s'", key);
 
-        listen = value;
+        listen.SetLocal(value);
     } else if (strcmp(key, "default") == 0) {
         if (action.IsDefined())
             throw FormatRuntimeError("duplicate '%s'", key);
@@ -184,7 +184,7 @@ Config::LoadFile(TextFile &file)
         }
     }
 
-    if (listen.empty())
+    if (listen.IsNull())
         throw FormatRuntimeError("no 'listen' in %s", file.GetPath());
 
     if (!action.connect.IsDefined())

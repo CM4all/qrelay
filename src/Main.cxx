@@ -24,7 +24,7 @@ Run(const Config &config)
 
     Instance instance(config);
 
-    instance.qmqp_relay_server.ListenPath(config.listen.c_str());
+    instance.qmqp_relay_server.Listen(config.listen);
 
     if (daemonize() < 0)
         return EXIT_FAILURE;

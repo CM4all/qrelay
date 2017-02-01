@@ -79,7 +79,7 @@ struct Config {
         void Parse(Tokenizer &tokenizer);
     };
 
-    std::string listen;
+    AllocatedSocketAddress listen;
 
     std::list<Rule> rules;
 
