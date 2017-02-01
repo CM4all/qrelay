@@ -5,7 +5,6 @@
 #include "Config.hxx"
 #include "CommandLine.hxx"
 #include "Instance.hxx"
-#include "util/Error.hxx"
 
 #include <daemon/daemonize.h>
 
@@ -24,11 +23,7 @@ Run(const Config &config)
 
     Instance instance(config);
 
-    Error error;
-    if (!instance.qmqp_relay_server.ListenPath(config.listen.c_str(), error)) {
-        instance.logger(error.GetMessage());
-        return EXIT_FAILURE;
-    }
+    instance.qmqp_relay_server.ListenPath(config.listen.c_str());
 
     if (daemonize() < 0)
         return EXIT_FAILURE;

@@ -10,8 +10,6 @@
 #include "SocketDescriptor.hxx"
 #include "event/SocketEvent.hxx"
 
-struct sockaddr;
-class Error;
 class SocketAddress;
 
 class ServerSocket {
@@ -23,8 +21,8 @@ public:
     explicit ServerSocket(EventLoop &event_loop);
     ~ServerSocket();
 
-    bool Listen(SocketAddress address, Error &error);
-    bool ListenPath(const char *path, Error &error);
+    void Listen(SocketAddress address);
+    void ListenPath(const char *path);
 
     StaticSocketAddress GetLocalAddress() const;
 

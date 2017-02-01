@@ -7,7 +7,7 @@
 #include "ServerSocket.hxx"
 #include "StaticSocketAddress.hxx"
 #include "AllocatedSocketAddress.hxx"
-#include "util/Error.hxx"
+#include "system/Error.hxx"
 
 #include <daemon/log.h>
 
@@ -27,26 +27,22 @@ ServerSocket::~ServerSocket()
 }
 
 static SocketDescriptor
-Listen(const SocketAddress address, Error &error)
+Listen(const SocketAddress address)
 {
     SocketDescriptor fd;
     if (!fd.Create(address.GetFamily(),
                    SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK,
-                   0, error))
-        return SocketDescriptor();
+                   0))
+        throw MakeErrno("Failed to create socket");
 
-    if (!fd.SetReuseAddress(true)) {
-        error.SetErrno("Failed to set SO_REUSEADDR");
-        return SocketDescriptor();
-    }
+    if (!fd.SetReuseAddress(true))
+        throw MakeErrno("Failed to set SO_REUSEADDR");
 
     if (address.IsV6Any())
         fd.SetV6Only(false);
 
-    if (!fd.Bind(address)) {
-        error.SetErrno("Failed to bind");
-        return SocketDescriptor();
-    }
+    if (!fd.Bind(address))
+        throw MakeErrno("Failed to bind");
 
     switch (address.GetFamily()) {
     case AF_INET:
@@ -59,30 +55,24 @@ Listen(const SocketAddress address, Error &error)
         break;
     }
 
-    if (listen(fd.Get(), 64) < 0) {
-        error.SetErrno("Failed to listen");
-        return SocketDescriptor();
-    }
+    if (listen(fd.Get(), 64) < 0)
+        throw MakeErrno("Failed to listen");
 
     return fd;
 }
 
-bool
-ServerSocket::Listen(const SocketAddress address, Error &error)
+void
+ServerSocket::Listen(const SocketAddress address)
 {
     assert(!fd.IsDefined());
 
-    fd = ::Listen(address, error);
-    if (!fd.IsDefined())
-        return false;
-
+    fd = ::Listen(address);
     event.Set(fd.Get(), EV_READ|EV_PERSIST);
     event.Add();
-    return true;
 }
 
-bool
-ServerSocket::ListenPath(const char *path, Error &error)
+void
+ServerSocket::ListenPath(const char *path)
 {
     assert(!fd.IsDefined());
 
@@ -91,7 +81,7 @@ ServerSocket::ListenPath(const char *path, Error &error)
     AllocatedSocketAddress address;
     address.SetLocal(path);
 
-    return Listen(address, error);
+    Listen(address);
 }
 
 StaticSocketAddress
