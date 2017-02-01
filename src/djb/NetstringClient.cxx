@@ -4,14 +4,9 @@
 
 #include "NetstringClient.hxx"
 #include "NetstringError.hxx"
-#include "net/Error.hxx"
 #include "util/ConstBuffer.hxx"
 #include "util/HugeAllocator.hxx"
 #include "util/Error.hxx"
-
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
 
 static constexpr timeval send_timeout{10, 0};
 static constexpr timeval recv_timeout{60, 0};
@@ -58,9 +53,9 @@ NetstringClient::Request(int _out_fd, int _in_fd,
 
 void
 NetstringClient::OnEvent(short events)
-{
+try {
     if (events & EV_TIMEOUT) {
-        on_error(Error(timeout_domain, "Connect timeout"));
+        throw std::runtime_error("Connect timeout");
     } else if (events & EV_WRITE) {
         Error error;
         switch (write.Write(out_fd, error)) {
@@ -69,8 +64,7 @@ NetstringClient::OnEvent(short events)
             break;
 
         case MultiWriteBuffer::Result::ERROR:
-            on_error(std::move(error));
-            break;
+            throw std::runtime_error(error.GetMessage());
 
         case MultiWriteBuffer::Result::FINISHED:
             event.Delete();
@@ -86,12 +80,10 @@ NetstringClient::OnEvent(short events)
             break;
 
         case NetstringInput::Result::ERROR:
-            on_error(std::move(error));
-            break;
+            throw std::runtime_error(error.GetMessage());
 
         case NetstringInput::Result::CLOSED:
-            on_error(Error(netstring_domain, "Connection closed prematurely"));
-            break;
+            throw std::runtime_error("Connection closed prematurely");
 
         case NetstringInput::Result::FINISHED:
             event.Delete();
@@ -99,4 +91,6 @@ NetstringClient::OnEvent(short events)
             break;
         }
     }
+} catch (const std::runtime_error &) {
+    on_error(std::current_exception());
 }

@@ -12,6 +12,7 @@
 
 #include <list>
 #include <functional>
+#include <exception>
 
 template<typename T> struct ConstBuffer;
 
@@ -31,7 +32,7 @@ class NetstringClient final {
     NetstringInput input;
 
     std::function<void(const void *, size_t)> on_response;
-    std::function<void(Error &&)> on_error;
+    std::function<void(std::exception_ptr)> on_error;
 
 public:
     NetstringClient(EventLoop &event_loop, size_t max_size);

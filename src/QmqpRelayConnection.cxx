@@ -126,7 +126,7 @@ QmqpRelayConnection::OnConnect(int out_fd, int in_fd)
     client.OnResponse(std::bind(&QmqpRelayConnection::OnResponse, this,
                                 std::placeholders::_1,
                                 std::placeholders::_2));
-    client.OnError([this](Error &&){
+    client.OnError([this](std::exception_ptr){
             if (SendResponse("Zrelay failed"))
                 delete this;
         });
