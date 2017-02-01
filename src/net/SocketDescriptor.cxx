@@ -108,6 +108,17 @@ SocketDescriptor::SetTcpFastOpen(int qlen)
     return SetOption(SOL_TCP, TCP_FASTOPEN, &qlen, sizeof(qlen));
 }
 
+SocketDescriptor
+SocketDescriptor::Accept(StaticSocketAddress &address) const
+{
+    assert(IsDefined());
+
+    address.size = address.GetCapacity();
+    int result = accept4(fd, address, &address.size,
+                         SOCK_CLOEXEC|SOCK_NONBLOCK);
+    return SocketDescriptor(result);
+}
+
 bool
 SocketDescriptor::Connect(const SocketAddress address)
 {
