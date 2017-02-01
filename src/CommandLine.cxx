@@ -31,10 +31,6 @@ ParseCommandLine(int argc, char **argv)
         ("no-daemon", "don't daemonize")
         ("pidfile", po::value<std::string>(), "create a pid file")
         ("user", po::value<std::string>(), "switch to another user id")
-        ("logger-user", po::value<std::string>(),
-         "execute the logger program with this user id")
-        ("logger", po::value<std::string>(),
-         "specifies a logger program (executed by /bin/sh)")
         ;
 
     po::variables_map vm;
@@ -59,21 +55,6 @@ ParseCommandLine(int argc, char **argv)
     if (vm.count("user")) {
         const std::string user = vm["user"].as<std::string>();
         if (daemon_user_by_name(&daemon_config.user, user.c_str(), NULL) < 0) {
-            cerr << "Invalid user: " << user << endl;
-            exit(EXIT_FAILURE);
-        }
-    }
-
-    if (vm.count("logger")) {
-        static std::string buffer;
-        buffer = vm["logger"].as<std::string>();
-        daemon_config.logger = buffer.c_str();
-    }
-
-    if (vm.count("logger-user")) {
-        const std::string user = vm["logger-user"].as<std::string>();
-        if (daemon_user_by_name(&daemon_config.logger_user,
-                                user.c_str(), NULL) < 0) {
             cerr << "Invalid user: " << user << endl;
             exit(EXIT_FAILURE);
         }
