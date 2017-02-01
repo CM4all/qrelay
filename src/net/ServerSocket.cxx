@@ -6,7 +6,6 @@
 
 #include "ServerSocket.hxx"
 #include "StaticSocketAddress.hxx"
-#include "event/Callback.hxx"
 #include "util/Error.hxx"
 
 #include <daemon/log.h>

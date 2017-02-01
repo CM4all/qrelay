@@ -8,7 +8,6 @@
 #include "SocketDescriptor.hxx"
 #include "SocketAddress.hxx"
 #include "Error.hxx"
-#include "event/Callback.hxx"
 #include "util/Error.hxx"
 
 #include <daemon/log.h>
