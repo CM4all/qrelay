@@ -3,6 +3,8 @@
  */
 
 #include "Config.hxx"
+#include "net/Resolver.hxx"
+#include "net/AddressInfo.hxx"
 #include "util/Tokenizer.hxx"
 #include "util/Error.hxx"
 #include "util/Domain.hxx"
@@ -25,9 +27,13 @@ Config::Action::ParseConnect(Tokenizer &tokenizer, Error &error)
         return false;
     }
 
-    if (!connect.Lookup(value, 628, SOCK_STREAM, error))
-        return false;
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
 
+    const auto ai = Resolve(value, 628, &hints);
+    connect = ai.front();
     type = Type::CONNECT;
     return true;
 }

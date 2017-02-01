@@ -56,6 +56,8 @@ libnet_a_SOURCES = \
 	src/net/SocketAddress.cxx src/net/SocketAddress.hxx \
 	src/net/StaticSocketAddress.cxx src/net/StaticSocketAddress.hxx \
 	src/net/AllocatedSocketAddress.cxx src/net/AllocatedSocketAddress.hxx \
+	src/net/Resolver.cxx src/net/Resolver.hxx \
+	src/net/AddressInfo.hxx \
 	src/net/ServerSocket.cxx src/net/ServerSocket.hxx \
 	src/net/TemplateServerSocket.hxx \
 	src/net/ConnectSocket.cxx src/net/ConnectSocket.hxx \
