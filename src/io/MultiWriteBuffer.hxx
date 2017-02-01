@@ -29,7 +29,10 @@ public:
         buffers[n++] = WriteBuffer(buffer, size);
     }
 
-    Result Write(int fd, Error &error);
+    /**
+     * Throws std::system_error on error.
+     */
+    Result Write(int fd);
 };
 
 #endif

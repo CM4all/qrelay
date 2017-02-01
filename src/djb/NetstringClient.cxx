@@ -6,7 +6,6 @@
 #include "NetstringError.hxx"
 #include "util/ConstBuffer.hxx"
 #include "util/HugeAllocator.hxx"
-#include "util/Error.hxx"
 
 static constexpr timeval send_timeout{10, 0};
 static constexpr timeval recv_timeout{60, 0};
@@ -57,14 +56,10 @@ try {
     if (events & EV_TIMEOUT) {
         throw std::runtime_error("Connect timeout");
     } else if (events & EV_WRITE) {
-        Error error;
-        switch (write.Write(out_fd, error)) {
+        switch (write.Write(out_fd)) {
         case MultiWriteBuffer::Result::MORE:
             event.Add(&send_timeout);
             break;
-
-        case MultiWriteBuffer::Result::ERROR:
-            throw std::runtime_error(error.GetMessage());
 
         case MultiWriteBuffer::Result::FINISHED:
             event.Delete();

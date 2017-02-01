@@ -3,13 +3,14 @@
  */
 
 #include "WriteBuffer.hxx"
-#include "util/Error.hxx"
+#include "system/Error.hxx"
 
+#include <assert.h>
 #include <unistd.h>
 #include <errno.h>
 
 WriteBuffer::Result
-WriteBuffer::Write(int fd, Error &error)
+WriteBuffer::Write(int fd)
 {
     ssize_t nbytes = write(fd, buffer, GetSize());
     if (nbytes < 0) {
@@ -19,8 +20,7 @@ WriteBuffer::Write(int fd, Error &error)
             return Result::MORE;
 
         default:
-            error.SetErrno("Failed to write");
-            return Result::ERROR;
+            throw MakeErrno("Failed to write");
         }
     }
 

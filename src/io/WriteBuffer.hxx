@@ -8,8 +8,6 @@
 #include <cstddef>
 #include <cstdint>
 
-class Error;
-
 class WriteBuffer {
     friend class MultiWriteBuffer;
 
@@ -30,11 +28,13 @@ public:
 
     enum class Result {
         MORE,
-        ERROR,
         FINISHED,
     };
 
-    Result Write(int fd, Error &error);
+    /**
+     * Throws std::system_error on error.
+     */
+    Result Write(int fd);
 };
 
 #endif

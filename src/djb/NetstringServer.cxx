@@ -10,7 +10,6 @@
 #include "NetstringError.hxx"
 #include "util/ConstBuffer.hxx"
 #include "util/HugeAllocator.hxx"
-#include "util/Error.hxx"
 
 #include <stdexcept>
 
@@ -39,13 +38,9 @@ try {
     for (const auto &i : list)
         write.Push(i.data, i.size);
 
-    Error error;
-    switch (write.Write(fd.Get(), error)) {
+    switch (write.Write(fd.Get())) {
     case MultiWriteBuffer::Result::MORE:
         throw std::runtime_error("short write");
-
-    case MultiWriteBuffer::Result::ERROR:
-        throw std::runtime_error(error.GetMessage());
 
     case MultiWriteBuffer::Result::FINISHED:
         return true;

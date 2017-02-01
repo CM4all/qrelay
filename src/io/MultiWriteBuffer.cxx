@@ -3,13 +3,13 @@
  */
 
 #include "MultiWriteBuffer.hxx"
-#include "util/Error.hxx"
+#include "system/Error.hxx"
 
 #include <sys/uio.h>
 #include <errno.h>
 
 MultiWriteBuffer::Result
-MultiWriteBuffer::Write(int fd, Error &error)
+MultiWriteBuffer::Write(int fd)
 {
     assert(i < n);
 
@@ -28,8 +28,7 @@ MultiWriteBuffer::Write(int fd, Error &error)
             return Result::MORE;
 
         default:
-            error.SetErrno("Failed to write");
-            return Result::ERROR;
+            throw MakeErrno("Failed to write");
         }
     }
 
