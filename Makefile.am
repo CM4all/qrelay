@@ -10,7 +10,6 @@ cm4all_qrelay_SOURCES = \
 	src/CommandLine.cxx src/CommandLine.hxx \
 	src/io/WriteBuffer.cxx src/io/WriteBuffer.hxx \
 	src/io/MultiWriteBuffer.cxx src/io/MultiWriteBuffer.hxx \
-	src/djb/NetstringError.cxx src/djb/NetstringError.hxx \
 	src/djb/NetstringParser.cxx src/djb/NetstringParser.hxx \
 	src/djb/NetstringServer.cxx src/djb/NetstringServer.hxx \
 	src/djb/NetstringClient.cxx src/djb/NetstringClient.hxx \

@@ -7,7 +7,6 @@
  */
 
 #include "NetstringServer.hxx"
-#include "NetstringError.hxx"
 #include "util/ConstBuffer.hxx"
 #include "util/HugeAllocator.hxx"
 

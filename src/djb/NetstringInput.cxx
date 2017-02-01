@@ -5,7 +5,6 @@
  */
 
 #include "NetstringInput.hxx"
-#include "NetstringError.hxx"
 #include "system/Error.hxx"
 #include "util/RuntimeError.hxx"
 #include "util/HugeAllocator.hxx"
