@@ -43,13 +43,11 @@ struct Config {
             EXEC,
         };
 
-        Type type;
+        Type type = Type::UNDEFINED;
 
         AllocatedSocketAddress connect;
 
         std::list<std::string> exec;
-
-        Action():type(Type::UNDEFINED) {}
 
         bool IsDefined() const {
             return type != Type::UNDEFINED;
