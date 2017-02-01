@@ -28,7 +28,6 @@ ParseCommandLine(int argc, char **argv)
         ("help", "produce help message")
         ("config", po::value<std::string>()->required(),
          "load this configuration file")
-        ("no-daemon", "don't daemonize")
         ("user", po::value<std::string>(), "switch to another user id")
         ;
 
@@ -41,9 +40,6 @@ ParseCommandLine(int argc, char **argv)
     }
 
     po::notify(vm);
-
-    if (vm.count("no-daemon"))
-        daemon_config.detach = false;
 
     if (vm.count("user")) {
         const std::string user = vm["user"].as<std::string>();

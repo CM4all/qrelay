@@ -41,6 +41,8 @@ Run(const Config &config)
 int
 main(int argc, char **argv)
 {
+    daemon_config.detach = false;
+
     Config config;
 
     try {
