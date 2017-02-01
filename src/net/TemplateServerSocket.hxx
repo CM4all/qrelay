@@ -9,8 +9,6 @@
 
 #include <tuple>
 
-struct sockaddr;
-class Error;
 class SocketAddress;
 
 template<class C, std::size_t i>
