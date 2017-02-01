@@ -7,10 +7,11 @@
 #include "ConnectSocket.hxx"
 #include "SocketDescriptor.hxx"
 #include "SocketAddress.hxx"
-#include "Error.hxx"
-#include "util/Error.hxx"
+#include "system/Error.hxx"
 
 #include <daemon/log.h>
+
+#include <stdexcept>
 
 #include <unistd.h>
 #include <string.h>
@@ -22,7 +23,7 @@ void
 ConnectSocketHandler::OnSocketConnectTimeout()
 {
     /* default implementation falls back to OnSocketConnectError() */
-    OnSocketConnectError(Error(timeout_domain, "Connect timeout"));
+    OnSocketConnectError(std::make_exception_ptr(std::runtime_error("Connect timeout")));
 }
 
 ConnectSocket::ConnectSocket(EventLoop &_event_loop,
@@ -41,20 +42,16 @@ ConnectSocket::~ConnectSocket()
 }
 
 static SocketDescriptor
-Connect(const SocketAddress address, Error &error)
+Connect(const SocketAddress address)
 {
     SocketDescriptor fd;
     if (!fd.Create(address.GetFamily(),
                    SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK,
-                   0,
-                   error))
-        return SocketDescriptor();
+                   0))
+        throw MakeErrno("Failed to create socket");
 
-    if (!fd.Connect(address) && errno != EINPROGRESS) {
-        error.SetErrno("Failed to connect");
-        fd.Close();
-        return SocketDescriptor();
-    }
+    if (!fd.Connect(address) && errno != EINPROGRESS)
+        throw MakeErrno("Failed to connect");
 
     return fd;
 }
@@ -64,10 +61,10 @@ ConnectSocket::Connect(const SocketAddress address)
 {
     assert(!fd.IsDefined());
 
-    Error error;
-    fd = ::Connect(address, error);
-    if (!fd.IsDefined()) {
-        handler.OnSocketConnectError(std::move(error));
+    try {
+        fd = ::Connect(address);
+    } catch (...) {
+        handler.OnSocketConnectError(std::current_exception());
         return false;
     }
 
@@ -86,9 +83,7 @@ ConnectSocket::OnEvent(short events)
 
     int s_err = fd.GetError();
     if (s_err != 0) {
-        Error error;
-        error.SetErrno(s_err, "Failed to connect");
-        handler.OnSocketConnectError(std::move(error));
+        handler.OnSocketConnectError(std::make_exception_ptr(MakeErrno(s_err, "Failed to connect")));
         return;
     }
 

@@ -10,6 +10,8 @@
 #include "SocketDescriptor.hxx"
 #include "event/SocketEvent.hxx"
 
+#include <exception>
+
 class Error;
 class SocketAddress;
 
@@ -17,7 +19,7 @@ class ConnectSocketHandler {
 public:
     virtual void OnSocketConnectSuccess(SocketDescriptor &&fd) = 0;
     virtual void OnSocketConnectTimeout();
-    virtual void OnSocketConnectError(Error &&error) = 0;
+    virtual void OnSocketConnectError(std::exception_ptr ep) = 0;
 };
 
 class ConnectSocket {

@@ -6,6 +6,7 @@
 #include "Mail.hxx"
 #include "Config.hxx"
 #include "util/Error.hxx"
+#include "util/OstreamException.hxx"
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -176,9 +177,9 @@ QmqpRelayConnection::OnSocketConnectSuccess(SocketDescriptor &&_fd)
 }
 
 void
-QmqpRelayConnection::OnSocketConnectError(Error &&error)
+QmqpRelayConnection::OnSocketConnectError(std::exception_ptr ep)
 {
-    logger(error.GetMessage());
+    logger(ep);
     if (SendResponse("Zconnect failed"))
         delete this;
 }

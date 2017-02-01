@@ -53,7 +53,7 @@ protected:
 private:
     /* virtual methods from class ConnectSocketHandler */
     void OnSocketConnectSuccess(SocketDescriptor &&fd) override;
-    void OnSocketConnectError(Error &&error) override;
+    void OnSocketConnectError(std::exception_ptr ep) override;
 };
 
 #endif
