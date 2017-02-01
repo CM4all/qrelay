@@ -50,9 +50,6 @@ StripRight(char *p)
     p[length] = 0;
 }
 
-void
-StripRight(char *p);
-
 char *
 Strip(char *p)
 {
