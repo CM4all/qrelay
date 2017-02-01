@@ -47,6 +47,7 @@ libutil_a_SOURCES = \
 	src/util/ConstBuffer.hxx \
 	src/util/Domain.hxx \
 	src/util/Error.cxx src/util/Error.hxx \
+	src/util/OstreamException.hxx \
 	src/util/HugeAllocator.cxx src/util/HugeAllocator.hxx
 libutil_a_CPPFLAGS = $(AM_CPPFLAGS) \
 	$(LIBCM4ALL_INLINE_CFLAGS)
