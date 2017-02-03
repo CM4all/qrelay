@@ -50,7 +50,7 @@ NetstringClient::Request(int _out_fd, int _in_fd,
 }
 
 void
-NetstringClient::OnEvent(short events)
+NetstringClient::OnEvent(unsigned events)
 try {
     if (events & EV_TIMEOUT) {
         throw std::runtime_error("Connect timeout");

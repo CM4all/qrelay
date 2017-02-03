@@ -50,7 +50,7 @@ protected:
     virtual void OnDisconnect() = 0;
 
 private:
-    void OnEvent(short events);
+    void OnEvent(unsigned events);
 };
 
 #endif

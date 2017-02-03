@@ -37,7 +37,7 @@ public:
     bool Connect(SocketAddress address);
 
 private:
-    void OnEvent(short events);
+    void OnEvent(unsigned events);
 };
 
 #endif

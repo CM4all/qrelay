@@ -59,7 +59,7 @@ NetstringServer::SendResponse(const char *data)
 }
 
 void
-NetstringServer::OnEvent(short events)
+NetstringServer::OnEvent(unsigned events)
 try {
     if (events & EV_TIMEOUT) {
         OnDisconnect();

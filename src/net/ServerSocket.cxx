@@ -97,7 +97,7 @@ ServerSocket::GetLocalAddress() const
 }
 
 void
-ServerSocket::OnEvent(short)
+ServerSocket::OnEvent(unsigned)
 {
     StaticSocketAddress remote_address;
     auto remote_fd = fd.Accept(remote_address);

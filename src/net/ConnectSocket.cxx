@@ -74,7 +74,7 @@ ConnectSocket::Connect(const SocketAddress address)
 }
 
 void
-ConnectSocket::OnEvent(short events)
+ConnectSocket::OnEvent(unsigned events)
 {
     if (events & EV_TIMEOUT) {
         handler.OnSocketConnectTimeout();

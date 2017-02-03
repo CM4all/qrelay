@@ -52,7 +52,7 @@ public:
                  std::list<ConstBuffer<void>> &&data);
 
 private:
-    void OnEvent(short events);
+    void OnEvent(unsigned events);
 };
 
 #endif

@@ -47,7 +47,7 @@ protected:
     virtual void OnAccept(SocketDescriptor &&fd, SocketAddress address) = 0;
 
 private:
-    void OnEvent(short events);
+    void OnEvent(unsigned events);
 };
 
 #endif
