@@ -44,6 +44,7 @@ event = static_library('event',
   'src/event/Loop.cxx',
   'src/event/ShutdownListener.cxx',
   'src/event/DeferEvent.cxx',
+  'src/event/SignalEvent.cxx',
   include_directories: inc,
   dependencies: [
     libinline,
