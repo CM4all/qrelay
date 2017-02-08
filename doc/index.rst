@@ -11,7 +11,7 @@ them to another QMQP server.
 Configuration
 -------------
 
-The file :file:`/etc/cm4all/qrelay.conf` contains the qrelay
+The file :file:`/etc/cm4all/qrelay/qrelay.conf` contains the qrelay
 configuration.  It should start with a :envvar:`listen` directive that
 tells qrelay which socket path to listen on.
 Example::
