@@ -85,13 +85,12 @@ libevent_a_CPPFLAGS = $(AM_CPPFLAGS) \
 # documentation
 #
 
-MOSTLYCLEANFILES = doc/qrelay.html
+clean-local:
+	rm -rf doc/_build
+
+doc/_build/html/.buildinfo: doc/*.rst
+	$(MAKE) -C doc html
 
 if DOCUMENTATION
-doc/qrelay.html: doc/qrelay.xml
-	$(XMLTO) -o $(@D) html-nochunks $<
-
-all-local: doc/qrelay.html
-
-doc_DATA = doc/qrelay.html
+all-local: doc/_build/html/.buildinfo
 endif
