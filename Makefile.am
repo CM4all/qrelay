@@ -42,6 +42,8 @@ libutil_a_SOURCES = \
 	src/util/BindMethod.hxx \
 	src/util/CharUtil.hxx \
 	src/util/StringUtil.cxx src/util/StringUtil.hxx \
+	src/util/StringView.cxx src/util/StringView.hxx \
+	src/util/IterableSplitString.hxx \
 	src/util/Tokenizer.cxx src/util/Tokenizer.hxx \
 	src/util/Range.hxx \
 	src/util/ConstBuffer.hxx \
