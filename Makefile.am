@@ -18,6 +18,7 @@ cm4all_qrelay_SOURCES = \
 	src/io/TextFile.cxx src/io/TextFile.hxx \
 	src/system/SetupProcess.cxx src/system/SetupProcess.hxx \
 	src/system/Error.hxx \
+	src/CgroupProc.cxx src/CgroupProc.hxx \
 	src/Instance.cxx src/Instance.hxx \
 	src/Logger.hxx \
 	src/Mail.cxx src/Mail.hxx \
