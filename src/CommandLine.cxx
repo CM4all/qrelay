@@ -3,7 +3,6 @@
  */
 
 #include "CommandLine.hxx"
-#include "Config.hxx"
 
 #include <daemon/daemonize.h>
 
@@ -19,7 +18,7 @@ using std::endl;
 
 #include <cstdlib>
 
-Config
+CommandLine
 ParseCommandLine(int argc, char **argv)
 {
     po::options_description desc("Allowed options");
@@ -48,7 +47,5 @@ ParseCommandLine(int argc, char **argv)
         }
     }
 
-    Config config;
-    config.LoadFile(vm["config"].as<std::string>().c_str());
-    return config;
+    return { vm["config"].as<std::string>() };
 }

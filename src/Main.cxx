@@ -38,7 +38,10 @@ main(int argc, char **argv)
 try {
     daemon_config.detach = false;
 
-    const auto config = ParseCommandLine(argc, argv);
+    const auto cmdline = ParseCommandLine(argc, argv);
+
+    Config config;
+    config.LoadFile(cmdline.config_path.c_str());
 
     SetupProcess();
 

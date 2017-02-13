@@ -5,9 +5,13 @@
 #ifndef QRELAY_COMMAND_LINE_HXX
 #define QRELAY_COMMAND_LINE_HXX
 
-struct Config;
+#include <string>
 
-Config
+struct CommandLine {
+    std::string config_path;
+};
+
+CommandLine
 ParseCommandLine(int argc, char **argv);
 
 #endif
