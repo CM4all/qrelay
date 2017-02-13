@@ -21,9 +21,8 @@ using std::endl;
 static int
 Run(const Config &config)
 {
-    Instance instance(config);
-
-    instance.qmqp_relay_server.Listen(config.listen);
+    Instance instance;
+    instance.AddQmqpRelayServer(config);
 
     if (daemonize() < 0)
         return EXIT_FAILURE;

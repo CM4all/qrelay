@@ -8,9 +8,8 @@
 using std::cerr;
 using std::endl;
 
-Instance::Instance(const Config &config)
-    :shutdown_listener(event_loop, BIND_THIS_METHOD(ShutdownCallback)),
-     qmqp_relay_server(event_loop, config, logger, event_loop)
+Instance::Instance()
+    :shutdown_listener(event_loop, BIND_THIS_METHOD(ShutdownCallback))
 {
     shutdown_listener.Enable();
 }
