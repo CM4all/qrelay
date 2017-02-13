@@ -27,7 +27,6 @@ util = static_library('util',
   'src/util/HugeAllocator.cxx',
   'src/util/StringUtil.cxx',
   'src/util/StringView.cxx',
-  'src/util/Tokenizer.cxx',
   dependencies: [
     libinline
   ])
@@ -66,7 +65,6 @@ net = static_library('net',
   ])
 
 executable('cm4all-qrelay',
-  'src/Config.cxx',
   'src/CommandLine.cxx',
   'src/io/WriteBuffer.cxx',
   'src/io/MultiWriteBuffer.cxx',
@@ -75,7 +73,6 @@ executable('cm4all-qrelay',
   'src/djb/NetstringClient.cxx',
   'src/djb/NetstringInput.cxx',
   'src/djb/NetstringGenerator.cxx',
-  'src/io/TextFile.cxx',
   'src/system/SetupProcess.cxx',
   'src/CgroupProc.cxx',
   'src/Instance.cxx',

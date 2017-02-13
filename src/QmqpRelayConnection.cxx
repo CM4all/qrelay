@@ -4,13 +4,139 @@
 
 #include "QmqpRelayConnection.hxx"
 #include "Mail.hxx"
-#include "Config.hxx"
 #include "system/Error.hxx"
+#include "net/Resolver.hxx"
+#include "net/AddressInfo.hxx"
+#include "net/AllocatedSocketAddress.hxx"
+#include "lua/Error.hxx"
 #include "util/OstreamException.hxx"
+
+extern "C" {
+#include <lauxlib.h>
+}
 
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/socket.h>
+
+static constexpr struct luaL_reg mail_methods [] = {
+    {"connect", QmqpRelayConnection::ConnectMethod},
+    {"discard", QmqpRelayConnection::DiscardMethod},
+    {"reject", QmqpRelayConnection::RejectMethod},
+    {"exec", QmqpRelayConnection::ExecMethod},
+    {nullptr, nullptr}
+};
+
+void
+QmqpRelayConnection::Register(lua_State *L)
+{
+    luaL_newmetatable(L, "qrelay.mail");
+
+    /* metatable.__index = metatable */
+    lua_pushstring(L, "__index");
+    lua_pushvalue(L, -2);
+    lua_settable(L, -3);
+
+    luaL_openlib(L, NULL, mail_methods, 0);
+}
+
+QmqpRelayConnection &
+QmqpRelayConnection::Check(lua_State *L, int idx)
+{
+    auto d = (QmqpRelayConnection **)luaL_checkudata(L, idx, "qrelay.mail");
+    luaL_argcheck(L, d != nullptr, idx, "`qrelay.mail' expected");
+    return **d;
+}
+
+static AllocatedSocketAddress
+GetLuaAddress(lua_State *L, int idx)
+{
+    if (!lua_isstring(L, idx))
+        luaL_argerror(L, idx, "address expected");
+
+    const char *s = lua_tostring(L, idx);
+
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+
+    const auto ai = Resolve(s, 628, &hints);
+    return AllocatedSocketAddress(ai.front());
+}
+
+int
+QmqpRelayConnection::ConnectMethod(lua_State *L)
+{
+    if (lua_gettop(L) != 2)
+      return luaL_error(L, "Invalid parameters");
+
+    auto &c = Check(L, 1);
+    auto &action = c.handler_action;
+    if (action.IsDefined())
+      return luaL_error(L, "Action already defined");
+
+    auto address = GetLuaAddress(L, 2);
+
+    action.type = Action::Type::CONNECT;
+    action.connect = std::move(address);
+    return 0;
+}
+
+int
+QmqpRelayConnection::DiscardMethod(lua_State *L)
+{
+    if (lua_gettop(L) != 1)
+      return luaL_error(L, "Invalid parameters");
+
+    auto &c = Check(L, 1);
+    auto &action = c.handler_action;
+    if (action.IsDefined())
+      return luaL_error(L, "Action already defined");
+
+    action.type = Action::Type::DISCARD;
+    return 0;
+}
+
+int
+QmqpRelayConnection::RejectMethod(lua_State *L)
+{
+    if (lua_gettop(L) != 1)
+      return luaL_error(L, "Invalid parameters");
+
+    auto &c = Check(L, 1);
+    auto &action = c.handler_action;
+    if (action.IsDefined())
+      return luaL_error(L, "Action already defined");
+
+    action.type = Action::Type::REJECT;
+    return 0;
+}
+
+int
+QmqpRelayConnection::ExecMethod(lua_State *L)
+{
+    if (lua_gettop(L) < 1)
+      return luaL_error(L, "Not enough parameters");
+
+    std::list<std::string> l;
+    const unsigned n = lua_gettop(L);
+    for (unsigned i = 1; i <= n; ++i) {
+        if (!lua_isstring(L, i))
+            luaL_argerror(L, i, "address expected");
+
+        l.emplace_back(lua_tostring(L, i));
+    }
+
+    auto &c = Check(L, 1);
+    auto &action = c.handler_action;
+    if (action.IsDefined())
+      return luaL_error(L, "Action already defined");
+
+    action.type = Action::Type::EXEC;
+    action.exec = std::move(l);
+    return 0;
+}
 
 void
 QmqpRelayConnection::OnRequest(void *data, size_t size)
@@ -27,17 +153,21 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
     tail = mail.tail.ToVoid();
     request.push_back(mail.message.ToVoid());
 
-    const Action *action;
-    try {
-        action = config.GetAction(mail);
-    } catch (const std::runtime_error &e) {
-        logger(e);
-        if (SendResponse("Drule error"))
-            delete this;
-        return;
-    }
+    handler->Push(L);
 
-    Do(*action);
+    auto d = (QmqpRelayConnection **)lua_newuserdata(L, sizeof(QmqpRelayConnection **));
+    *d = this;
+
+    luaL_getmetatable(L, "qrelay.mail");
+    lua_setmetatable(L, -2);
+
+    if (lua_pcall(L, 1, 0, 0))
+        throw Lua::PopError(L);
+
+    if (!handler_action.IsDefined())
+        throw std::runtime_error("Lua handler did not set an action");
+
+    Do(handler_action);
 }
 
 void

@@ -5,21 +5,20 @@
 #ifndef QMQP_RELAY_CONNECTION_HXX
 #define QMQP_RELAY_CONNECTION_HXX
 
+#include "Action.hxx"
+#include "Logger.hxx"
 #include "djb/NetstringServer.hxx"
 #include "djb/NetstringGenerator.hxx"
 #include "djb/NetstringClient.hxx"
 #include "net/ConnectSocket.hxx"
+#include "lua/ValuePtr.hxx"
 #include "util/ConstBuffer.hxx"
-#include "Logger.hxx"
 
 #include <list>
 
-struct Config;
-struct Action;
-class Error;
-
 class QmqpRelayConnection final : public NetstringServer, ConnectSocketHandler {
-    const Config &config;
+    lua_State *const L;
+    Lua::ValuePtr handler;
     Logger logger;
 
     std::list<ConstBuffer<void>> request;
@@ -31,15 +30,29 @@ class QmqpRelayConnection final : public NetstringServer, ConnectSocketHandler {
     ConnectSocket connect;
     NetstringClient client;
 
+    Action handler_action;
+
 public:
-    QmqpRelayConnection(const Config &_config, const Logger &parent_logger,
+    QmqpRelayConnection(lua_State *_L, Lua::ValuePtr _handler,
+                        const Logger &parent_logger,
                         EventLoop &event_loop,
                         SocketDescriptor &&_fd)
         :NetstringServer(event_loop, std::move(_fd)),
-         config(_config),
+         L(_L), handler(std::move(_handler)),
          logger(parent_logger, "connection"),
          connect(event_loop, *this),
          client(event_loop, 256) {}
+
+    static void Register(lua_State *L);
+
+    static int ConnectMethod(lua_State *L);
+    static int DiscardMethod(lua_State *L);
+    static int RejectMethod(lua_State *L);
+    static int ExecMethod(lua_State *L);
+
+private:
+    gcc_pure
+    static QmqpRelayConnection &Check(lua_State *L, int idx);
 
 protected:
     void Do(const Action &action);

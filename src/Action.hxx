@@ -10,8 +10,6 @@
 #include <string>
 #include <list>
 
-class Tokenizer;
-
 struct Action {
     static constexpr unsigned MAX_EXEC = 32;
 
@@ -48,9 +46,6 @@ struct Action {
     bool IsDefined() const {
         return type != Type::UNDEFINED;
     }
-
-    void ParseConnect(Tokenizer &tokenizer);
-    void Parse(Tokenizer &tokenizer);
 };
 
 #endif

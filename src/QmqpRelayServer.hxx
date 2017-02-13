@@ -8,10 +8,10 @@
 #include "Logger.hxx"
 #include "QmqpRelayConnection.hxx"
 #include "net/TemplateServerSocket.hxx"
-
-struct Config;
+#include "lua/ValuePtr.hxx"
 
 typedef TemplateServerSocket<QmqpRelayConnection,
-                             const Config &, Logger, EventLoop &> QmqpRelayServer;
+                             lua_State *, Lua::ValuePtr,
+                             Logger, EventLoop &> QmqpRelayServer;
 
 #endif

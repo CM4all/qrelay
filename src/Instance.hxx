@@ -5,15 +5,15 @@
 #ifndef INSTANCE_HXX
 #define INSTANCE_HXX
 
-#include "Config.hxx"
 #include "Logger.hxx"
 #include "QmqpRelayServer.hxx"
 #include "event/Loop.hxx"
 #include "event/ShutdownListener.hxx"
+#include "lua/ValuePtr.hxx"
 
 #include <forward_list>
 
-struct Config;
+namespace Lua { class Value; }
 
 class Instance {
     EventLoop event_loop;
@@ -30,11 +30,15 @@ public:
         return event_loop;
     }
 
-    void AddQmqpRelayServer(const Config &config) {
-        qmqp_relay_servers.emplace_front(event_loop, config, logger,
-                                         event_loop);
-        qmqp_relay_servers.front().Listen(config.listen);
+    void AddQmqpRelayServer(SocketAddress address,
+                            lua_State *L,
+                            Lua::ValuePtr &&handler) {
+        qmqp_relay_servers.emplace_front(event_loop, L, handler,
+                                         logger, event_loop);
+        qmqp_relay_servers.front().Listen(address);
     }
+
+    void Check();
 
 private:
     void ShutdownCallback();

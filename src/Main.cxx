@@ -2,13 +2,22 @@
  * author: Max Kellermann <mk@cm4all.com>
  */
 
-#include "Config.hxx"
 #include "CommandLine.hxx"
 #include "Instance.hxx"
 #include "system/SetupProcess.hxx"
+#include "net/AllocatedSocketAddress.hxx"
+#include "lua/State.hxx"
+#include "lua/Value.hxx"
+#include "lua/Util.hxx"
+#include "lua/RunFile.hxx"
 #include "util/OstreamException.hxx"
 
 #include <daemon/daemonize.h>
+
+extern "C" {
+#include <lauxlib.h>
+#include <lualib.h>
+}
 
 #include <iostream>
 using std::cerr;
@@ -17,13 +26,59 @@ using std::endl;
 #include <stdlib.h>
 
 static int
+l_listen(lua_State *L)
+{
+  if (lua_gettop(L) != 2)
+      return luaL_error(L, "Invalid parameter count");
+
+  if (!lua_isstring(L, 1))
+      luaL_argerror(L, 1, "path expected");
+
+  if (!lua_isfunction(L, 2))
+      luaL_argerror(L, 2, "function expected");
+
+  const char *address_string = lua_tostring(L, 1);
+  AllocatedSocketAddress address;
+  address.SetLocal(address_string);
+
+  auto handler = std::make_shared<Lua::Value>(L, 2);
+
+  auto &instance = *(Instance *)lua_touserdata(L, lua_upvalueindex(1));
+  instance.AddQmqpRelayServer(address, L, std::move(handler));
+
+  return 0;
+}
+
+static void
+SetupState(lua_State *L, Instance &instance)
+{
+    luaL_openlibs(L);
+
+    /* create the "qrelay" namespace */
+    lua_newtable(L);
+
+    Lua::Push(L, Lua::LightUserData(&instance));
+    lua_pushcclosure(L, l_listen, 1);
+    lua_setfield(L, -2, "listen");
+
+    //Lua::SetField(L, -2, "listen", l_listen);
+
+    lua_setglobal(L, "qrelay");
+
+    QmqpRelayConnection::Register(L);
+}
+
+static int
 Run(const CommandLine &cmdline)
 {
-    Config config;
-    config.LoadFile(cmdline.config_path.c_str());
+    Lua::State state(luaL_newstate());
 
     Instance instance;
-    instance.AddQmqpRelayServer(config);
+    SetupState(state.get(), instance);
+
+    Lua::RunFile(state.get(), cmdline.config_path.c_str());
+
+    instance.Check();
 
     if (daemonize() < 0)
         return EXIT_FAILURE;

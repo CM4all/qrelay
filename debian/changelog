@@ -5,6 +5,7 @@ cm4all-qrelay (0.4) unstable; urgency=low
   * enable TCP Fast Open
   * remove sysv init script, require systemd
   * move configuration file to /etc/cm4all/qrelay/
+  * replace configuration file with Lua script
 
  --   
 
