@@ -15,8 +15,6 @@ using std::cerr;
 using std::endl;
 
 #include <stdlib.h>
-#include <signal.h>
-#include <sys/prctl.h>
 
 static int
 Run(const CommandLine &cmdline)
