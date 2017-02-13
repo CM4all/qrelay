@@ -22,11 +22,3 @@ aclocal.m4
 perf.data
 perf.data.old
 confdefs.h
-
-debian/stamp-*
-debian/*.substvars
-debian/*.debhelper
-debian/files
-debian/cm4all-qrelay
-debian/cm4all-qrelay-dbg
-debian/cm4all-qrelay-doc

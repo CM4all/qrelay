@@ -4,6 +4,14 @@
 /stamp-*
 /files
 /*.substvars
+/*.debhelper
+/*.log
 /tmp
 
 /cm4all-qrelay
+
+/stamp-*
+
+/cm4all-qrelay
+/cm4all-qrelay-dbg
+/cm4all-qrelay-doc
