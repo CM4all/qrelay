@@ -1,5 +1,5 @@
 AC_PREREQ(2.60)
-AC_INIT(CM4all qrelay, 0.4, mk@cm4all.com, cm4all-snowball)
+AC_INIT(CM4all qrelay, 0.4, mk@cm4all.com, cm4all-qrelay)
 AC_COPYRIGHT(Copyright 2014-2016 Content Management AG)
 AC_CONFIG_SRCDIR(src/Main.cxx)
 AC_CONFIG_MACRO_DIR([m4])
