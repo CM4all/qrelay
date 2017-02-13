@@ -19,8 +19,11 @@ using std::endl;
 #include <sys/prctl.h>
 
 static int
-Run(const Config &config)
+Run(const CommandLine &cmdline)
 {
+    Config config;
+    config.LoadFile(cmdline.config_path.c_str());
+
     Instance instance;
     instance.AddQmqpRelayServer(config);
 
@@ -39,12 +42,9 @@ try {
 
     const auto cmdline = ParseCommandLine(argc, argv);
 
-    Config config;
-    config.LoadFile(cmdline.config_path.c_str());
-
     SetupProcess();
 
-    const int result = Run(config);
+    const int result = Run(cmdline);
 
     daemonize_cleanup();
 
