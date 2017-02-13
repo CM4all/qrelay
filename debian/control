@@ -3,7 +3,7 @@ Section: non-free/mail
 Priority: extra
 Maintainer: Max Kellermann <mk@cm4all.com>
 Build-Depends: debhelper (>= 9), dh-autoreconf, dh-systemd,
- autoconf (>= 2.60), automake (>= 1.11),
+ meson, make,
  g++ (>= 4:4.9),
  libc6-dev (>= 2.13),
  libboost-program-options-dev (>= 1.54),
@@ -13,8 +13,6 @@ Build-Depends: debhelper (>= 9), dh-autoreconf, dh-systemd,
  libcm4all-daemon-dev (>= 0.4.2),
  python3-sphinx
 Standards-Version: 3.9.1
-XS-Python-Standards-Version: 0.4
-XS-Python-Version: all
 Vcs-git: git.intern.cm-ag:/srv/git/master/qrelay.git
 
 Package: cm4all-qrelay

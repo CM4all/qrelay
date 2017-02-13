@@ -1,24 +1,6 @@
 .stgit*
 *~
-*.o
-*.a
-*.bc
-*.s
 
-/cm4all-qrelay
+/build/
 
-*.cache
-build
-libtool
-*.log
-*.status
-Makefile
-Makefile.in
-configure
 aclocal.m4
-.libs
-.deps
-.dirstamp
-perf.data
-perf.data.old
-confdefs.h

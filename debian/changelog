@@ -1,5 +1,6 @@
 cm4all-qrelay (0.4) unstable; urgency=low
 
+  * build with Meson and Ninja
   * disable the "V6ONLY" flag on IPv6 wildcard listeners
   * enable TCP Fast Open
   * remove sysv init script, require systemd

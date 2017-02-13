@@ -1,7 +1,93 @@
 #!/usr/bin/make -f
+# -*- mode: makefile; coding: utf-8 -*-
 
-%:
-	dh $@ --with=autoreconf --parallel --with=systemd
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
 
-override_dh_auto_install:
-override_dh_strip:
+DEB_HOST_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+
+CFLAGS = -Wall -g
+
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+  CFLAGS += -O0
+else
+  CFLAGS += -O2
+endif
+
+CFLAGS += -fno-omit-frame-pointer
+CXXFLAGS = $(CFLAGS)
+
+build/build.ninja: meson.build
+	rm -rf build
+	meson . build
+
+debian/stamp-build: build/build.ninja
+	ninja -C build
+	touch $@
+
+doc/_build/html/.buildinfo: doc/*.rst
+	$(MAKE) -C doc html
+
+debian/stamp-doc: doc/_build/html/.buildinfo
+	touch $@
+
+build: debian/stamp-build debian/stamp-doc
+check:
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f debian/stamp-*
+
+	rm -rf build doc/_build
+
+	dh_clean
+
+# Build architecture-independent files here.
+binary-indep: build check
+	dh_testdir -i
+	dh_testroot -i
+	dh_installdirs -i
+	dh_installdocs -i
+	dh_installchangelogs -i
+	dh_systemd_enable -i
+	dh_systemd_start -i
+	dh_installinit -i
+	dh_install -i
+	dh_link -i
+	#dh_strip -i
+	dh_compress -i
+	dh_fixperms -i
+	dh_installdeb -i
+	dh_shlibdeps -i
+	dh_gencontrol -i
+	dh_md5sums -i
+	dh_builddeb -i
+
+# Build architecture-dependent files here.
+binary-arch: build check
+	dh_testdir -a
+	dh_testroot -a
+	dh_installdirs -a
+	dh_installdocs -a
+	dh_installchangelogs -a
+	dh_systemd_enable -a
+	dh_systemd_start -a
+	dh_installinit -a
+	dh_install -a
+	dh_link -a
+	#dh_strip -a
+	dh_compress -a
+	dh_fixperms -a
+	dh_installdeb -a
+	dh_shlibdeps -a
+	dh_gencontrol -a
+	dh_md5sums -a
+	dh_builddeb -a
+
+source diff:
+	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false
+
+binary: binary-indep binary-arch
+.PHONY: build check clean binary-indep binary-arch binary
