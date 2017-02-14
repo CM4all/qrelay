@@ -37,7 +37,13 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
         return;
     }
 
-    switch (action->type) {
+    Do(*action);
+}
+
+void
+QmqpRelayConnection::Do(const Action &action)
+{
+    switch (action.type) {
     case Action::Type::UNDEFINED:
         assert(false);
         gcc_unreachable();
@@ -53,11 +59,11 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
         break;
 
     case Action::Type::CONNECT:
-        connect.Connect(action->connect);
+        connect.Connect(action.connect);
         break;
 
     case Action::Type::EXEC:
-        Exec(*action);
+        Exec(action);
         break;
     }
 }

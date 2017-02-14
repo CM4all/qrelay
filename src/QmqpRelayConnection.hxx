@@ -42,6 +42,7 @@ public:
          client(event_loop, 256) {}
 
 protected:
+    void Do(const Action &action);
     void Exec(const Action &action);
     void OnConnect(int out_fd, int in_fd);
     void OnResponse(const void *data, size_t size);
