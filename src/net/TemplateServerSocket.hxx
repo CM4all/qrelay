@@ -6,6 +6,7 @@
 #define TEMPLATE_SERVER_SOCKET_HXX
 
 #include "ServerSocket.hxx"
+#include "SocketAddress.hxx"
 
 #include <tuple>
 
