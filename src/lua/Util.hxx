@@ -109,6 +109,15 @@ Push(lua_State *L, LightUserData value)
 	lua_pushlightuserdata(L, value.value);
 }
 
+template<typename K, typename V>
+void
+SetTable(lua_State *L, int idx, K &&key, V &&value)
+{
+	Push(L, std::forward<K>(key));
+	Push(L, std::forward<V>(value));
+	lua_settable(L, idx);
+}
+
 template<typename V>
 void
 SetField(lua_State *L, int idx, const char *name, V &&value)
