@@ -67,8 +67,8 @@ public:
 	 * Push the value on the stack.
 	 */
 	void Push() {
-		lua_pushlightuserdata(L, this);
-		lua_gettable(L, LUA_REGISTRYINDEX);
+		GetTable(L, LUA_REGISTRYINDEX,
+			 LightUserData(this));
 	}
 };
 
