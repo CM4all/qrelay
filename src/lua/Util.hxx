@@ -55,6 +55,20 @@ struct LightUserData {
 	constexpr LightUserData(void *_value):value(_value) {}
 };
 
+template<typename... T>
+struct CClosure {
+	lua_CFunction fn;
+
+	std::tuple<T...> values;
+};
+
+template<typename... T>
+CClosure<T...>
+MakeCClosure(lua_CFunction fn, T&&... values)
+{
+	return {fn, {values...}};
+}
+
 static inline void
 Push(lua_State *L, std::nullptr_t)
 {
@@ -95,11 +109,44 @@ Push(lua_State *L, double value)
 	lua_pushnumber(L, value);
 }
 
+template<std::size_t i>
+struct _PushTuple {
+	template<typename T>
+	static void PushTuple(lua_State *L, const T &t) {
+		_PushTuple<i - 1>::template PushTuple<T>(L, t);
+		Push(L, std::get<i - 1>(t));
+	}
+};
+
+template<>
+struct _PushTuple<0> {
+	template<typename T>
+	static void PushTuple(lua_State *, const T &) {
+	}
+};
+
+template<typename... T>
+gcc_nonnull_all
+void
+Push(lua_State *L, const std::tuple<T...> &t)
+{
+	_PushTuple<sizeof...(T)>::template PushTuple<std::tuple<T...>>(L, t);
+}
+
 gcc_nonnull_all
 static inline void
 Push(lua_State *L, lua_CFunction value)
 {
 	lua_pushcfunction(L, value);
+}
+
+template<typename... T>
+gcc_nonnull_all
+void
+Push(lua_State *L, CClosure<T...> value)
+{
+	Push(L, value.values);
+	lua_pushcclosure(L, value.fn, sizeof...(T));
 }
 
 gcc_nonnull_all

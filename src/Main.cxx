@@ -57,9 +57,9 @@ SetupState(lua_State *L, Instance &instance)
     /* create the "qrelay" namespace */
     lua_newtable(L);
 
-    Lua::Push(L, Lua::LightUserData(&instance));
-    lua_pushcclosure(L, l_listen, 1);
-    lua_setfield(L, -2, "listen");
+    Lua::SetField(L, -2, "listen",
+                  Lua::MakeCClosure(l_listen,
+                                    Lua::LightUserData(&instance)));
 
     //Lua::SetField(L, -2, "listen", l_listen);
 
