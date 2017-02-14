@@ -8,6 +8,7 @@
 #include "net/Resolver.hxx"
 #include "net/AddressInfo.hxx"
 #include "net/AllocatedSocketAddress.hxx"
+#include "lua/Util.hxx"
 #include "lua/Error.hxx"
 #include "util/OstreamException.hxx"
 
@@ -33,9 +34,7 @@ QmqpRelayConnection::Register(lua_State *L)
     luaL_newmetatable(L, "qrelay.mail");
 
     /* metatable.__index = metatable */
-    lua_pushstring(L, "__index");
-    lua_pushvalue(L, -2);
-    lua_settable(L, -3);
+    Lua::SetTable(L, -3, "__index", Lua::StackIndex(-2));
 
     luaL_openlib(L, NULL, mail_methods, 0);
 }
