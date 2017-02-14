@@ -30,6 +30,8 @@
 #ifndef LUA_VALUE_HXX
 #define LUA_VALUE_HXX
 
+#include "Util.hxx"
+
 extern "C" {
 #include <lua.h>
 }
@@ -47,15 +49,15 @@ public:
 	 * Initialize an instance with an object on the stack.
 	 */
 	Value(lua_State *_L, int idx):L(_L) {
-		lua_pushlightuserdata(L, this);
-		lua_pushvalue(L, idx);
-		lua_settable(L, LUA_REGISTRYINDEX);
+		SetTable(L, LUA_REGISTRYINDEX,
+			 LightUserData(this),
+			 StackIndex(idx));
 	}
 
 	~Value() {
-		lua_pushlightuserdata(L, this);
-		lua_pushnil(L);
-		lua_settable(L, LUA_REGISTRYINDEX);
+		SetTable(L, LUA_REGISTRYINDEX,
+			 LightUserData(this),
+			 nullptr);
 	}
 
 	Value(const Value &) = delete;
