@@ -52,6 +52,12 @@ public:
 		lua_settable(L, LUA_REGISTRYINDEX);
 	}
 
+	~Value() {
+		lua_pushlightuserdata(L, this);
+		lua_pushnil(L);
+		lua_settable(L, LUA_REGISTRYINDEX);
+	}
+
 	Value(const Value &) = delete;
 	Value &operator=(const Value &) = delete;
 
