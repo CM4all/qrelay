@@ -27,7 +27,7 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
     tail = mail.tail.ToVoid();
     request.push_back(mail.message.ToVoid());
 
-    const Config::Action *action;
+    const Action *action;
     try {
         action = config.GetAction(mail);
     } catch (const std::runtime_error &e) {
@@ -38,34 +38,34 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
     }
 
     switch (action->type) {
-    case Config::Action::Type::UNDEFINED:
+    case Action::Type::UNDEFINED:
         assert(false);
         gcc_unreachable();
 
-    case Config::Action::Type::DISCARD:
+    case Action::Type::DISCARD:
         if (SendResponse("Kdiscarded"))
             delete this;
         break;
 
-    case Config::Action::Type::REJECT:
+    case Action::Type::REJECT:
         if (SendResponse("Drejected"))
             delete this;
         break;
 
-    case Config::Action::Type::CONNECT:
+    case Action::Type::CONNECT:
         connect.Connect(action->connect);
         break;
 
-    case Config::Action::Type::EXEC:
+    case Action::Type::EXEC:
         Exec(*action);
         break;
     }
 }
 
 void
-QmqpRelayConnection::Exec(const Config::Action &action)
+QmqpRelayConnection::Exec(const Action &action)
 {
-    assert(action.type == Config::Action::Type::EXEC);
+    assert(action.type == Action::Type::EXEC);
     assert(!action.exec.empty());
 
     int stdin_pipe[2], stdout_pipe[2];
@@ -102,7 +102,7 @@ QmqpRelayConnection::Exec(const Config::Action &action)
         fcntl(0, F_SETFL, fcntl(0, F_GETFL) & ~O_NONBLOCK);
         fcntl(1, F_SETFL, fcntl(1, F_GETFL) & ~O_NONBLOCK);
 
-        char *argv[Config::Action::MAX_EXEC + 1];
+        char *argv[Action::MAX_EXEC + 1];
 
         unsigned n = 0;
         for (const auto &i : action.exec)

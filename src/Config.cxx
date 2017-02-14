@@ -15,7 +15,7 @@
 #include <string.h>
 
 void
-Config::Action::ParseConnect(Tokenizer &tokenizer)
+Action::ParseConnect(Tokenizer &tokenizer)
 {
     assert(!IsDefined());
 
@@ -34,7 +34,7 @@ Config::Action::ParseConnect(Tokenizer &tokenizer)
 }
 
 void
-Config::Action::Parse(Tokenizer &tokenizer)
+Action::Parse(Tokenizer &tokenizer)
 {
     assert(!IsDefined());
 
@@ -118,7 +118,7 @@ Config::Rule::Parse(Tokenizer &tokenizer)
     action.Parse(tokenizer);
 }
 
-const Config::Action *
+const Action *
 Config::GetAction(const QmqpMail &mail) const
 {
     for (const auto &rule : rules) {

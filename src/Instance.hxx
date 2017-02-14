@@ -5,6 +5,7 @@
 #ifndef INSTANCE_HXX
 #define INSTANCE_HXX
 
+#include "Config.hxx"
 #include "Logger.hxx"
 #include "QmqpRelayServer.hxx"
 #include "event/Loop.hxx"

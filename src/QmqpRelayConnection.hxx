@@ -11,11 +11,11 @@
 #include "net/ConnectSocket.hxx"
 #include "util/ConstBuffer.hxx"
 #include "Logger.hxx"
-#include "Config.hxx"
 
 #include <list>
 
 struct Config;
+struct Action;
 class Error;
 
 class QmqpRelayConnection final : public NetstringServer, ConnectSocketHandler {
@@ -42,7 +42,7 @@ public:
          client(event_loop, 256) {}
 
 protected:
-    void Exec(const Config::Action &action);
+    void Exec(const Action &action);
     void OnConnect(int out_fd, int in_fd);
     void OnResponse(const void *data, size_t size);
 

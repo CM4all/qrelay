@@ -5,6 +5,7 @@
 #ifndef QRELAY_CONFIG_HXX
 #define QRELAY_CONFIG_HXX
 
+#include "Action.hxx"
 #include "net/AllocatedSocketAddress.hxx"
 
 #include <string>
@@ -16,47 +17,6 @@ class TextFile;
 struct QmqpMail;
 
 struct Config {
-    struct Action {
-        static constexpr unsigned MAX_EXEC = 32;
-
-        enum class Type {
-            UNDEFINED,
-
-            /**
-             * Discard the email, pretending it was accepted.
-             */
-            DISCARD,
-
-            /**
-             * Reject the email with a permanent error.
-             */
-            REJECT,
-
-            /**
-             * Connect to another QMQP server and relay to it.
-             */
-            CONNECT,
-
-            /**
-             * Execute a program that talks QMQP on stdin/stdout.
-             */
-            EXEC,
-        };
-
-        Type type = Type::UNDEFINED;
-
-        AllocatedSocketAddress connect;
-
-        std::list<std::string> exec;
-
-        bool IsDefined() const {
-            return type != Type::UNDEFINED;
-        }
-
-        void ParseConnect(Tokenizer &tokenizer);
-        void Parse(Tokenizer &tokenizer);
-    };
-
     struct Condition {
         std::string recipient;
 
