@@ -15,6 +15,7 @@ add_global_arguments('-D_REENTRANT', '-D_GNU_SOURCE',
   language: 'cpp')
 
 boost = dependency('boost', modules: ['program_options'], version: '>= 1.54')
+liblua = dependency('luajit')
 libevent = dependency('libevent', version: '>= 2.0.19')
 libinline = dependency('libcm4all-inline', version: '>= 0.3.4')
 libdaemon = dependency('libcm4all-daemon', version: '>= 0.4.2')
@@ -30,6 +31,15 @@ util = static_library('util',
   dependencies: [
     libinline
   ])
+
+lua = static_library('lua',
+  'src/lua/Error.cxx',
+  'src/lua/RunFile.cxx',
+  'src/lua/State.cxx',
+  dependencies: [
+    liblua,
+  ]
+)
 
 event = static_library('event',
   'src/event/Loop.cxx',
@@ -75,8 +85,10 @@ executable('cm4all-qrelay',
   include_directories: inc,
   dependencies: [
     boost, libevent,
+    liblua,
     libinline, libdaemon, libsocket,
     declare_dependency(link_with: util),
+    declare_dependency(link_with: lua),
     declare_dependency(link_with: net),
     declare_dependency(link_with: event),
   ])
