@@ -40,11 +40,13 @@ namespace Lua {
  * Save a Lua value for using it later.
  */
 class Value {
+	lua_State *const L;
+
 public:
 	/**
 	 * Initialize an instance with an object on the stack.
 	 */
-	Value(lua_State *L, int idx) {
+	Value(lua_State *_L, int idx):L(_L) {
 		lua_pushlightuserdata(L, this);
 		lua_pushvalue(L, idx);
 		lua_settable(L, LUA_REGISTRYINDEX);
@@ -56,7 +58,7 @@ public:
 	/**
 	 * Push the value on the stack.
 	 */
-	void Push(lua_State *L) {
+	void Push() {
 		lua_pushlightuserdata(L, this);
 		lua_gettable(L, LUA_REGISTRYINDEX);
 	}

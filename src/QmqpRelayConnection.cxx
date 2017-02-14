@@ -153,7 +153,7 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
     tail = mail.tail.ToVoid();
     request.push_back(mail.message.ToVoid());
 
-    handler->Push(L);
+    handler->Push();
 
     auto d = (QmqpRelayConnection **)lua_newuserdata(L, sizeof(QmqpRelayConnection **));
     *d = this;
