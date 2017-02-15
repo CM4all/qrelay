@@ -36,7 +36,7 @@ struct QmqpMail {
      */
     std::vector<ConstBuffer<char>> recipients;
 
-    bool Parse(ConstBuffer<char> input);
+    bool Parse(ConstBuffer<void> input);
 };
 
 #endif

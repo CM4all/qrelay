@@ -31,7 +31,7 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
     assert(request.empty());
 
     QmqpMail mail;
-    if (!mail.Parse(ConstBuffer<char>::FromVoid({data, size}))) {
+    if (!mail.Parse({data, size})) {
         if (SendResponse("Dmalformed input"))
             delete this;
         return;

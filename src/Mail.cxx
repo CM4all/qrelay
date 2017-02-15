@@ -15,8 +15,9 @@ MakeConstBuffer(typename ConstBuffer<T>::pointer_type begin,
 }
 
 bool
-QmqpMail::Parse(ConstBuffer<char> _input)
+QmqpMail::Parse(ConstBuffer<void> __input)
 {
+    const auto _input = ConstBuffer<char>::FromVoid(__input);
     Range<const char *> input(_input.begin(), _input.end());
 
     message = ParseNetstring(input);
