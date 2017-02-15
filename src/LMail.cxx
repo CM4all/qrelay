@@ -9,14 +9,48 @@
 #include "LAddress.hxx"
 #include "lua/Class.hxx"
 
+#include <sys/socket.h>
 #include <string.h>
 
 class IncomingMail : public QmqpMail {
     const int fd;
 
+    bool have_cred = false;
+    struct ucred cred;
+
 public:
     IncomingMail(QmqpMail &&src, int _fd)
         :QmqpMail(std::move(src)), fd(_fd) {}
+
+    int GetPid() {
+        LoadPeerCred();
+        return cred.pid;
+    }
+
+    int GetUid() {
+        LoadPeerCred();
+        return cred.uid;
+    }
+
+    int GetGid() {
+        LoadPeerCred();
+        return cred.gid;
+    }
+
+private:
+    void LoadPeerCred() {
+        if (have_cred)
+            return;
+
+        have_cred = true;
+
+        socklen_t len = sizeof(cred);
+        if (getsockopt(fd, SOL_SOCKET, SO_PEERCRED, &cred, &len) < 0) {
+            cred.pid = -1;
+            cred.uid = -1;
+            cred.gid = -1;
+        }
+    }
 };
 
 static constexpr char lua_mail_class[] = "qrelay.mail";
@@ -94,13 +128,22 @@ PushArray(lua_State *L, const std::vector<StringView> &src)
         Lua::SetTable(L, -3, i++, value);
 }
 
+static void
+PushOptional(lua_State *L, int value)
+{
+    if (value >= 0)
+        Lua::Push(L, value);
+    else
+        Lua::Push(L, nullptr);
+}
+
 static int
 LuaMailIndex(lua_State *L)
 {
     if (lua_gettop(L) != 2)
         return luaL_error(L, "Invalid parameters");
 
-    auto &mail = *CheckLuaMail(L, 1);
+    auto &mail = *(IncomingMail *)CheckLuaMail(L, 1);
 
     if (!lua_isstring(L, 2))
         luaL_argerror(L, 2, "string expected");
@@ -119,6 +162,15 @@ LuaMailIndex(lua_State *L)
         return 1;
     } else if (strcmp(name, "recipients") == 0) {
         PushArray(L, mail.recipients);
+        return 1;
+    } else if (strcmp(name, "pid") == 0) {
+        PushOptional(L, mail.GetPid());
+        return 1;
+    } else if (strcmp(name, "uid") == 0) {
+        PushOptional(L, mail.GetUid());
+        return 1;
+    } else if (strcmp(name, "gid") == 0) {
+        PushOptional(L, mail.GetGid());
         return 1;
     }
 
