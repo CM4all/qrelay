@@ -42,6 +42,11 @@ The following attributes can be queried:
 
 * :samp:`gid`: The client's group id.
 
+The following methods can access more data:
+
+* :samp:`get_cgroup('CONTROLLERNAME')`: Obtain the cgroup membership
+  path for the given controller.
+
 The following actions are possible:
 
 * :samp:`connect("ADDRESS")`: Connect to this address and relay the

@@ -8,6 +8,7 @@
 #include "Action.hxx"
 #include "LAddress.hxx"
 #include "lua/Class.hxx"
+#include "CgroupProc.hxx"
 
 #include <sys/socket.h>
 #include <string.h>
@@ -110,11 +111,36 @@ NewExecAction(lua_State *L)
     return 1;
 }
 
+static int
+GetCgroup(lua_State *L)
+{
+    if (lua_gettop(L) != 2)
+      return luaL_error(L, "Invalid parameters");
+
+    auto &mail = *(IncomingMail *)CheckLuaMail(L, 1);
+
+    if (!lua_isstring(L, 2))
+        luaL_argerror(L, 2, "string expected");
+    const char *controller = lua_tostring(L, 2);
+
+    const int pid = mail.GetPid();
+    if (pid < 0)
+        return 0;
+
+    const auto path = ReadProcessCgroup(pid, controller);
+    if (path.empty())
+        return 0;
+
+    Lua::Push(L, path.c_str());
+    return 1;
+}
+
 static constexpr struct luaL_reg mail_methods [] = {
     {"connect", NewConnectAction},
     {"discard", NewDiscardAction},
     {"reject", NewRejectAction},
     {"exec", NewExecAction},
+    {"get_cgroup", GetCgroup},
     {nullptr, nullptr}
 };
 
