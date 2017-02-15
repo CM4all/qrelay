@@ -37,6 +37,7 @@ extern "C" {
 }
 
 #include <cstddef>
+#include <tuple>
 
 namespace Lua {
 
