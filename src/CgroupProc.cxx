@@ -10,7 +10,7 @@
 #include <stdio.h>
 
 static bool
-ListContains(StringView haystack, bool separator, StringView needle)
+ListContains(StringView haystack, char separator, StringView needle)
 {
     for (auto value : IterableSplitString(haystack, separator))
         if (value.Equals(needle))
