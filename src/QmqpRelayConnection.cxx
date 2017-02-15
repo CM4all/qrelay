@@ -6,9 +6,8 @@
 #include "Mail.hxx"
 #include "Action.hxx"
 #include "LAction.hxx"
+#include "LAddress.hxx"
 #include "system/Error.hxx"
-#include "net/Resolver.hxx"
-#include "net/AddressInfo.hxx"
 #include "net/AllocatedSocketAddress.hxx"
 #include "lua/Util.hxx"
 #include "lua/Error.hxx"
@@ -59,23 +58,6 @@ QmqpRelayConnection::Index(lua_State *L)
     }
 
     return luaL_error(L, "Unknown attribute");
-}
-
-static AllocatedSocketAddress
-GetLuaAddress(lua_State *L, int idx)
-{
-    if (!lua_isstring(L, idx))
-        luaL_argerror(L, idx, "address expected");
-
-    const char *s = lua_tostring(L, idx);
-
-    struct addrinfo hints;
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-
-    const auto ai = Resolve(s, 628, &hints);
-    return AllocatedSocketAddress(ai.front());
 }
 
 int
