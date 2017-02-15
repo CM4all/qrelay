@@ -13,6 +13,7 @@
 #include "lua/Util.hxx"
 #include "lua/Error.hxx"
 #include "util/OstreamException.hxx"
+#include "util/ScopeExit.hxx"
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -46,9 +47,11 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
     if (lua_pcall(L, 1, 1, 0))
         throw Lua::PopError(L);
 
+    const auto _L = L;
+    AtScopeExit(_L) { lua_pop(_L, 1); };
+
     auto *action = CheckLuaAction(L, -1);
     Do(*action);
-    lua_pop(L, 1);
 }
 
 void
