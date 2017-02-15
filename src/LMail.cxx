@@ -126,12 +126,6 @@ RegisterLuaMail(lua_State *L)
 }
 
 QmqpMail *
-NewLuaMail(lua_State *L)
-{
-    return LuaMail::New(L);
-}
-
-QmqpMail *
 NewLuaMail(lua_State *L, QmqpMail &&src)
 {
     return LuaMail::New(L, std::move(src));

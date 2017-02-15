@@ -12,9 +12,6 @@ void
 RegisterLuaMail(lua_State *L);
 
 QmqpMail *
-NewLuaMail(lua_State *L);
-
-QmqpMail *
 NewLuaMail(lua_State *L, QmqpMail &&src);
 
 QmqpMail *
