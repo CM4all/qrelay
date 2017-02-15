@@ -43,7 +43,7 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
 
     handler->Push();
 
-    NewLuaMail(L, std::move(mail));
+    NewLuaMail(L, std::move(mail), GetFD());
     if (lua_pcall(L, 1, 1, 0))
         throw Lua::PopError(L);
 

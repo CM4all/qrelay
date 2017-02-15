@@ -12,7 +12,7 @@ void
 RegisterLuaMail(lua_State *L);
 
 QmqpMail *
-NewLuaMail(lua_State *L, QmqpMail &&src);
+NewLuaMail(lua_State *L, QmqpMail &&src, int fd);
 
 QmqpMail *
 CheckLuaMail(lua_State *L, int idx);

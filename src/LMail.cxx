@@ -12,9 +12,11 @@
 #include <string.h>
 
 class IncomingMail : public QmqpMail {
+    const int fd;
+
 public:
-    IncomingMail(QmqpMail &&src)
-        :QmqpMail(std::move(src)) {}
+    IncomingMail(QmqpMail &&src, int _fd)
+        :QmqpMail(std::move(src)), fd(_fd) {}
 };
 
 static constexpr char lua_mail_class[] = "qrelay.mail";
@@ -132,9 +134,9 @@ RegisterLuaMail(lua_State *L)
 }
 
 QmqpMail *
-NewLuaMail(lua_State *L, QmqpMail &&src)
+NewLuaMail(lua_State *L, QmqpMail &&src, int fd)
 {
-    return LuaMail::New(L, std::move(src));
+    return LuaMail::New(L, std::move(src), fd);
 }
 
 QmqpMail *
