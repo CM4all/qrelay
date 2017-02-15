@@ -34,6 +34,8 @@ The following attributes can be queried:
 
 * :samp:`sender`: The sender envelope address.
 
+* :samp:`recipients`: A list of recipient envelope addresses.
+
 The following actions are possible:
 
 * :samp:`connect("ADDRESS")`: Connect to this address and relay the

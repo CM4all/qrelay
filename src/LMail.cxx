@@ -76,6 +76,16 @@ static constexpr struct luaL_reg mail_methods [] = {
     {nullptr, nullptr}
 };
 
+static void
+PushArray(lua_State *L, const std::vector<StringView> &src)
+{
+    lua_createtable(L, src.size(), 0);
+
+    int i = 1;
+    for (const auto &value : src)
+        Lua::SetTable(L, -3, i++, value);
+}
+
 static int
 LuaMailIndex(lua_State *L)
 {
@@ -98,6 +108,9 @@ LuaMailIndex(lua_State *L)
 
     if (strcmp(name, "sender") == 0) {
         Lua::Push(L, mail.sender);
+        return 1;
+    } else if (strcmp(name, "recipients") == 0) {
+        PushArray(L, mail.recipients);
         return 1;
     }
 
