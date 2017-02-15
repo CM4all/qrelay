@@ -50,13 +50,19 @@ l_qmqp_listen(lua_State *L)
 }
 
 static void
-SetupState(lua_State *L, Instance &instance)
+SetupConfigState(lua_State *L, Instance &instance)
 {
     luaL_openlibs(L);
 
     Lua::SetGlobal(L, "qmqp_listen",
                    Lua::MakeCClosure(l_qmqp_listen,
                                      Lua::LightUserData(&instance)));
+}
+
+static void
+SetupRuntimeState(lua_State *L)
+{
+    Lua::SetGlobal(L, "qmqp_listen", nullptr);
 
     QmqpRelayConnection::Register(L);
 }
@@ -67,7 +73,7 @@ Run(const CommandLine &cmdline)
     Lua::State state(luaL_newstate());
 
     Instance instance;
-    SetupState(state.get(), instance);
+    SetupConfigState(state.get(), instance);
 
     Lua::RunFile(state.get(), cmdline.config_path.c_str());
 
@@ -75,6 +81,8 @@ Run(const CommandLine &cmdline)
 
     if (daemonize() < 0)
         return EXIT_FAILURE;
+
+    SetupRuntimeState(state.get());
 
     instance.GetEventLoop().Dispatch();
 
