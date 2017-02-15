@@ -82,6 +82,8 @@ LuaMailIndex(lua_State *L)
     if (lua_gettop(L) != 2)
         return luaL_error(L, "Invalid parameters");
 
+    auto &mail = *CheckLuaMail(L, 1);
+
     if (!lua_isstring(L, 2))
         luaL_argerror(L, 2, "string expected");
 
@@ -92,6 +94,11 @@ LuaMailIndex(lua_State *L)
             Lua::Push(L, i->func);
             return 1;
         }
+    }
+
+    if (strcmp(name, "sender") == 0) {
+        Lua::Push(L, mail.sender);
+        return 1;
     }
 
     return luaL_error(L, "Unknown attribute");

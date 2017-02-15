@@ -28,7 +28,13 @@ new socket, but the bind mount cannot be refreshed.
 
 The second parameter is a callback function which shall decide what to
 do with an incoming email.  This function receives a mail object which
-can be inspected.  The following actions are possible:
+can be inspected.
+
+The following attributes can be queried:
+
+* :samp:`sender`: The sender envelope address.
+
+The following actions are possible:
 
 * :samp:`connect("ADDRESS")`: Connect to this address and relay the
   email via QMQP.
