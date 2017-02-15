@@ -32,11 +32,29 @@ void
 QmqpRelayConnection::Register(lua_State *L)
 {
     luaL_newmetatable(L, "qrelay.mail");
+    Lua::SetTable(L, -3, "__index", Index);
+    lua_pop(L, 1);
+}
 
-    /* metatable.__index = metatable */
-    Lua::SetTable(L, -3, "__index", Lua::StackIndex(-2));
+int
+QmqpRelayConnection::Index(lua_State *L)
+{
+    if (lua_gettop(L) != 2)
+        return luaL_error(L, "Invalid parameters");
 
-    luaL_openlib(L, NULL, mail_methods, 0);
+    if (!lua_isstring(L, 2))
+        luaL_argerror(L, 2, "string expected");
+
+    const char *name = lua_tostring(L, 2);
+
+    for (const auto *i = mail_methods; i->name != nullptr; ++i) {
+        if (strcmp(i->name, name) == 0) {
+            Lua::Push(L, i->func);
+            return 1;
+        }
+    }
+
+    return luaL_error(L, "Unknown attribute");
 }
 
 QmqpRelayConnection &
