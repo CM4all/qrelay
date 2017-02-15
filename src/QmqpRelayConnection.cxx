@@ -133,12 +133,12 @@ QmqpRelayConnection::RejectMethod(lua_State *L)
 int
 QmqpRelayConnection::ExecMethod(lua_State *L)
 {
-    if (lua_gettop(L) < 1)
+    if (lua_gettop(L) < 2)
       return luaL_error(L, "Not enough parameters");
 
     std::list<std::string> l;
     const unsigned n = lua_gettop(L);
-    for (unsigned i = 1; i <= n; ++i) {
+    for (unsigned i = 2; i <= n; ++i) {
         if (!lua_isstring(L, i))
             luaL_argerror(L, i, "address expected");
 
