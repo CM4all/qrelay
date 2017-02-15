@@ -11,8 +11,14 @@
 
 #include <string.h>
 
+class IncomingMail : public QmqpMail {
+public:
+    IncomingMail(QmqpMail &&src)
+        :QmqpMail(std::move(src)) {}
+};
+
 static constexpr char lua_mail_class[] = "qrelay.mail";
-typedef Lua::Class<QmqpMail, lua_mail_class> LuaMail;
+typedef Lua::Class<IncomingMail, lua_mail_class> LuaMail;
 
 static int
 NewConnectAction(lua_State *L)
