@@ -143,7 +143,7 @@ Push(lua_State *L, lua_CFunction value)
 template<typename... T>
 gcc_nonnull_all
 void
-Push(lua_State *L, CClosure<T...> value)
+Push(lua_State *L, const CClosure<T...> &value)
 {
 	Push(L, value.values);
 	lua_pushcclosure(L, value.fn, sizeof...(T));
