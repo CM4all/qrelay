@@ -36,6 +36,12 @@ The following attributes can be queried:
 
 * :samp:`recipients`: A list of recipient envelope addresses.
 
+* :samp:`pid`: The client's process id.
+
+* :samp:`uid`: The client's user id.
+
+* :samp:`gid`: The client's group id.
+
 The following actions are possible:
 
 * :samp:`connect("ADDRESS")`: Connect to this address and relay the
