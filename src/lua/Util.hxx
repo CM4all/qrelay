@@ -30,6 +30,8 @@
 #ifndef LUA_UTIL_HXX
 #define LUA_UTIL_HXX
 
+#include "util/StringView.hxx"
+
 #include <inline/compiler.h>
 
 extern "C" {
@@ -94,6 +96,13 @@ static inline void
 Push(lua_State *L, const char *value)
 {
 	lua_pushstring(L, value);
+}
+
+gcc_nonnull_all
+static inline void
+Push(lua_State *L, StringView value)
+{
+	lua_pushlstring(L, value.data, value.size);
 }
 
 gcc_nonnull_all
