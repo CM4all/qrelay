@@ -8,7 +8,7 @@
 
 #include <stdlib.h>
 
-ConstBuffer<char>
+StringView
 ParseNetstring(Range<const char *> &input_r)
 {
     const Range<const char *> input = input_r;
