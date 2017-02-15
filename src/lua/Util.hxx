@@ -156,6 +156,14 @@ Push(lua_State *L, LightUserData value)
 	lua_pushlightuserdata(L, value.value);
 }
 
+template<typename V>
+void
+SetGlobal(lua_State *L, const char *name, V &&value)
+{
+	Push(L, std::forward<V>(value));
+	lua_setglobal(L, name);
+}
+
 template<typename K>
 void
 GetTable(lua_State *L, int idx, K &&key)
