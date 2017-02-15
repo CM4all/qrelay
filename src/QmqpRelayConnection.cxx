@@ -4,6 +4,7 @@
 
 #include "QmqpRelayConnection.hxx"
 #include "Mail.hxx"
+#include "LMail.hxx"
 #include "Action.hxx"
 #include "LAction.hxx"
 #include "LAddress.hxx"
@@ -13,105 +14,15 @@
 #include "lua/Error.hxx"
 #include "util/OstreamException.hxx"
 
-extern "C" {
-#include <lauxlib.h>
-}
-
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/socket.h>
 
-static constexpr struct luaL_reg mail_methods [] = {
-    {"connect", QmqpRelayConnection::ConnectMethod},
-    {"discard", QmqpRelayConnection::DiscardMethod},
-    {"reject", QmqpRelayConnection::RejectMethod},
-    {"exec", QmqpRelayConnection::ExecMethod},
-    {nullptr, nullptr}
-};
-
 void
 QmqpRelayConnection::Register(lua_State *L)
 {
-    luaL_newmetatable(L, "qrelay.mail");
-    Lua::SetTable(L, -3, "__index", Index);
-    lua_pop(L, 1);
-
     RegisterLuaAction(L);
-}
-
-int
-QmqpRelayConnection::Index(lua_State *L)
-{
-    if (lua_gettop(L) != 2)
-        return luaL_error(L, "Invalid parameters");
-
-    if (!lua_isstring(L, 2))
-        luaL_argerror(L, 2, "string expected");
-
-    const char *name = lua_tostring(L, 2);
-
-    for (const auto *i = mail_methods; i->name != nullptr; ++i) {
-        if (strcmp(i->name, name) == 0) {
-            Lua::Push(L, i->func);
-            return 1;
-        }
-    }
-
-    return luaL_error(L, "Unknown attribute");
-}
-
-int
-QmqpRelayConnection::ConnectMethod(lua_State *L)
-{
-    if (lua_gettop(L) != 2)
-      return luaL_error(L, "Invalid parameters");
-
-    auto &action = *NewLuaAction(L);
-    action.type = Action::Type::CONNECT;
-    action.connect = GetLuaAddress(L, 2);
-    return 1;
-}
-
-int
-QmqpRelayConnection::DiscardMethod(lua_State *L)
-{
-    if (lua_gettop(L) != 1)
-      return luaL_error(L, "Invalid parameters");
-
-    auto &action = *NewLuaAction(L);
-    action.type = Action::Type::DISCARD;
-    return 1;
-}
-
-int
-QmqpRelayConnection::RejectMethod(lua_State *L)
-{
-    if (lua_gettop(L) != 1)
-      return luaL_error(L, "Invalid parameters");
-
-    auto &action = *NewLuaAction(L);
-    action.type = Action::Type::REJECT;
-    return 1;
-}
-
-int
-QmqpRelayConnection::ExecMethod(lua_State *L)
-{
-    if (lua_gettop(L) < 2)
-      return luaL_error(L, "Not enough parameters");
-
-    auto &action = *NewLuaAction(L);
-    action.type = Action::Type::EXEC;
-
-    const unsigned n = lua_gettop(L);
-    for (unsigned i = 2; i <= n; ++i) {
-        if (!lua_isstring(L, i))
-            luaL_argerror(L, i, "string expected");
-
-        action.exec.emplace_back(lua_tostring(L, i));
-    }
-
-    return 1;
+    RegisterLuaMail(L);
 }
 
 void
@@ -131,12 +42,7 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
 
     handler->Push();
 
-    auto d = (QmqpRelayConnection **)lua_newuserdata(L, sizeof(QmqpRelayConnection **));
-    *d = this;
-
-    luaL_getmetatable(L, "qrelay.mail");
-    lua_setmetatable(L, -2);
-
+    NewLuaMail(L, std::move(mail));
     if (lua_pcall(L, 1, 1, 0))
         throw Lua::PopError(L);
 

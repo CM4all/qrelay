@@ -44,12 +44,6 @@ public:
 
     static void Register(lua_State *L);
 
-    static int Index(lua_State *L);
-    static int ConnectMethod(lua_State *L);
-    static int DiscardMethod(lua_State *L);
-    static int RejectMethod(lua_State *L);
-    static int ExecMethod(lua_State *L);
-
 protected:
     void Do(const Action &action);
     void Exec(const Action &action);
