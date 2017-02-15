@@ -140,7 +140,7 @@ QmqpRelayConnection::ExecMethod(lua_State *L)
     const unsigned n = lua_gettop(L);
     for (unsigned i = 2; i <= n; ++i) {
         if (!lua_isstring(L, i))
-            luaL_argerror(L, i, "address expected");
+            luaL_argerror(L, i, "string expected");
 
         l.emplace_back(lua_tostring(L, i));
     }
