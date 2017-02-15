@@ -26,7 +26,7 @@ using std::endl;
 #include <stdlib.h>
 
 static int
-l_listen(lua_State *L)
+l_qmqp_listen(lua_State *L)
 {
   if (lua_gettop(L) != 2)
       return luaL_error(L, "Invalid parameter count");
@@ -54,16 +54,9 @@ SetupState(lua_State *L, Instance &instance)
 {
     luaL_openlibs(L);
 
-    /* create the "qrelay" namespace */
-    lua_newtable(L);
-
-    Lua::SetField(L, -2, "listen",
-                  Lua::MakeCClosure(l_listen,
-                                    Lua::LightUserData(&instance)));
-
-    //Lua::SetField(L, -2, "listen", l_listen);
-
-    lua_setglobal(L, "qrelay");
+    Lua::SetGlobal(L, "qmqp_listen",
+                   Lua::MakeCClosure(l_qmqp_listen,
+                                     Lua::LightUserData(&instance)));
 
     QmqpRelayConnection::Register(L);
 }

@@ -13,9 +13,9 @@ Configuration
 
 The file :file:`/etc/cm4all/qrelay/config.lua` is a Lua script which
 is executed at startup.  It contains at least one
-:samp:`qrelay.listen()` call, for example::
+:samp:`qmqp_listen()` call, for example::
 
-  qrelay.listen('/run/cm4all/qrelay/qrelay.sock', function(m)
+  qmqp_listen('/run/cm4all/qrelay/qrelay.sock', function(m)
     return m:connect('192.168.1.99')
   end)
 
