@@ -5,7 +5,6 @@
 #ifndef QMQP_RELAY_CONNECTION_HXX
 #define QMQP_RELAY_CONNECTION_HXX
 
-#include "Action.hxx"
 #include "Logger.hxx"
 #include "djb/NetstringServer.hxx"
 #include "djb/NetstringGenerator.hxx"
@@ -15,6 +14,8 @@
 #include "util/ConstBuffer.hxx"
 
 #include <list>
+
+struct Action;
 
 class QmqpRelayConnection final : public NetstringServer, ConnectSocketHandler {
     lua_State *const L;
@@ -29,8 +30,6 @@ class QmqpRelayConnection final : public NetstringServer, ConnectSocketHandler {
 
     ConnectSocket connect;
     NetstringClient client;
-
-    Action handler_action;
 
 public:
     QmqpRelayConnection(lua_State *_L, Lua::ValuePtr _handler,
@@ -50,10 +49,6 @@ public:
     static int DiscardMethod(lua_State *L);
     static int RejectMethod(lua_State *L);
     static int ExecMethod(lua_State *L);
-
-private:
-    gcc_pure
-    static QmqpRelayConnection &Check(lua_State *L, int idx);
 
 protected:
     void Do(const Action &action);

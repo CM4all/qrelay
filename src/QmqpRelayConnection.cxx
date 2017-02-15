@@ -4,11 +4,13 @@
 
 #include "QmqpRelayConnection.hxx"
 #include "Mail.hxx"
+#include "Action.hxx"
 #include "system/Error.hxx"
 #include "net/Resolver.hxx"
 #include "net/AddressInfo.hxx"
 #include "net/AllocatedSocketAddress.hxx"
 #include "lua/Util.hxx"
+#include "lua/Class.hxx"
 #include "lua/Error.hxx"
 #include "util/OstreamException.hxx"
 
@@ -19,6 +21,9 @@ extern "C" {
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/socket.h>
+
+static constexpr char lua_action_class[] = "qrelay.action";
+typedef Lua::Class<Action, lua_action_class> LuaAction;
 
 static constexpr struct luaL_reg mail_methods [] = {
     {"connect", QmqpRelayConnection::ConnectMethod},
@@ -33,6 +38,9 @@ QmqpRelayConnection::Register(lua_State *L)
 {
     luaL_newmetatable(L, "qrelay.mail");
     Lua::SetTable(L, -3, "__index", Index);
+    lua_pop(L, 1);
+
+    LuaAction::Register(L);
     lua_pop(L, 1);
 }
 
@@ -55,14 +63,6 @@ QmqpRelayConnection::Index(lua_State *L)
     }
 
     return luaL_error(L, "Unknown attribute");
-}
-
-QmqpRelayConnection &
-QmqpRelayConnection::Check(lua_State *L, int idx)
-{
-    auto d = (QmqpRelayConnection **)luaL_checkudata(L, idx, "qrelay.mail");
-    luaL_argcheck(L, d != nullptr, idx, "`qrelay.mail' expected");
-    return **d;
 }
 
 static AllocatedSocketAddress
@@ -88,16 +88,10 @@ QmqpRelayConnection::ConnectMethod(lua_State *L)
     if (lua_gettop(L) != 2)
       return luaL_error(L, "Invalid parameters");
 
-    auto &c = Check(L, 1);
-    auto &action = c.handler_action;
-    if (action.IsDefined())
-      return luaL_error(L, "Action already defined");
-
-    auto address = GetLuaAddress(L, 2);
-
+    auto &action = *LuaAction::New(L);
     action.type = Action::Type::CONNECT;
-    action.connect = std::move(address);
-    return 0;
+    action.connect = GetLuaAddress(L, 2);
+    return 1;
 }
 
 int
@@ -106,13 +100,9 @@ QmqpRelayConnection::DiscardMethod(lua_State *L)
     if (lua_gettop(L) != 1)
       return luaL_error(L, "Invalid parameters");
 
-    auto &c = Check(L, 1);
-    auto &action = c.handler_action;
-    if (action.IsDefined())
-      return luaL_error(L, "Action already defined");
-
+    auto &action = *LuaAction::New(L);
     action.type = Action::Type::DISCARD;
-    return 0;
+    return 1;
 }
 
 int
@@ -121,13 +111,9 @@ QmqpRelayConnection::RejectMethod(lua_State *L)
     if (lua_gettop(L) != 1)
       return luaL_error(L, "Invalid parameters");
 
-    auto &c = Check(L, 1);
-    auto &action = c.handler_action;
-    if (action.IsDefined())
-      return luaL_error(L, "Action already defined");
-
+    auto &action = *LuaAction::New(L);
     action.type = Action::Type::REJECT;
-    return 0;
+    return 1;
 }
 
 int
@@ -136,23 +122,18 @@ QmqpRelayConnection::ExecMethod(lua_State *L)
     if (lua_gettop(L) < 2)
       return luaL_error(L, "Not enough parameters");
 
-    std::list<std::string> l;
+    auto &action = *LuaAction::New(L);
+    action.type = Action::Type::EXEC;
+
     const unsigned n = lua_gettop(L);
     for (unsigned i = 2; i <= n; ++i) {
         if (!lua_isstring(L, i))
             luaL_argerror(L, i, "string expected");
 
-        l.emplace_back(lua_tostring(L, i));
+        action.exec.emplace_back(lua_tostring(L, i));
     }
 
-    auto &c = Check(L, 1);
-    auto &action = c.handler_action;
-    if (action.IsDefined())
-      return luaL_error(L, "Action already defined");
-
-    action.type = Action::Type::EXEC;
-    action.exec = std::move(l);
-    return 0;
+    return 1;
 }
 
 void
@@ -178,13 +159,12 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
     luaL_getmetatable(L, "qrelay.mail");
     lua_setmetatable(L, -2);
 
-    if (lua_pcall(L, 1, 0, 0))
+    if (lua_pcall(L, 1, 1, 0))
         throw Lua::PopError(L);
 
-    if (!handler_action.IsDefined())
-        throw std::runtime_error("Lua handler did not set an action");
-
-    Do(handler_action);
+    auto *action = LuaAction::Check(L, -1);
+    Do(*action);
+    lua_pop(L, 1);
 }
 
 void
