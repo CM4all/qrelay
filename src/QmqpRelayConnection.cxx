@@ -5,12 +5,12 @@
 #include "QmqpRelayConnection.hxx"
 #include "Mail.hxx"
 #include "Action.hxx"
+#include "LAction.hxx"
 #include "system/Error.hxx"
 #include "net/Resolver.hxx"
 #include "net/AddressInfo.hxx"
 #include "net/AllocatedSocketAddress.hxx"
 #include "lua/Util.hxx"
-#include "lua/Class.hxx"
 #include "lua/Error.hxx"
 #include "util/OstreamException.hxx"
 
@@ -21,9 +21,6 @@ extern "C" {
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/socket.h>
-
-static constexpr char lua_action_class[] = "qrelay.action";
-typedef Lua::Class<Action, lua_action_class> LuaAction;
 
 static constexpr struct luaL_reg mail_methods [] = {
     {"connect", QmqpRelayConnection::ConnectMethod},
@@ -40,8 +37,7 @@ QmqpRelayConnection::Register(lua_State *L)
     Lua::SetTable(L, -3, "__index", Index);
     lua_pop(L, 1);
 
-    LuaAction::Register(L);
-    lua_pop(L, 1);
+    RegisterLuaAction(L);
 }
 
 int
@@ -88,7 +84,7 @@ QmqpRelayConnection::ConnectMethod(lua_State *L)
     if (lua_gettop(L) != 2)
       return luaL_error(L, "Invalid parameters");
 
-    auto &action = *LuaAction::New(L);
+    auto &action = *NewLuaAction(L);
     action.type = Action::Type::CONNECT;
     action.connect = GetLuaAddress(L, 2);
     return 1;
@@ -100,7 +96,7 @@ QmqpRelayConnection::DiscardMethod(lua_State *L)
     if (lua_gettop(L) != 1)
       return luaL_error(L, "Invalid parameters");
 
-    auto &action = *LuaAction::New(L);
+    auto &action = *NewLuaAction(L);
     action.type = Action::Type::DISCARD;
     return 1;
 }
@@ -111,7 +107,7 @@ QmqpRelayConnection::RejectMethod(lua_State *L)
     if (lua_gettop(L) != 1)
       return luaL_error(L, "Invalid parameters");
 
-    auto &action = *LuaAction::New(L);
+    auto &action = *NewLuaAction(L);
     action.type = Action::Type::REJECT;
     return 1;
 }
@@ -122,7 +118,7 @@ QmqpRelayConnection::ExecMethod(lua_State *L)
     if (lua_gettop(L) < 2)
       return luaL_error(L, "Not enough parameters");
 
-    auto &action = *LuaAction::New(L);
+    auto &action = *NewLuaAction(L);
     action.type = Action::Type::EXEC;
 
     const unsigned n = lua_gettop(L);
@@ -162,7 +158,7 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
     if (lua_pcall(L, 1, 1, 0))
         throw Lua::PopError(L);
 
-    auto *action = LuaAction::Check(L, -1);
+    auto *action = CheckLuaAction(L, -1);
     Do(*action);
     lua_pop(L, 1);
 }
