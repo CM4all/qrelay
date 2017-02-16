@@ -9,6 +9,7 @@
 #include "LAddress.hxx"
 #include "lua/Class.hxx"
 #include "CgroupProc.hxx"
+#include "MountProc.hxx"
 
 #include <sys/socket.h>
 #include <string.h>
@@ -135,12 +136,40 @@ GetCgroup(lua_State *L)
     return 1;
 }
 
+static int
+GetMountInfo(lua_State *L)
+{
+    if (lua_gettop(L) != 2)
+      return luaL_error(L, "Invalid parameters");
+
+    auto &mail = *(IncomingMail *)CheckLuaMail(L, 1);
+
+    if (!lua_isstring(L, 2))
+        luaL_argerror(L, 2, "string expected");
+    const char *mountpoint = lua_tostring(L, 2);
+
+    const int pid = mail.GetPid();
+    if (pid < 0)
+        return 0;
+
+    const auto m = ReadProcessMount(pid, mountpoint);
+    if (!m.IsDefined())
+        return 0;
+
+    lua_newtable(L);
+    Lua::SetField(L, -2, "root", m.root.c_str());
+    Lua::SetField(L, -2, "filesystem", m.filesystem.c_str());
+    Lua::SetField(L, -2, "source", m.source.c_str());
+    return 1;
+}
+
 static constexpr struct luaL_reg mail_methods [] = {
     {"connect", NewConnectAction},
     {"discard", NewDiscardAction},
     {"reject", NewRejectAction},
     {"exec", NewExecAction},
     {"get_cgroup", GetCgroup},
+    {"get_mount_info", GetMountInfo},
     {nullptr, nullptr}
 };
 

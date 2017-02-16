@@ -47,6 +47,13 @@ The following methods can access more data:
 * :samp:`get_cgroup('CONTROLLERNAME')`: Obtain the cgroup membership
   path for the given controller.
 
+* :samp:`get_mount_info('MOUNTPOINT')`: Obtain information about a
+  mount point in the client's filesystem namespace.  The return value
+  is :samp:`nil` if the given path is not a mount point, or a table
+  containing the items :envvar:`root` (root of the mount within the
+  filesystem), :envvar:`filesystem` (the name of the filesystem) and
+  :envvar:`source` (the device which is mounted here)
+
 The following actions are possible:
 
 * :samp:`connect("ADDRESS")`: Connect to this address and relay the
