@@ -18,7 +18,9 @@ endif
 CFLAGS += -fno-omit-frame-pointer
 CXXFLAGS = $(CFLAGS)
 
-MESON_OPTIONS =
+MESON_BUILDTYPE = debug
+
+MESON_OPTIONS = --buildtype $(MESON_BUILDTYPE)
 
 build/build.ninja: meson.build
 	rm -rf build
