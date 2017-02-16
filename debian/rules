@@ -18,9 +18,11 @@ endif
 CFLAGS += -fno-omit-frame-pointer
 CXXFLAGS = $(CFLAGS)
 
+MESON_OPTIONS =
+
 build/build.ninja: meson.build
 	rm -rf build
-	meson . build
+	meson . build $(MESON_OPTIONS)
 
 debian/stamp-build: build/build.ninja
 	ninja -C build
