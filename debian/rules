@@ -4,20 +4,6 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-DEB_HOST_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
-DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
-
-CFLAGS = -Wall -g
-
-ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
-  CFLAGS += -O0
-else
-  CFLAGS += -O2
-endif
-
-CFLAGS += -fno-omit-frame-pointer
-CXXFLAGS = $(CFLAGS)
-
 MESON_BUILDTYPE = debug
 
 MESON_OPTIONS = --buildtype $(MESON_BUILDTYPE)
