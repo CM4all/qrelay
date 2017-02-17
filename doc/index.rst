@@ -11,9 +11,9 @@ them to another QMQP server.
 Configuration
 -------------
 
-The file :file:`/etc/cm4all/qrelay/config.lua` is a Lua script which
-is executed at startup.  It contains at least one
-:samp:`qmqp_listen()` call, for example::
+The file :file:`/etc/cm4all/qrelay/config.lua` is a `Lua
+<http://www.lua.org/>`_ script which is executed at startup.  It
+contains at least one :samp:`qmqp_listen()` call, for example::
 
   qmqp_listen('/run/cm4all/qrelay/qrelay.sock', function(m)
     return m:connect('192.168.1.99')
@@ -29,6 +29,15 @@ new socket, but the bind mount cannot be refreshed.
 The second parameter is a callback function which shall decide what to
 do with an incoming email.  This function receives a mail object which
 can be inspected.
+
+It is important that the function finishes quickly.  It must never
+block, because this would block the whole daemon process.  This means
+it must not do any network I/O, launch child processes, and should
+avoid anything but querying the email's parameters.
+
+
+Inspecting Incoming Mail
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 The following attributes can be queried:
 
@@ -54,6 +63,14 @@ The following methods can access more data:
   filesystem), :envvar:`filesystem` (the name of the filesystem) and
   :envvar:`source` (the device which is mounted here)
 
+
+Actions
+^^^^^^^
+
+The handler function shall return an object describing what to do with
+the email.  The mail object contains several methods which create such
+action objects; they do not actually perform the action.
+
 The following actions are possible:
 
 * :samp:`connect("ADDRESS")`: Connect to this address and relay the
@@ -66,3 +83,20 @@ The following actions are possible:
 * :samp:`discard()`: Discard the email, pretending delivery was successful.
 
 * :samp:`reject()`: Reject the email with a permanent error.
+
+
+Examples
+^^^^^^^^
+
+TODO
+
+
+About Lua
+^^^^^^^^^
+
+`Programming in Lua <https://www.lua.org/pil/1.html>`_ (a tutorial
+book), `Lua 5.3 Reference Manual <https://www.lua.org/manual/5.3/>`_.
+
+Note that in Lua, attributes are referenced with a dot
+(e.g. :samp:`m.sender`), but methods are referenced with a colon
+(e.g. :samp:`m:reject()`).
