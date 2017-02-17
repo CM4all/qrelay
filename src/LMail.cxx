@@ -114,7 +114,7 @@ NewExecAction(lua_State *L)
 
 static int
 GetCgroup(lua_State *L)
-{
+try {
     if (lua_gettop(L) != 2)
       return luaL_error(L, "Invalid parameters");
 
@@ -134,11 +134,13 @@ GetCgroup(lua_State *L)
 
     Lua::Push(L, path.c_str());
     return 1;
+} catch (const std::runtime_error &e) {
+    return luaL_error(L, e.what());
 }
 
 static int
 GetMountInfo(lua_State *L)
-{
+try {
     if (lua_gettop(L) != 2)
       return luaL_error(L, "Invalid parameters");
 
@@ -161,6 +163,8 @@ GetMountInfo(lua_State *L)
     Lua::SetField(L, -2, "filesystem", m.filesystem.c_str());
     Lua::SetField(L, -2, "source", m.source.c_str());
     return 1;
+} catch (const std::runtime_error &e) {
+    return luaL_error(L, e.what());
 }
 
 static constexpr struct luaL_reg mail_methods [] = {
