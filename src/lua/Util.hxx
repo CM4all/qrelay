@@ -69,7 +69,7 @@ template<typename... T>
 CClosure<T...>
 MakeCClosure(lua_CFunction fn, T&&... values)
 {
-	return {fn, {values...}};
+	return {fn, std::make_tuple(std::forward<T>(values)...)};
 }
 
 static inline void
