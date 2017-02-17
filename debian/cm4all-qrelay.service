@@ -4,7 +4,7 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
-ExecStart=/usr/sbin/cm4all-qrelay --config /etc/cm4all/qrelay/qrelay.conf --user cm4all-qrelay
+ExecStart=/usr/sbin/cm4all-qrelay --config /etc/cm4all/qrelay/config.lua --user cm4all-qrelay
 
 [Install]
 WantedBy=multi-user.target
