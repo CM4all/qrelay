@@ -65,4 +65,4 @@ The following actions are possible:
 
 * :samp:`discard()`: Discard the email, pretending delivery was successful.
 
-* :samp:`reject*(`: Reject the email with a permanent error.
+* :samp:`reject()`: Reject the email with a permanent error.
