@@ -32,7 +32,15 @@ new socket, but the bind mount cannot be refreshed.
 
 The second parameter is a callback function which shall decide what to
 do with an incoming email.  This function receives a mail object which
-can be inspected.
+can be inspected.  Multiple listeners can share the same handler by
+declaring the function explicitly::
+
+  function handler(m)
+    return m:reject()
+  end
+
+  qmqp_listen('/foo', handler)
+  qmqp_listen('/bar', handler)
 
 It is important that the function finishes quickly.  It must never
 block, because this would block the whole daemon process.  This means
