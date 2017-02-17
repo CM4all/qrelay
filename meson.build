@@ -17,6 +17,7 @@ add_global_arguments('-D_REENTRANT', '-D_GNU_SOURCE',
 boost = dependency('boost', modules: ['program_options'], version: '>= 1.54')
 liblua = dependency('luajit')
 libevent = dependency('libevent', version: '>= 2.0.19')
+libsystemd = dependency('libsystemd')
 libinline = dependency('libcm4all-inline', version: '>= 0.3.4')
 libdaemon = dependency('libcm4all-daemon', version: '>= 0.4.2')
 libsocket = dependency('libcm4all-socket', version: '>= 0.3.5')
@@ -86,7 +87,7 @@ executable('cm4all-qrelay',
   'src/Main.cxx',
   include_directories: inc,
   dependencies: [
-    boost, libevent,
+    boost, libevent, libsystemd,
     liblua,
     libinline, libdaemon, libsocket,
     declare_dependency(link_with: util),

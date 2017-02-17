@@ -19,7 +19,11 @@ contains at least one :samp:`qmqp_listen()` call, for example::
     return m:connect('192.168.1.99')
   end)
 
-The first parameter is the socket path to listen on.
+The first parameter is the socket path to listen on.  Passing the
+global variable :envvar:`systemd` (not the string literal
+:samp:`"systemd"`) will listen on the sockets passed by systemd::
+
+  qmqp_listen(systemd, function(m) ...
 
 To use this socket from within a container, move it to a dedicated
 directory and bind-mount this directory into the container.  Mounting

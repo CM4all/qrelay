@@ -38,6 +38,13 @@ public:
         qmqp_relay_servers.front().Listen(address);
     }
 
+    /**
+     * Listen for incoming connections on sockets passed by systemd
+     * (systemd socket activation).
+     */
+    void AddSystemdQmqpRelayServer(lua_State *L,
+                                   Lua::ValuePtr &&handler);
+
     void Check();
 
 private:

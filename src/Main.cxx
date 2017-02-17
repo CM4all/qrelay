@@ -25,26 +25,39 @@ using std::endl;
 
 #include <stdlib.h>
 
+static int systemd_magic = 42;
+
+static bool
+IsSystemdMagic(lua_State *L, int idx)
+{
+    return lua_islightuserdata(L, idx) &&
+        lua_touserdata(L, idx) == &systemd_magic;
+}
+
 static int
 l_qmqp_listen(lua_State *L)
 {
+  auto &instance = *(Instance *)lua_touserdata(L, lua_upvalueindex(1));
+
   if (lua_gettop(L) != 2)
       return luaL_error(L, "Invalid parameter count");
-
-  if (!lua_isstring(L, 1))
-      luaL_argerror(L, 1, "path expected");
 
   if (!lua_isfunction(L, 2))
       luaL_argerror(L, 2, "function expected");
 
-  const char *address_string = lua_tostring(L, 1);
-  AllocatedSocketAddress address;
-  address.SetLocal(address_string);
-
   auto handler = std::make_shared<Lua::Value>(L, 2);
 
-  auto &instance = *(Instance *)lua_touserdata(L, lua_upvalueindex(1));
-  instance.AddQmqpRelayServer(address, L, std::move(handler));
+  if (IsSystemdMagic(L, 1)) {
+      instance.AddSystemdQmqpRelayServer(L, std::move(handler));
+  } else if (lua_isstring(L, 1)) {
+      const char *address_string = lua_tostring(L, 1);
+
+      AllocatedSocketAddress address;
+      address.SetLocal(address_string);
+
+      instance.AddQmqpRelayServer(address, L, std::move(handler));
+  } else
+      luaL_argerror(L, 1, "path expected");
 
   return 0;
 }
@@ -53,6 +66,8 @@ static void
 SetupConfigState(lua_State *L, Instance &instance)
 {
     luaL_openlibs(L);
+
+    Lua::SetGlobal(L, "systemd", Lua::LightUserData(&systemd_magic));
 
     Lua::SetGlobal(L, "qmqp_listen",
                    Lua::MakeCClosure(l_qmqp_listen,

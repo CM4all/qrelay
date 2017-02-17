@@ -1,0 +1,6 @@
+[Socket]
+ListenStream=/run/qrelay/socket
+PassCredentials=true
+
+[Install]
+WantedBy=sockets.target

@@ -4,15 +4,43 @@
 
 #include "Instance.hxx"
 
+#include <systemd/sd-daemon.h>
+
 #include <stdexcept>
 #include <iostream>
 using std::cerr;
 using std::endl;
 
+#include <errno.h>
+#include <string.h>
+
 Instance::Instance()
     :shutdown_listener(event_loop, BIND_THIS_METHOD(ShutdownCallback))
 {
     shutdown_listener.Enable();
+}
+
+void
+Instance::AddSystemdQmqpRelayServer(lua_State *L,
+                                    Lua::ValuePtr &&handler)
+{
+    int n = sd_listen_fds(true);
+    if (n < 0) {
+        logger("sd_listen_fds() failed: ", strerror(errno));
+        return;
+    }
+
+    if (n == 0) {
+        logger("No systemd socket");
+        return;
+    }
+
+    for (unsigned i = 0; i < unsigned(n); ++i) {
+        qmqp_relay_servers.emplace_front(event_loop, L,
+                                         Lua::ValuePtr(handler),
+                                         logger, event_loop);
+        qmqp_relay_servers.front().Listen(SocketDescriptor(SD_LISTEN_FDS_START + i));
+    }
 }
 
 void
