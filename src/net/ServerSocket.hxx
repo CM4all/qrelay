@@ -21,6 +21,7 @@ public:
     explicit ServerSocket(EventLoop &event_loop);
     ~ServerSocket();
 
+    void Listen(SocketDescriptor &&_fd);
     void Listen(SocketAddress address);
     void ListenPath(const char *path);
 

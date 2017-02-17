@@ -27,6 +27,17 @@ ServerSocket::~ServerSocket()
         event.Delete();
 }
 
+void
+ServerSocket::Listen(SocketDescriptor &&_fd)
+{
+    assert(!fd.IsDefined());
+    assert(_fd.IsDefined());
+
+    fd = std::move(_fd);
+    event.Set(fd.Get(), EV_READ|EV_PERSIST);
+    event.Add();
+}
+
 static SocketDescriptor
 Listen(const SocketAddress address)
 {
