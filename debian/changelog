@@ -8,7 +8,7 @@ cm4all-qrelay (0.4) unstable; urgency=low
   * replace configuration file with Lua script
   * support systemd socket activation
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Fri, 17 Feb 2017 11:54:14 -0000
 
 cm4all-qrelay (0.3) unstable; urgency=low
 
