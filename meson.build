@@ -62,7 +62,7 @@ net = static_library('net',
   'src/net/SocketDescriptor.cxx',
   include_directories: inc,
   dependencies: [
-    libinline, libdaemon, libsocket,
+    libinline, libsocket,
     declare_dependency(link_with: event),
   ])
 

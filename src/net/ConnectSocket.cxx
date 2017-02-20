@@ -9,8 +9,6 @@
 #include "SocketAddress.hxx"
 #include "system/Error.hxx"
 
-#include <daemon/log.h>
-
 #include <stdexcept>
 
 #include <unistd.h>

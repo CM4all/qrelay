@@ -9,9 +9,8 @@
 #include "AllocatedSocketAddress.hxx"
 #include "system/Error.hxx"
 
-#include <daemon/log.h>
-
 #include <sys/un.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
@@ -113,7 +112,7 @@ ServerSocket::OnEvent(unsigned)
     StaticSocketAddress remote_address;
     auto remote_fd = fd.Accept(remote_address);
     if (!remote_fd.IsDefined()) {
-        daemon_log(1, "accept() failed: %s\n", strerror(errno));
+        fprintf(stderr, "accept() failed: %s\n", strerror(errno));
         return;
     }
 
