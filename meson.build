@@ -19,7 +19,6 @@ liblua = dependency('luajit')
 libevent = dependency('libevent', version: '>= 2.0.19')
 libsystemd = dependency('libsystemd')
 libinline = dependency('libcm4all-inline', version: '>= 0.3.4')
-libdaemon = dependency('libcm4all-daemon', version: '>= 0.4.2')
 libsocket = dependency('libcm4all-socket', version: '>= 0.3.5')
 
 inc = include_directories('src')
@@ -89,7 +88,7 @@ executable('cm4all-qrelay',
   dependencies: [
     boost, libevent, libsystemd,
     liblua,
-    libinline, libdaemon, libsocket,
+    libinline, libsocket,
     declare_dependency(link_with: util),
     declare_dependency(link_with: lua),
     declare_dependency(link_with: net),

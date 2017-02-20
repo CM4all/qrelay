@@ -12,8 +12,6 @@
 #include "lua/RunFile.hxx"
 #include "util/OstreamException.hxx"
 
-#include <daemon/daemonize.h>
-
 extern "C" {
 #include <lauxlib.h>
 #include <lualib.h>
@@ -96,9 +94,6 @@ Run(const CommandLine &cmdline)
 
     instance.Check();
 
-    if (daemonize() < 0)
-        return EXIT_FAILURE;
-
     SetupRuntimeState(state.get());
 
     /* tell systemd we're ready */
@@ -112,16 +107,11 @@ Run(const CommandLine &cmdline)
 int
 main(int argc, char **argv)
 try {
-    daemon_config.detach = false;
-
     const auto cmdline = ParseCommandLine(argc, argv);
 
     SetupProcess();
 
     const int result = Run(cmdline);
-
-    daemonize_cleanup();
-
     cerr << "exiting" << endl;
     return result;
 } catch (const std::exception &e) {
