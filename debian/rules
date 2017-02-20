@@ -14,6 +14,7 @@ build/build.ninja: meson.build
 
 debian/stamp-build: build/build.ninja
 	ninja -C build
+	touch $@
 
 doc/_build/html/.buildinfo: doc/*.rst
 	$(MAKE) -C doc html
