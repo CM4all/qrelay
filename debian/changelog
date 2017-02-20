@@ -2,6 +2,7 @@ cm4all-qrelay (0.5) unstable; urgency=low
 
   * systemd: set Type=notify
   * systemd: let systemd switch the user id
+  * systemd: move socket to /run/cm4all/qrelay/socket
 
  --   
 

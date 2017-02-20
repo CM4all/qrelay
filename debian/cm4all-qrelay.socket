@@ -1,5 +1,5 @@
 [Socket]
-ListenStream=/run/qrelay/socket
+ListenStream=/run/cm4all/qrelay/socket
 PassCredentials=true
 
 [Install]
