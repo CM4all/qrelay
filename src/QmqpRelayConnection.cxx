@@ -143,14 +143,6 @@ QmqpRelayConnection::Exec(const Action &action)
 void
 QmqpRelayConnection::OnConnect(int out_fd, int in_fd)
 {
-    client.OnResponse(std::bind(&QmqpRelayConnection::OnResponse, this,
-                                std::placeholders::_1,
-                                std::placeholders::_2));
-    client.OnError([this](std::exception_ptr){
-            if (SendResponse("Zrelay failed"))
-                delete this;
-        });
-
     struct ucred cred;
     socklen_t len = sizeof (cred);
     if (getsockopt(GetFD(), SOL_SOCKET, SO_PEERCRED, &cred, &len) == 0) {
@@ -164,13 +156,6 @@ QmqpRelayConnection::OnConnect(int out_fd, int in_fd)
     request.push_back(tail);
 
     client.Request(out_fd, in_fd, std::move(request));
-}
-
-void
-QmqpRelayConnection::OnResponse(const void *data, size_t size)
-{
-    if (SendResponse(data, size))
-        delete this;
 }
 
 void
@@ -198,5 +183,19 @@ QmqpRelayConnection::OnSocketConnectError(std::exception_ptr ep)
 {
     logger(ep);
     if (SendResponse("Zconnect failed"))
+        delete this;
+}
+
+void
+QmqpRelayConnection::OnNetstringResponse(ConstBuffer<void> payload)
+{
+    if (SendResponse(payload.data, payload.size))
+        delete this;
+}
+
+void
+QmqpRelayConnection::OnNetstringError(std::exception_ptr)
+{
+    if (SendResponse("Zrelay failed"))
         delete this;
 }

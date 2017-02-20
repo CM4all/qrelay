@@ -9,12 +9,18 @@
 #include "NetstringInput.hxx"
 #include "io/MultiWriteBuffer.hxx"
 #include "event/SocketEvent.hxx"
+#include "util/ConstBuffer.hxx"
 
 #include <list>
-#include <functional>
 #include <exception>
 
 template<typename T> struct ConstBuffer;
+
+class NetstringClientHandler {
+public:
+    virtual void OnNetstringResponse(ConstBuffer<void> payload) = 0;
+    virtual void OnNetstringError(std::exception_ptr error) = 0;
+};
 
 /**
  * A client that sends a netstring
@@ -31,22 +37,12 @@ class NetstringClient final {
 
     NetstringInput input;
 
-    std::function<void(const void *, size_t)> on_response;
-    std::function<void(std::exception_ptr)> on_error;
+    NetstringClientHandler &handler;
 
 public:
-    NetstringClient(EventLoop &event_loop, size_t max_size);
+    NetstringClient(EventLoop &event_loop, size_t max_size,
+                    NetstringClientHandler &_handler);
     ~NetstringClient();
-
-    template<typename T>
-    void OnResponse(T &&t) {
-        on_response = std::forward<T>(t);
-    }
-
-    template<typename T>
-    void OnError(T &&t) {
-        on_error = std::forward<T>(t);
-    }
 
     void Request(int _out_fd, int _in_fd,
                  std::list<ConstBuffer<void>> &&data);

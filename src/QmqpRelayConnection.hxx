@@ -17,7 +17,10 @@
 
 struct Action;
 
-class QmqpRelayConnection final : public NetstringServer, ConnectSocketHandler {
+class QmqpRelayConnection final :
+    public NetstringServer, ConnectSocketHandler,
+    NetstringClientHandler {
+
     lua_State *const L;
     Lua::ValuePtr handler;
     Logger logger;
@@ -40,7 +43,7 @@ public:
          L(_L), handler(std::move(_handler)),
          logger(parent_logger, "connection"),
          connect(event_loop, *this),
-         client(event_loop, 256) {}
+         client(event_loop, 256, *this) {}
 
     static void Register(lua_State *L);
 
@@ -58,6 +61,10 @@ private:
     /* virtual methods from class ConnectSocketHandler */
     void OnSocketConnectSuccess(SocketDescriptor &&fd) override;
     void OnSocketConnectError(std::exception_ptr ep) override;
+
+    /* virtual methods from class NetstringClientHandler */
+    void OnNetstringResponse(ConstBuffer<void> payload) override;
+    void OnNetstringError(std::exception_ptr error) override;
 };
 
 #endif

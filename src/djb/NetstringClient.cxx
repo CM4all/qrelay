@@ -10,10 +10,11 @@ static constexpr timeval send_timeout{10, 0};
 static constexpr timeval recv_timeout{60, 0};
 static constexpr timeval busy_timeout{5, 0};
 
-NetstringClient::NetstringClient(EventLoop &event_loop, size_t max_size)
+NetstringClient::NetstringClient(EventLoop &event_loop, size_t max_size,
+                                 NetstringClientHandler &_handler)
     :out_fd(-1), in_fd(-1),
      event(event_loop, BIND_THIS_METHOD(OnEvent)),
-     input(max_size) {}
+     input(max_size), handler(_handler) {}
 
 NetstringClient::~NetstringClient()
 {
@@ -33,8 +34,6 @@ NetstringClient::Request(int _out_fd, int _in_fd,
 {
     assert(in_fd < 0);
     assert(out_fd < 0);
-    assert(on_response);
-    assert(on_error);
     assert(_in_fd >= 0);
     assert(_out_fd >= 0);
 
@@ -77,10 +76,10 @@ try {
 
         case NetstringInput::Result::FINISHED:
             event.Delete();
-            on_response(input.GetValue(), input.GetSize());
+            handler.OnNetstringResponse({input.GetValue(), input.GetSize()});
             break;
         }
     }
 } catch (const std::runtime_error &) {
-    on_error(std::current_exception());
+    handler.OnNetstringError(std::current_exception());
 }
