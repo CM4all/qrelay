@@ -4,8 +4,6 @@
 
 #include "CommandLine.hxx"
 
-#include <daemon/daemonize.h>
-
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
 
@@ -26,7 +24,6 @@ ParseCommandLine(int argc, char **argv)
         ("help", "produce help message")
         ("config", po::value<std::string>()->required(),
          "load this configuration file")
-        ("user", po::value<std::string>(), "switch to another user id")
         ;
 
     po::variables_map vm;
@@ -38,14 +35,6 @@ ParseCommandLine(int argc, char **argv)
     }
 
     po::notify(vm);
-
-    if (vm.count("user")) {
-        const std::string user = vm["user"].as<std::string>();
-        if (daemon_user_by_name(&daemon_config.user, user.c_str(), NULL) < 0) {
-            cerr << "Invalid user: " << user << endl;
-            exit(EXIT_FAILURE);
-        }
-    }
 
     return { vm["config"].as<std::string>() };
 }
