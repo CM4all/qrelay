@@ -19,6 +19,8 @@ extern "C" {
 #include <lualib.h>
 }
 
+#include <systemd/sd-daemon.h>
+
 #include <iostream>
 using std::cerr;
 using std::endl;
@@ -98,6 +100,9 @@ Run(const CommandLine &cmdline)
         return EXIT_FAILURE;
 
     SetupRuntimeState(state.get());
+
+    /* tell systemd we're ready */
+    sd_notify(0, "READY=1");
 
     instance.GetEventLoop().Dispatch();
 
