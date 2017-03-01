@@ -21,12 +21,18 @@ libsystemd = dependency('libsystemd')
 libinline = dependency('libcm4all-inline', version: '>= 0.3.4')
 libsocket = dependency('libcm4all-socket', version: '>= 0.3.5')
 
-inc = include_directories('src')
+inc = include_directories('src', 'libcommon/src')
 
 util = static_library('util',
+  'libcommon/src/util/AllocatedString.cxx',
+  'libcommon/src/util/Exception.cxx',
+  'libcommon/src/util/LeakDetector.cxx',
+  'libcommon/src/util/PrintException.cxx',
+  'libcommon/src/util/StringBuilder.cxx',
+  'libcommon/src/util/StringParser.cxx',
+  'libcommon/src/util/StringUtil.cxx',
+  'libcommon/src/util/StringView.cxx',
   'src/util/HugeAllocator.cxx',
-  'src/util/StringUtil.cxx',
-  'src/util/StringView.cxx',
   dependencies: [
     libinline
   ])
