@@ -75,6 +75,14 @@ The following methods can access more data:
   filesystem), :envvar:`filesystem` (the name of the filesystem) and
   :envvar:`source` (the device which is mounted here)
 
+Manipulating the Mail Object
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The method `insert_header(NAME, VALUE)` inserts a new MIME header at
+the front of the email.  Example::
+
+  m:insert_header('X-Cgroup', m:get_cgroup('cpuacct'))
+
 
 Actions
 ^^^^^^^

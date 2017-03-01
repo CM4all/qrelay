@@ -8,6 +8,9 @@
 #include "djb/QmqpMail.hxx"
 #include "util/AllocatedArray.hxx"
 
+#include <forward_list>
+#include <string>
+
 #include <stdint.h>
 
 /**
@@ -21,12 +24,20 @@ struct MutableMail : QmqpMail {
      */
     AllocatedArray<uint8_t> buffer;
 
+    /**
+     * A list of additional header lines (each ending with "\r\n")
+     * which get inserted at the top of the mail.
+     */
+    std::forward_list<std::string> headers;
+
     explicit MutableMail(AllocatedArray<uint8_t> &&_buffer)
         :buffer(_buffer) {}
 
     bool Parse() {
         return QmqpMail::Parse({&buffer.front(), buffer.size()});
     }
+
+    void InsertHeader(const char *name, const char *value);
 };
 
 #endif

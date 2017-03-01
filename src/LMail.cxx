@@ -59,6 +59,23 @@ static constexpr char lua_mail_class[] = "qrelay.mail";
 typedef Lua::Class<IncomingMail, lua_mail_class> LuaMail;
 
 static int
+InsertHeader(lua_State *L)
+{
+    if (lua_gettop(L) != 3)
+      return luaL_error(L, "Invalid parameters");
+
+    if (!lua_isstring(L, 2))
+        luaL_argerror(L, 2, "string expected");
+
+    if (!lua_isstring(L, 3))
+        luaL_argerror(L, 3, "string expected");
+
+    auto &mail = *(IncomingMail *)CheckLuaMail(L, 1);
+    mail.InsertHeader(lua_tostring(L, 2), lua_tostring(L, 3));
+    return 0;
+}
+
+static int
 NewConnectAction(lua_State *L)
 {
     if (lua_gettop(L) != 2)
@@ -168,6 +185,7 @@ try {
 }
 
 static constexpr struct luaL_reg mail_methods [] = {
+    {"insert_header", InsertHeader},
     {"connect", NewConnectAction},
     {"discard", NewDiscardAction},
     {"reject", NewRejectAction},

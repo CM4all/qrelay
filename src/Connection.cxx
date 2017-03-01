@@ -180,6 +180,9 @@ QmqpRelayConnection::OnConnect(int out_fd, int in_fd)
         request.emplace_front(received_buffer, length);
     }
 
+    for (const auto &i : mail.headers)
+        request.emplace_front(i.data(), i.length());
+
     generator(request, false);
     request.push_back(mail.tail.ToVoid());
 
