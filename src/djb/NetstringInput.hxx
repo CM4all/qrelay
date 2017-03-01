@@ -18,21 +18,19 @@ class NetstringInput {
         FINISHED,
     };
 
-    State state;
+    State state = State::HEADER;
 
     char header_buffer[32];
-    size_t header_position;
+    size_t header_position = 0;
 
-    uint8_t *value_buffer;
+    uint8_t *value_buffer = nullptr;
     size_t value_size, value_position;
 
     const size_t max_size;
 
 public:
     NetstringInput(size_t _max_size)
-        :state(State::HEADER),
-         header_position(0), value_buffer(nullptr),
-         max_size(_max_size) {}
+        :max_size(_max_size) {}
 
     ~NetstringInput();
 
