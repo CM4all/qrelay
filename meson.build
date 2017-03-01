@@ -11,7 +11,6 @@ add_global_arguments('-D_REENTRANT', '-D_GNU_SOURCE',
   '-Wunused',
   '-pedantic',
   '-Wno-non-virtual-dtor',
-  '-Werror', '-pedantic-errors',
   language: 'cpp')
 
 boost = dependency('boost', modules: ['program_options'], version: '>= 1.54')

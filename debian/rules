@@ -6,7 +6,7 @@
 
 MESON_BUILDTYPE = debug
 
-MESON_OPTIONS = --buildtype $(MESON_BUILDTYPE)
+MESON_OPTIONS = --buildtype $(MESON_BUILDTYPE) --werror
 
 build/build.ninja: meson.build
 	rm -rf build
