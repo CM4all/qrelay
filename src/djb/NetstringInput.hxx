@@ -29,7 +29,7 @@ class NetstringInput {
     const size_t max_size;
 
 public:
-    NetstringInput(size_t _max_size)
+    explicit NetstringInput(size_t _max_size)
         :max_size(_max_size) {}
 
     ~NetstringInput();
