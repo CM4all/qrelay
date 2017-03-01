@@ -64,7 +64,7 @@ NewConnectAction(lua_State *L)
     if (lua_gettop(L) != 2)
       return luaL_error(L, "Invalid parameters");
 
-    auto &action = *NewLuaAction(L);
+    auto &action = *NewLuaAction(L, 1);
     action.type = Action::Type::CONNECT;
     action.connect = GetLuaAddress(L, 2);
     return 1;
@@ -76,7 +76,7 @@ NewDiscardAction(lua_State *L)
     if (lua_gettop(L) != 1)
       return luaL_error(L, "Invalid parameters");
 
-    auto &action = *NewLuaAction(L);
+    auto &action = *NewLuaAction(L, 1);
     action.type = Action::Type::DISCARD;
     return 1;
 }
@@ -87,7 +87,7 @@ NewRejectAction(lua_State *L)
     if (lua_gettop(L) != 1)
       return luaL_error(L, "Invalid parameters");
 
-    auto &action = *NewLuaAction(L);
+    auto &action = *NewLuaAction(L, 1);
     action.type = Action::Type::REJECT;
     return 1;
 }
@@ -98,7 +98,7 @@ NewExecAction(lua_State *L)
     if (lua_gettop(L) < 2)
       return luaL_error(L, "Not enough parameters");
 
-    auto &action = *NewLuaAction(L);
+    auto &action = *NewLuaAction(L, 1);
     action.type = Action::Type::EXEC;
 
     const unsigned n = lua_gettop(L);
