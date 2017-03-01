@@ -43,7 +43,7 @@ protected:
      * A netstring has been received.
      *
      * @param data the netstring value; for the implementation's
-     * convenience, the netstring is null-terminated and writable
+     * convenience, the netstring is writable
      */
     virtual void OnRequest(void *data, size_t size) = 0;
     virtual void OnError(std::exception_ptr ep) = 0;
