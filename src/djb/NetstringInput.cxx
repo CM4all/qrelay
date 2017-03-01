@@ -8,6 +8,7 @@
 #include "system/Error.hxx"
 #include "util/RuntimeError.hxx"
 #include "util/HugeAllocator.hxx"
+#include "util/CharUtil.hxx"
 
 #include <unistd.h>
 #include <string.h>
@@ -19,17 +20,11 @@ NetstringInput::~NetstringInput()
         HugeFree(value_buffer, max_size);
 }
 
-static constexpr bool
-IsDigit(char ch)
-{
-    return ch >= '0' && ch <= '9';
-}
-
 static bool
 OnlyDigits(const char *p, size_t size)
 {
     for (size_t i = 0; i != size; ++i)
-        if (!IsDigit(p[i]))
+        if (!IsDigitASCII(p[i]))
             return false;
 
     return true;
