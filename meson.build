@@ -47,13 +47,15 @@ lua = static_library('lua',
 )
 
 event = static_library('event',
-  'src/event/Loop.cxx',
-  'src/event/ShutdownListener.cxx',
-  'src/event/DeferEvent.cxx',
-  'src/event/SignalEvent.cxx',
+  'libcommon/src/event/Loop.cxx',
+  'libcommon/src/event/ShutdownListener.cxx',
+  'libcommon/src/event/CleanupTimer.cxx',
+  'libcommon/src/event/DeferEvent.cxx',
+  'libcommon/src/event/SignalEvent.cxx',
   include_directories: inc,
   dependencies: [
     libinline,
+    libevent,
     declare_dependency(link_with: util),
   ])
 
