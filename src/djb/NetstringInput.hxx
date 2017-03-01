@@ -34,6 +34,9 @@ public:
 
     ~NetstringInput();
 
+    NetstringInput(const NetstringInput &) = delete;
+    NetstringInput &operator=(const NetstringInput &) = delete;
+
     enum class Result {
         MORE,
         CLOSED,
