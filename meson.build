@@ -89,7 +89,7 @@ executable('cm4all-qrelay',
   'src/LMail.cxx',
   'src/LAction.cxx',
   'src/LAddress.cxx',
-  'src/QmqpRelayConnection.cxx',
+  'src/Connection.cxx',
   'src/Main.cxx',
   include_directories: inc,
   dependencies: [

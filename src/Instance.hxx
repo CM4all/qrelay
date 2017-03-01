@@ -6,7 +6,7 @@
 #define INSTANCE_HXX
 
 #include "Logger.hxx"
-#include "QmqpRelayServer.hxx"
+#include "Server.hxx"
 #include "event/Loop.hxx"
 #include "event/ShutdownListener.hxx"
 #include "lua/ValuePtr.hxx"

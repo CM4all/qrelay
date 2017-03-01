@@ -2,7 +2,7 @@
  * author: Max Kellermann <mk@cm4all.com>
  */
 
-#include "QmqpRelayConnection.hxx"
+#include "Connection.hxx"
 #include "djb/QmqpMail.hxx"
 #include "LMail.hxx"
 #include "Action.hxx"

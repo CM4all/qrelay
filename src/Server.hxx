@@ -6,7 +6,7 @@
 #define QMQP_RELAY_SERVER_HXX
 
 #include "Logger.hxx"
-#include "QmqpRelayConnection.hxx"
+#include "Connection.hxx"
 #include "net/TemplateServerSocket.hxx"
 #include "lua/ValuePtr.hxx"
 
