@@ -27,12 +27,12 @@ QmqpRelayConnection::Register(lua_State *L)
 }
 
 void
-QmqpRelayConnection::OnRequest(void *data, size_t size)
+QmqpRelayConnection::OnRequest(AllocatedArray<uint8_t> &&payload)
 {
     assert(request.empty());
 
-    MutableMail mail;
-    if (!mail.Parse({data, size})) {
+    MutableMail mail(std::move(payload));
+    if (!mail.Parse()) {
         if (SendResponse("Dmalformed input"))
             delete this;
         return;
@@ -187,9 +187,9 @@ QmqpRelayConnection::OnSocketConnectError(std::exception_ptr ep)
 }
 
 void
-QmqpRelayConnection::OnNetstringResponse(ConstBuffer<void> payload)
+QmqpRelayConnection::OnNetstringResponse(AllocatedArray<uint8_t> &&payload)
 {
-    if (SendResponse(payload.data, payload.size))
+    if (SendResponse(&payload.front(), payload.size()))
         delete this;
 }
 

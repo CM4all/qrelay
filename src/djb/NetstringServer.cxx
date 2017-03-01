@@ -76,7 +76,7 @@ try {
 
     case NetstringInput::Result::FINISHED:
         event.Delete();
-        OnRequest(input.GetValue(), input.GetSize());
+        OnRequest(std::move(input.GetValue()));
         break;
     }
 } catch (...) {

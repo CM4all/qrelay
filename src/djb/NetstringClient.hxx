@@ -18,7 +18,7 @@ template<typename T> struct ConstBuffer;
 
 class NetstringClientHandler {
 public:
-    virtual void OnNetstringResponse(ConstBuffer<void> payload) = 0;
+    virtual void OnNetstringResponse(AllocatedArray<uint8_t> &&payload) = 0;
     virtual void OnNetstringError(std::exception_ptr error) = 0;
 };
 

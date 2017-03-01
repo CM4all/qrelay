@@ -45,16 +45,10 @@ public:
      */
     Result Receive(int fd);
 
-    void *GetValue() {
+    AllocatedArray<uint8_t> &GetValue() {
         assert(state == State::FINISHED);
 
-        return &value.front();
-    }
-
-    size_t GetSize() const {
-        assert(state == State::FINISHED);
-
-        return value.size();
+        return value;
     }
 
 private:

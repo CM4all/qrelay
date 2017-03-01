@@ -53,7 +53,7 @@ protected:
     void OnConnect(int out_fd, int in_fd);
     void OnResponse(const void *data, size_t size);
 
-    void OnRequest(void *data, size_t size) override;
+    void OnRequest(AllocatedArray<uint8_t> &&payload) override;
     void OnError(std::exception_ptr ep) override;
     void OnDisconnect() override;
 
@@ -63,7 +63,7 @@ private:
     void OnSocketConnectError(std::exception_ptr ep) override;
 
     /* virtual methods from class NetstringClientHandler */
-    void OnNetstringResponse(ConstBuffer<void> payload) override;
+    void OnNetstringResponse(AllocatedArray<uint8_t> &&payload) override;
     void OnNetstringError(std::exception_ptr error) override;
 };
 
