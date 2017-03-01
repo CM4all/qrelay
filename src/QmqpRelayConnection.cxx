@@ -3,7 +3,7 @@
  */
 
 #include "QmqpRelayConnection.hxx"
-#include "Mail.hxx"
+#include "djb/QmqpMail.hxx"
 #include "LMail.hxx"
 #include "Action.hxx"
 #include "LAction.hxx"

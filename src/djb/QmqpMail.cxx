@@ -2,8 +2,8 @@
  * author: Max Kellermann <mk@cm4all.com>
  */
 
-#include "Mail.hxx"
-#include "djb/NetstringParser.hxx"
+#include "QmqpMail.hxx"
+#include "NetstringParser.hxx"
 #include "util/ConstBuffer.hxx"
 
 static inline constexpr StringView

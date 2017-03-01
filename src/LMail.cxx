@@ -3,7 +3,7 @@
  */
 
 #include "LMail.hxx"
-#include "Mail.hxx"
+#include "djb/QmqpMail.hxx"
 #include "LAction.hxx"
 #include "Action.hxx"
 #include "LAddress.hxx"
