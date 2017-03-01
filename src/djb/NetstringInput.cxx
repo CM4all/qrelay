@@ -7,7 +7,6 @@
 #include "NetstringInput.hxx"
 #include "system/Error.hxx"
 #include "util/RuntimeError.hxx"
-#include "util/HugeAllocator.hxx"
 #include "util/CharUtil.hxx"
 
 #include <unistd.h>
@@ -16,8 +15,7 @@
 
 NetstringInput::~NetstringInput()
 {
-    if (value_buffer != nullptr)
-        HugeFree(value_buffer, max_size);
+    delete[] value_buffer;
 }
 
 static bool
@@ -73,11 +71,8 @@ NetstringInput::ReceiveHeader(int fd)
         throw FormatRuntimeError("Netstring is too large: %zu", value_size);
 
     state = State::VALUE;
+    value_buffer = new uint8_t[max_size];
     value_position = 0;
-
-    value_buffer = (uint8_t *)HugeAllocate(max_size);
-    if (value_buffer == nullptr)
-        throw MakeErrno();
 
     size_t vbytes = header_position - (colon - header_buffer) - 1;
     memcpy(value_buffer, colon + 1, vbytes);
