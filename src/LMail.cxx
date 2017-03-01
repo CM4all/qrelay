@@ -3,7 +3,7 @@
  */
 
 #include "LMail.hxx"
-#include "djb/QmqpMail.hxx"
+#include "MutableMail.hxx"
 #include "LAction.hxx"
 #include "Action.hxx"
 #include "LAddress.hxx"
@@ -14,15 +14,15 @@
 #include <sys/socket.h>
 #include <string.h>
 
-class IncomingMail : public QmqpMail {
+class IncomingMail : public MutableMail {
     const int fd;
 
     bool have_cred = false;
     struct ucred cred;
 
 public:
-    IncomingMail(QmqpMail &&src, int _fd)
-        :QmqpMail(std::move(src)), fd(_fd) {}
+    IncomingMail(MutableMail &&src, int _fd)
+        :MutableMail(std::move(src)), fd(_fd) {}
 
     int GetPid() {
         LoadPeerCred();
@@ -244,13 +244,13 @@ RegisterLuaMail(lua_State *L)
     lua_pop(L, 1);
 }
 
-QmqpMail *
-NewLuaMail(lua_State *L, QmqpMail &&src, int fd)
+MutableMail *
+NewLuaMail(lua_State *L, MutableMail &&src, int fd)
 {
     return LuaMail::New(L, std::move(src), fd);
 }
 
-QmqpMail *
+MutableMail *
 CheckLuaMail(lua_State *L, int idx)
 {
     return LuaMail::Check(L, idx);

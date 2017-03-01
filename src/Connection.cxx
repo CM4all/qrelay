@@ -3,7 +3,7 @@
  */
 
 #include "Connection.hxx"
-#include "djb/QmqpMail.hxx"
+#include "MutableMail.hxx"
 #include "LMail.hxx"
 #include "Action.hxx"
 #include "LAction.hxx"
@@ -31,7 +31,7 @@ QmqpRelayConnection::OnRequest(void *data, size_t size)
 {
     assert(request.empty());
 
-    QmqpMail mail;
+    MutableMail mail;
     if (!mail.Parse({data, size})) {
         if (SendResponse("Dmalformed input"))
             delete this;

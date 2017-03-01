@@ -6,15 +6,15 @@
 #define QRELAY_LMAIL_HXX
 
 struct lua_State;
-struct QmqpMail;
+struct MutableMail;
 
 void
 RegisterLuaMail(lua_State *L);
 
-QmqpMail *
-NewLuaMail(lua_State *L, QmqpMail &&src, int fd);
+MutableMail *
+NewLuaMail(lua_State *L, MutableMail &&src, int fd);
 
-QmqpMail *
+MutableMail *
 CheckLuaMail(lua_State *L, int idx);
 
 #endif
