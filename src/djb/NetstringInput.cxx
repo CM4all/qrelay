@@ -71,7 +71,10 @@ NetstringInput::ReceiveHeader(int fd)
         throw FormatRuntimeError("Netstring is too large: %zu", value_size);
 
     state = State::VALUE;
-    value_buffer = new uint8_t[max_size];
+
+    /* allocate only extra byte for the trailing comma */
+    value_buffer = new uint8_t[value_size + 1];
+
     value_position = 0;
 
     size_t vbytes = header_position - (colon - header_buffer) - 1;
