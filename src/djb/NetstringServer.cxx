@@ -8,7 +8,6 @@
 
 #include "NetstringServer.hxx"
 #include "util/ConstBuffer.hxx"
-#include "util/HugeAllocator.hxx"
 
 #include <stdexcept>
 

@@ -4,7 +4,6 @@
 
 #include "NetstringClient.hxx"
 #include "util/ConstBuffer.hxx"
-#include "util/HugeAllocator.hxx"
 
 static constexpr timeval send_timeout{10, 0};
 static constexpr timeval recv_timeout{60, 0};

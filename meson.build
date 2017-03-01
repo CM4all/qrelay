@@ -31,7 +31,6 @@ util = static_library('util',
   'libcommon/src/util/StringParser.cxx',
   'libcommon/src/util/StringUtil.cxx',
   'libcommon/src/util/StringView.cxx',
-  'src/util/HugeAllocator.cxx',
   dependencies: [
     libinline
   ])
