@@ -80,6 +80,6 @@ try {
         OnRequest(input.GetValue(), input.GetSize());
         break;
     }
-} catch (const std::runtime_error &) {
+} catch (...) {
     OnError(std::current_exception());
 }

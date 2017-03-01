@@ -80,6 +80,6 @@ try {
             break;
         }
     }
-} catch (const std::runtime_error &) {
+} catch (...) {
     handler.OnNetstringError(std::current_exception());
 }
