@@ -75,11 +75,9 @@ NetstringInput::ReceiveHeader(int fd)
     state = State::VALUE;
     value_position = 0;
 
-    if (value_buffer == nullptr) {
-        value_buffer = (uint8_t *)HugeAllocate(max_size);
-        if (value_buffer == nullptr)
-            throw MakeErrno();
-    }
+    value_buffer = (uint8_t *)HugeAllocate(max_size);
+    if (value_buffer == nullptr)
+        throw MakeErrno();
 
     size_t vbytes = header_position - (colon - header_buffer) - 1;
     memcpy(value_buffer, colon + 1, vbytes);
@@ -135,12 +133,8 @@ NetstringInput::Receive(int fd)
 {
     switch (state) {
     case State::FINISHED:
-        if (value_buffer != nullptr)
-            HugeDiscard(value_buffer, max_size);
-
-        state = State::HEADER;
-        header_position = 0;
-        /* fall through */
+        assert(false);
+        gcc_unreachable();
 
     case State::HEADER:
         return ReceiveHeader(fd);
