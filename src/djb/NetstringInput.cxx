@@ -13,11 +13,6 @@
 #include <string.h>
 #include <errno.h>
 
-NetstringInput::~NetstringInput()
-{
-    delete[] value_buffer;
-}
-
 static bool
 OnlyDigits(const char *p, size_t size)
 {
@@ -63,22 +58,20 @@ NetstringInput::ReceiveHeader(int fd)
 
     *colon = 0;
     char *endptr;
-    value_size = strtoul(header_buffer, &endptr, 10);
+    size_t size = strtoul(header_buffer, &endptr, 10);
     if (endptr != colon)
         throw std::runtime_error("Malformed netstring");
 
-    if (value_size >= max_size)
-        throw FormatRuntimeError("Netstring is too large: %zu", value_size);
-
-    state = State::VALUE;
+    if (size >= max_size)
+        throw FormatRuntimeError("Netstring is too large: %zu", size);
 
     /* allocate only extra byte for the trailing comma */
-    value_buffer = new uint8_t[value_size + 1];
-
+    value.ResizeDiscard(size + 1);
+    state = State::VALUE;
     value_position = 0;
 
     size_t vbytes = header_position - (colon - header_buffer) - 1;
-    memcpy(value_buffer, colon + 1, vbytes);
+    memcpy(&value.front(), colon + 1, vbytes);
     return ValueData(vbytes);
 }
 
@@ -89,10 +82,12 @@ NetstringInput::ValueData(size_t nbytes)
 
     value_position += nbytes;
 
-    if (value_position > value_size) {
-        if (value_buffer[value_size] != ',' ||
-            value_position > value_size + 1)
+    if (value_position >= value.size()) {
+        if (value.back() != ',')
             throw std::runtime_error("Malformed netstring");
+
+        /* erase the trailing comma */
+        value.SetSize(value.size() - 1);
 
         state = State::FINISHED;
         return Result::FINISHED;
@@ -104,8 +99,8 @@ NetstringInput::ValueData(size_t nbytes)
 inline NetstringInput::Result
 NetstringInput::ReceiveValue(int fd)
 {
-    ssize_t nbytes = read(fd, value_buffer + value_position,
-                          value_size + 1 - value_position);
+    ssize_t nbytes = read(fd, &value.front() + value_position,
+                          value.size() - value_position);
     if (nbytes < 0) {
         switch (errno) {
         case EAGAIN:

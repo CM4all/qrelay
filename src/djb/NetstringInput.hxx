@@ -7,6 +7,8 @@
 #ifndef NETSTRING_INPUT_HXX
 #define NETSTRING_INPUT_HXX
 
+#include "util/AllocatedArray.hxx"
+
 #include <cstddef>
 #include <cassert>
 #include <cstdint>
@@ -23,19 +25,14 @@ class NetstringInput {
     char header_buffer[32];
     size_t header_position = 0;
 
-    uint8_t *value_buffer = nullptr;
-    size_t value_size, value_position;
+    AllocatedArray<uint8_t> value;
+    size_t value_position;
 
     const size_t max_size;
 
 public:
     explicit NetstringInput(size_t _max_size)
         :max_size(_max_size) {}
-
-    ~NetstringInput();
-
-    NetstringInput(const NetstringInput &) = delete;
-    NetstringInput &operator=(const NetstringInput &) = delete;
 
     enum class Result {
         MORE,
@@ -48,16 +45,16 @@ public:
      */
     Result Receive(int fd);
 
-    void *GetValue() const {
+    void *GetValue() {
         assert(state == State::FINISHED);
 
-        return value_buffer;
+        return &value.front();
     }
 
     size_t GetSize() const {
         assert(state == State::FINISHED);
 
-        return value_size;
+        return value.size();
     }
 
 private:
