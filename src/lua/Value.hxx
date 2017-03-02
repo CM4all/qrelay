@@ -54,19 +54,22 @@ public:
 	 * Initialize an instance with an object on the stack.
 	 */
 	Value(lua_State *_L, int idx):L(_L) {
-		SetTable(L, LUA_REGISTRYINDEX,
-			 LightUserData(this),
-			 StackIndex(idx));
+		Set(StackIndex(idx));
 	}
 
 	~Value() {
-		SetTable(L, LUA_REGISTRYINDEX,
-			 LightUserData(this),
-			 nullptr);
+		Set(nullptr);
 	}
 
 	Value(const Value &) = delete;
 	Value &operator=(const Value &) = delete;
+
+	template<typename V>
+	void Set(V &&value) {
+		SetTable(L, LUA_REGISTRYINDEX,
+			 LightUserData(this),
+			 std::forward<V>(value));
+	}
 
 	/**
 	 * Push the value on the stack.
