@@ -50,8 +50,8 @@ struct Class {
 	typedef T *pointer_type;
 
 	/**
-	 * Register the Lua metatable.  This must be called once
-	 * before New().
+	 * Register the Lua metatable and leave it on the stack.  This
+	 * must be called once before New().
 	 */
 	static void Register(lua_State *L) {
 		luaL_newmetatable(L, name);
