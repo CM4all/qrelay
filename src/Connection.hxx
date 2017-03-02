@@ -15,8 +15,6 @@
 
 #include <boost/intrusive/list.hpp>
 
-#include <list>
-
 struct Action;
 
 class QmqpRelayConnection final :
@@ -28,11 +26,15 @@ class QmqpRelayConnection final :
     Lua::ValuePtr handler;
     Logger logger;
 
-    std::list<ConstBuffer<void>> request;
     NetstringGenerator generator;
-    ConstBuffer<void> tail;
 
     char received_buffer[256];
+
+    /**
+     * The #LuaMail that is going to be sent once we've connected to
+     * the outgoing QMQP server.
+     */
+    Lua::Value outgoing_mail;
 
     ConnectSocket connect;
     NetstringClient client;
@@ -45,6 +47,7 @@ public:
         :NetstringServer(event_loop, std::move(_fd)),
          L(_L), handler(std::move(_handler)),
          logger(parent_logger, "connection"),
+         outgoing_mail(_L),
          connect(event_loop, *this),
          client(event_loop, 256, *this) {}
 

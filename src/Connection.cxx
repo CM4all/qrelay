@@ -15,6 +15,8 @@
 #include "util/OstreamException.hxx"
 #include "util/ScopeExit.hxx"
 
+#include <list>
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/socket.h>
@@ -29,17 +31,12 @@ QmqpRelayConnection::Register(lua_State *L)
 void
 QmqpRelayConnection::OnRequest(AllocatedArray<uint8_t> &&payload)
 {
-    assert(request.empty());
-
     MutableMail mail(std::move(payload));
     if (!mail.Parse()) {
         if (SendResponse("Dmalformed input"))
             delete this;
         return;
     }
-
-    tail = mail.tail.ToVoid();
-    request.push_back(mail.message.ToVoid());
 
     handler->Push();
 
@@ -52,6 +49,22 @@ QmqpRelayConnection::OnRequest(AllocatedArray<uint8_t> &&payload)
 
     auto *action = CheckLuaAction(L, -1);
     Do(*action);
+}
+
+/*
+static const MutableMail &
+GetMail(lua_State *L, const Action &action)
+{
+    PushLuaActionMail(action);
+    AtScopeExit(L) { lua_pop(L, 1); };
+    return *CheckLuaMail(L, -1);
+}
+*/
+
+static void
+SetActionMail(Lua::Value &dest, const Action &action)
+{
+    dest.Set(Lua::Lambda([&](){ PushLuaActionMail(action); }));
 }
 
 void
@@ -73,6 +86,7 @@ QmqpRelayConnection::Do(const Action &action)
         break;
 
     case Action::Type::CONNECT:
+        SetActionMail(outgoing_mail, action);
         connect.Connect(action.connect);
         break;
 
@@ -137,12 +151,26 @@ QmqpRelayConnection::Exec(const Action &action)
     close(stdin_pipe[0]);
     close(stdout_pipe[1]);
 
+    SetActionMail(outgoing_mail, action);
     OnConnect(stdin_pipe[1], stdout_pipe[0]);
+}
+
+static MutableMail *
+GetMail(lua_State *L, const Lua::Value &value)
+{
+    value.Push();
+    AtScopeExit(L) { lua_pop(L, 1); };
+    return CheckLuaMail(L, -1);
 }
 
 void
 QmqpRelayConnection::OnConnect(int out_fd, int in_fd)
 {
+    auto &mail = *GetMail(L, outgoing_mail);
+
+    std::list<ConstBuffer<void>> request;
+    request.push_back(mail.message.ToVoid());
+
     struct ucred cred;
     socklen_t len = sizeof (cred);
     if (getsockopt(GetFD(), SOL_SOCKET, SO_PEERCRED, &cred, &len) == 0) {
@@ -153,7 +181,7 @@ QmqpRelayConnection::OnConnect(int out_fd, int in_fd)
     }
 
     generator(request, false);
-    request.push_back(tail);
+    request.push_back(mail.tail.ToVoid());
 
     client.Request(out_fd, in_fd, std::move(request));
 }
