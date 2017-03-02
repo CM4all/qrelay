@@ -31,6 +31,7 @@
 #define LUA_OBJECT_HXX
 
 #include "Util.hxx"
+#include "Assert.hxx"
 
 extern "C" {
 #include <lauxlib.h>
@@ -54,6 +55,8 @@ struct Class {
 	 * must be called once before New().
 	 */
 	static void Register(lua_State *L) {
+		const ScopeCheckStack check_stack(L, 1);
+
 		luaL_newmetatable(L, name);
 
 		/* let Lua's garbage collector call the destructor
@@ -71,6 +74,8 @@ struct Class {
 	 */
 	template<typename... Args>
 	static pointer_type New(lua_State *L, Args&&... args) {
+		const ScopeCheckStack check_stack(L, 1);
+
 		void *p = lua_newuserdata(L, sizeof(value_type));
 		luaL_getmetatable(L, name);
 		lua_setmetatable(L, -2);
@@ -94,6 +99,8 @@ struct Class {
 
 private:
 	static int l_gc(lua_State *L) {
+		const ScopeCheckStack check_stack(L);
+
 		auto *p = Check(L, 1);
 		/* call the destructor when this instance is
 		   garbage-collected */

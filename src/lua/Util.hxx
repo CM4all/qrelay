@@ -30,6 +30,7 @@
 #ifndef LUA_UTIL_HXX
 #define LUA_UTIL_HXX
 
+#include "Assert.hxx"
 #include "util/StringView.hxx"
 
 #include <inline/compiler.h>
@@ -140,6 +141,8 @@ gcc_nonnull_all
 void
 Push(lua_State *L, const std::tuple<T...> &t)
 {
+	const ScopeCheckStack check_stack(L, sizeof...(T));
+
 	_PushTuple<sizeof...(T)>::template PushTuple<std::tuple<T...>>(L, t);
 }
 
@@ -178,6 +181,8 @@ template<typename K>
 void
 GetTable(lua_State *L, int idx, K &&key)
 {
+	const ScopeCheckStack check_stack(L, 1);
+
 	Push(L, std::forward<K>(key));
 	lua_gettable(L, idx);
 }
@@ -186,6 +191,8 @@ template<typename K, typename V>
 void
 SetTable(lua_State *L, int idx, K &&key, V &&value)
 {
+	const ScopeCheckStack check_stack(L);
+
 	Push(L, std::forward<K>(key));
 	Push(L, std::forward<V>(value));
 	lua_settable(L, idx);
@@ -195,6 +202,8 @@ template<typename V>
 void
 SetField(lua_State *L, int idx, const char *name, V &&value)
 {
+	const ScopeCheckStack check_stack(L);
+
 	Push(L, std::forward<V>(value));
 	lua_setfield(L, idx, name);
 }
@@ -209,6 +218,8 @@ SetRegistry(lua_State *L, const char *name, V &&value)
 static inline void *
 GetRegistryLightUserData(lua_State *L, const char *name)
 {
+	const ScopeCheckStack check_stack(L);
+
 	lua_getfield(L, LUA_REGISTRYINDEX, name);
 	void *value = lua_touserdata(L, -1);
 	lua_pop(L, 1);
@@ -219,6 +230,8 @@ template<typename V>
 static inline void
 SetField(lua_State *L, const char *package, const char *name, V &&value)
 {
+	const ScopeCheckStack check_stack(L);
+
 	lua_getglobal(L, package);
 	SetField(L, -2, name, std::forward<V>(value));
 	lua_pop(L, 1);
