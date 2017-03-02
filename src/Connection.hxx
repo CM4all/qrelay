@@ -13,11 +13,14 @@
 #include "lua/ValuePtr.hxx"
 #include "util/ConstBuffer.hxx"
 
+#include <boost/intrusive/list.hpp>
+
 #include <list>
 
 struct Action;
 
 class QmqpRelayConnection final :
+    public boost::intrusive::list_base_hook<boost::intrusive::link_mode<boost::intrusive::auto_unlink>>,
     public NetstringServer, ConnectSocketHandler,
     NetstringClientHandler {
 

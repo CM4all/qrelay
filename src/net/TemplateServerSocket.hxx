@@ -8,6 +8,8 @@
 #include "ServerSocket.hxx"
 #include "SocketAddress.hxx"
 
+#include <boost/intrusive/list.hpp>
+
 #include <tuple>
 
 class SocketAddress;
@@ -37,17 +39,30 @@ struct ApplyTuple<C, 0> {
  */
 template<typename C, typename... Params>
 class TemplateServerSocket : public ServerSocket {
+    static_assert(std::is_base_of<boost::intrusive::list_base_hook<boost::intrusive::link_mode<boost::intrusive::auto_unlink>>,
+                                  C>::value,
+                  "Must use list_base_hook<auto_unlink>");
+
     typedef std::tuple<Params...> Tuple;
     Tuple params;
+
+    boost::intrusive::list<C,
+                           boost::intrusive::constant_time_size<false>> connections;
 
 public:
     template<typename... P>
     TemplateServerSocket(EventLoop &event_loop, P&&... _params)
         :ServerSocket(event_loop), params(std::forward<P>(_params)...) {}
 
+    ~TemplateServerSocket() {
+        while (!connections.empty())
+            delete &connections.front();
+    }
+
 protected:
     void OnAccept(SocketDescriptor &&_fd, SocketAddress) override {
-        CreateConnection(std::move(_fd));
+        auto *c = CreateConnection(std::move(_fd));
+        connections.push_front(*c);
     };
 
 private:
