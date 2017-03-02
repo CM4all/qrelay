@@ -66,9 +66,9 @@ public:
 	/**
 	 * Push the value on the stack.
 	 */
-	void Push() {
+	void Push() const {
 		GetTable(L, LUA_REGISTRYINDEX,
-			 LightUserData(this));
+			 LightUserData(const_cast<Value *>(this)));
 	}
 };
 
