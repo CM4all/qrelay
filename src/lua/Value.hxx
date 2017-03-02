@@ -46,6 +46,11 @@ class Value {
 
 public:
 	/**
+	 * Initialize an instance with "nil".
+	 */
+	explicit Value(lua_State *_L):L(_L) {}
+
+	/**
 	 * Initialize an instance with an object on the stack.
 	 */
 	Value(lua_State *_L, int idx):L(_L) {
