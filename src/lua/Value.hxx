@@ -81,6 +81,12 @@ public:
 	}
 };
 
+static inline void
+Push(lua_State *, const Value &value)
+{
+	value.Push();
+}
+
 }
 
 #endif
