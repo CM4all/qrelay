@@ -5,6 +5,7 @@ cm4all-qrelay (0.5) unstable; urgency=low
   * systemd: move socket to /run/cm4all/qrelay/socket
   * close all connections on shutdown
   * add mail method insert_header()
+  * strip the trailing newline character in the get_cgroup() result
 
  --   
 

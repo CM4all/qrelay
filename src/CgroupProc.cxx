@@ -19,6 +19,15 @@ ListContains(StringView haystack, char separator, StringView needle)
     return false;
 }
 
+static std::string
+StripTrailingNewline(char *line)
+{
+    size_t length = strlen(line);
+    if (length > 0 && line[length - 1] == '\n')
+        --length;
+    return {line, length};
+}
+
 std::string
 ReadProcessCgroup(unsigned pid, const char *_controller)
 {
@@ -44,7 +53,7 @@ ReadProcessCgroup(unsigned pid, const char *_controller)
             continue;
 
         if (ListContains(StringView(s, colon), ',', controller))
-            return colon + 1;
+            return StripTrailingNewline(colon + 1);
     }
 
     /* not found: return empty string */
