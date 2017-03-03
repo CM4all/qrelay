@@ -58,11 +58,12 @@ public:
 		Set(std::forward<V>(value));
 	}
 
+	Value(const Value &src);
+
 	~Value() {
 		Set(nullptr);
 	}
 
-	Value(const Value &) = delete;
 	Value &operator=(const Value &) = delete;
 
 	template<typename V>
@@ -86,6 +87,10 @@ Push(lua_State *, const Value &value)
 {
 	value.Push();
 }
+
+inline
+Value::Value(const Value &src)
+	:Value(src.L, src) {}
 
 }
 
