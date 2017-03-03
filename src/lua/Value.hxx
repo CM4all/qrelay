@@ -53,8 +53,9 @@ public:
 	/**
 	 * Initialize an instance with an object on the stack.
 	 */
-	Value(lua_State *_L, StackIndex value):L(_L) {
-		Set(value);
+	template<typename V>
+	Value(lua_State *_L, V &&value):L(_L) {
+		Set(std::forward<V>(value));
 	}
 
 	~Value() {
