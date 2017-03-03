@@ -50,13 +50,13 @@ namespace Lua {
 struct StackIndex {
 	int idx;
 
-	constexpr StackIndex(int _idx):idx(_idx) {}
+	explicit constexpr StackIndex(int _idx):idx(_idx) {}
 };
 
 struct LightUserData {
 	void *value;
 
-	constexpr LightUserData(void *_value):value(_value) {}
+	explicit constexpr LightUserData(void *_value):value(_value) {}
 };
 
 template<typename... T>
