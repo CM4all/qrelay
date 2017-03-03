@@ -45,7 +45,7 @@ l_qmqp_listen(lua_State *L)
   if (!lua_isfunction(L, 2))
       luaL_argerror(L, 2, "function expected");
 
-  auto handler = std::make_shared<Lua::Value>(L, 2);
+  auto handler = std::make_shared<Lua::Value>(L, Lua::StackIndex(2));
 
   if (IsSystemdMagic(L, 1)) {
       instance.AddSystemdQmqpRelayServer(L, std::move(handler));

@@ -53,8 +53,8 @@ public:
 	/**
 	 * Initialize an instance with an object on the stack.
 	 */
-	Value(lua_State *_L, int idx):L(_L) {
-		Set(StackIndex(idx));
+	Value(lua_State *_L, StackIndex value):L(_L) {
+		Set(value);
 	}
 
 	~Value() {

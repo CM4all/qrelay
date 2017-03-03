@@ -10,7 +10,7 @@
 struct LAction : Action {
     Lua::Value mail;
 
-    LAction(lua_State *L, int mail_idx)
+    LAction(lua_State *L, Lua::StackIndex mail_idx)
         :mail(L, mail_idx) {}
 };
 
@@ -27,7 +27,7 @@ RegisterLuaAction(lua_State *L)
 Action *
 NewLuaAction(lua_State *L, int mail_idx)
 {
-    return LuaAction::New(L, L, mail_idx);
+    return LuaAction::New(L, L, Lua::StackIndex(mail_idx));
 }
 
 Action *
