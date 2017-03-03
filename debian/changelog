@@ -1,3 +1,9 @@
+cm4all-qrelay (0.6) unstable; urgency=medium
+
+  * 
+
+ --
+
 cm4all-qrelay (0.5) unstable; urgency=low
 
   * systemd: set Type=notify
