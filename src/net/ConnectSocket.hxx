@@ -7,7 +7,7 @@
 #ifndef CONNECT_SOCKET_HXX
 #define CONNECT_SOCKET_HXX
 
-#include "SocketDescriptor.hxx"
+#include "net/SocketDescriptor.hxx"
 #include "event/SocketEvent.hxx"
 
 #include <exception>

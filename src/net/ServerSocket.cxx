@@ -5,8 +5,8 @@
  */
 
 #include "ServerSocket.hxx"
-#include "StaticSocketAddress.hxx"
-#include "AllocatedSocketAddress.hxx"
+#include "net/StaticSocketAddress.hxx"
+#include "net/AllocatedSocketAddress.hxx"
 #include "system/Error.hxx"
 
 #include <sys/un.h>

@@ -5,8 +5,8 @@
  */
 
 #include "ConnectSocket.hxx"
-#include "SocketDescriptor.hxx"
-#include "SocketAddress.hxx"
+#include "net/SocketDescriptor.hxx"
+#include "net/SocketAddress.hxx"
 #include "system/Error.hxx"
 
 #include <stdexcept>

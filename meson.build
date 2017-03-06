@@ -58,13 +58,13 @@ event = static_library('event',
   ])
 
 net = static_library('net',
-  'src/net/SocketAddress.cxx',
-  'src/net/StaticSocketAddress.cxx',
-  'src/net/AllocatedSocketAddress.cxx',
-  'src/net/Resolver.cxx',
+  'libcommon/src/net/SocketAddress.cxx',
+  'libcommon/src/net/StaticSocketAddress.cxx',
+  'libcommon/src/net/AllocatedSocketAddress.cxx',
+  'libcommon/src/net/Resolver.cxx',
   'src/net/ServerSocket.cxx',
   'src/net/ConnectSocket.cxx',
-  'src/net/SocketDescriptor.cxx',
+  'libcommon/src/net/SocketDescriptor.cxx',
   include_directories: inc,
   dependencies: [
     libinline, libsocket,
