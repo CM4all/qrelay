@@ -27,7 +27,7 @@ ServerSocket::~ServerSocket()
 }
 
 void
-ServerSocket::Listen(SocketDescriptor &&_fd)
+ServerSocket::Listen(UniqueSocketDescriptor &&_fd)
 {
     assert(!fd.IsDefined());
     assert(_fd.IsDefined());
@@ -37,7 +37,7 @@ ServerSocket::Listen(SocketDescriptor &&_fd)
     event.Add();
 }
 
-static SocketDescriptor
+static UniqueSocketDescriptor
 Listen(const SocketAddress address)
 {
     if (address.GetFamily() == AF_UNIX) {
@@ -47,7 +47,7 @@ Listen(const SocketAddress address)
             unlink(sun->sun_path);
     }
 
-    SocketDescriptor fd;
+    UniqueSocketDescriptor fd;
     if (!fd.Create(address.GetFamily(),
                    SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK,
                    0))

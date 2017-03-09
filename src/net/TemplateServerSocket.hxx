@@ -17,7 +17,7 @@ class SocketAddress;
 template<class C, std::size_t i>
 struct ApplyTuple {
     template<typename T, typename... P>
-    static C *Create(SocketDescriptor &&fd, T &&tuple, P&&... params) {
+    static C *Create(UniqueSocketDescriptor &&fd, T &&tuple, P&&... params) {
         return ApplyTuple<C, i - 1>::Create(std::move(fd),
                                             std::forward<T>(tuple),
                                             std::get<i - 1>(std::forward<T>(tuple)),
@@ -28,7 +28,7 @@ struct ApplyTuple {
 template<class C>
 struct ApplyTuple<C, 0> {
     template<typename T, typename... P>
-    static C *Create(SocketDescriptor &&fd, T &&, P&&... params) {
+    static C *Create(UniqueSocketDescriptor &&fd, T &&, P&&... params) {
         return new C(std::forward<P>(params)..., std::move(fd));
     }
 };
@@ -60,13 +60,13 @@ public:
     }
 
 protected:
-    void OnAccept(SocketDescriptor &&_fd, SocketAddress) override {
+    void OnAccept(UniqueSocketDescriptor &&_fd, SocketAddress) override {
         auto *c = CreateConnection(std::move(_fd));
         connections.push_front(*c);
     };
 
 private:
-    C *CreateConnection(SocketDescriptor &&_fd) {
+    C *CreateConnection(UniqueSocketDescriptor &&_fd) {
         return ApplyTuple<C, std::tuple_size<Tuple>::value>::template Create<Tuple &>(std::move(_fd), params);
     }
 };

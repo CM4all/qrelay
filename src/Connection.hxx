@@ -43,7 +43,7 @@ public:
     QmqpRelayConnection(lua_State *_L, Lua::ValuePtr _handler,
                         const Logger &parent_logger,
                         EventLoop &event_loop,
-                        SocketDescriptor &&_fd)
+                        UniqueSocketDescriptor &&_fd)
         :NetstringServer(event_loop, std::move(_fd)),
          L(_L), handler(std::move(_handler)),
          logger(parent_logger, "connection"),
@@ -65,7 +65,7 @@ protected:
 
 private:
     /* virtual methods from class ConnectSocketHandler */
-    void OnSocketConnectSuccess(SocketDescriptor &&fd) override;
+    void OnSocketConnectSuccess(UniqueSocketDescriptor &&fd) override;
     void OnSocketConnectError(std::exception_ptr ep) override;
 
     /* virtual methods from class NetstringClientHandler */

@@ -12,14 +12,14 @@
 #include "NetstringInput.hxx"
 #include "NetstringGenerator.hxx"
 #include "io/MultiWriteBuffer.hxx"
-#include "net/SocketDescriptor.hxx"
+#include "net/UniqueSocketDescriptor.hxx"
 #include "event/SocketEvent.hxx"
 
 #include <exception>
 #include <cstddef>
 
 class NetstringServer {
-    SocketDescriptor fd;
+    UniqueSocketDescriptor fd;
 
     SocketEvent event;
 
@@ -28,7 +28,7 @@ class NetstringServer {
     MultiWriteBuffer write;
 
 public:
-    NetstringServer(EventLoop &event_loop, SocketDescriptor &&_fd);
+    NetstringServer(EventLoop &event_loop, UniqueSocketDescriptor &&_fd);
     ~NetstringServer();
 
 protected:

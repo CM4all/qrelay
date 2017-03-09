@@ -39,7 +39,7 @@ Instance::AddSystemdQmqpRelayServer(lua_State *L,
         qmqp_relay_servers.emplace_front(event_loop, L,
                                          Lua::ValuePtr(handler),
                                          logger, event_loop);
-        qmqp_relay_servers.front().Listen(SocketDescriptor(SD_LISTEN_FDS_START + i));
+        qmqp_relay_servers.front().Listen(UniqueSocketDescriptor(SD_LISTEN_FDS_START + i));
     }
 }
 

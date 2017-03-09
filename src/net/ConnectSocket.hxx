@@ -7,7 +7,7 @@
 #ifndef CONNECT_SOCKET_HXX
 #define CONNECT_SOCKET_HXX
 
-#include "net/SocketDescriptor.hxx"
+#include "net/UniqueSocketDescriptor.hxx"
 #include "event/SocketEvent.hxx"
 
 #include <exception>
@@ -17,7 +17,7 @@ class SocketAddress;
 
 class ConnectSocketHandler {
 public:
-    virtual void OnSocketConnectSuccess(SocketDescriptor &&fd) = 0;
+    virtual void OnSocketConnectSuccess(UniqueSocketDescriptor &&fd) = 0;
     virtual void OnSocketConnectTimeout();
     virtual void OnSocketConnectError(std::exception_ptr ep) = 0;
 };
@@ -25,7 +25,7 @@ public:
 class ConnectSocket {
     ConnectSocketHandler &handler;
 
-    SocketDescriptor fd;
+    UniqueSocketDescriptor fd;
 
     SocketEvent event;
 

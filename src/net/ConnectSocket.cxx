@@ -5,7 +5,7 @@
  */
 
 #include "ConnectSocket.hxx"
-#include "net/SocketDescriptor.hxx"
+#include "net/UniqueSocketDescriptor.hxx"
 #include "net/SocketAddress.hxx"
 #include "system/Error.hxx"
 
@@ -39,10 +39,10 @@ ConnectSocket::~ConnectSocket()
     }
 }
 
-static SocketDescriptor
+static UniqueSocketDescriptor
 Connect(const SocketAddress address)
 {
-    SocketDescriptor fd;
+    UniqueSocketDescriptor fd;
     if (!fd.Create(address.GetFamily(),
                    SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK,
                    0))
@@ -85,5 +85,6 @@ ConnectSocket::OnEvent(unsigned events)
         return;
     }
 
-    handler.OnSocketConnectSuccess(std::exchange(fd, SocketDescriptor()));
+    handler.OnSocketConnectSuccess(std::exchange(fd,
+                                                 UniqueSocketDescriptor()));
 }

@@ -7,13 +7,13 @@
 #ifndef SERVER_SOCKET_HXX
 #define SERVER_SOCKET_HXX
 
-#include "net/SocketDescriptor.hxx"
+#include "net/UniqueSocketDescriptor.hxx"
 #include "event/SocketEvent.hxx"
 
 class SocketAddress;
 
 class ServerSocket {
-    SocketDescriptor fd;
+    UniqueSocketDescriptor fd;
 
     SocketEvent event;
 
@@ -21,7 +21,7 @@ public:
     explicit ServerSocket(EventLoop &event_loop);
     ~ServerSocket();
 
-    void Listen(SocketDescriptor &&_fd);
+    void Listen(UniqueSocketDescriptor &&_fd);
     void Listen(SocketAddress address);
     void ListenPath(const char *path);
 
@@ -45,7 +45,8 @@ protected:
      *
      * @param fd the socket owned by the callee
      */
-    virtual void OnAccept(SocketDescriptor &&fd, SocketAddress address) = 0;
+    virtual void OnAccept(UniqueSocketDescriptor &&fd,
+                          SocketAddress address) = 0;
 
 private:
     void OnEvent(unsigned events);

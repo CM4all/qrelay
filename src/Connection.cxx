@@ -203,7 +203,7 @@ QmqpRelayConnection::OnDisconnect()
 }
 
 void
-QmqpRelayConnection::OnSocketConnectSuccess(SocketDescriptor &&_fd)
+QmqpRelayConnection::OnSocketConnectSuccess(UniqueSocketDescriptor &&_fd)
 {
     const int connection_fd = _fd.Steal();
     OnConnect(connection_fd, connection_fd);
