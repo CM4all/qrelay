@@ -5,8 +5,9 @@
 #ifndef TEMPLATE_SERVER_SOCKET_HXX
 #define TEMPLATE_SERVER_SOCKET_HXX
 
-#include "ServerSocket.hxx"
+#include "net/ServerSocket.hxx"
 #include "net/SocketAddress.hxx"
+#include "util/PrintException.hxx"
 
 #include <boost/intrusive/list.hpp>
 
@@ -64,6 +65,10 @@ protected:
         auto *c = CreateConnection(std::move(_fd));
         connections.push_front(*c);
     };
+
+    void OnAcceptError(std::exception_ptr ep) override {
+        PrintException(ep);
+    }
 
 private:
     C *CreateConnection(UniqueSocketDescriptor &&_fd) {
