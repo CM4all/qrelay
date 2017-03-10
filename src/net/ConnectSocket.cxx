@@ -43,9 +43,7 @@ static UniqueSocketDescriptor
 Connect(const SocketAddress address)
 {
     UniqueSocketDescriptor fd;
-    if (!fd.Create(address.GetFamily(),
-                   SOCK_STREAM|SOCK_CLOEXEC|SOCK_NONBLOCK,
-                   0))
+    if (!fd.CreateNonBlock(address.GetFamily(), SOCK_STREAM, 0))
         throw MakeErrno("Failed to create socket");
 
     if (!fd.Connect(address) && errno != EINPROGRESS)
