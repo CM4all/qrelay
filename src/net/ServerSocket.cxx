@@ -108,7 +108,7 @@ void
 ServerSocket::OnEvent(unsigned)
 {
     StaticSocketAddress remote_address;
-    auto remote_fd = fd.Accept(remote_address);
+    auto remote_fd = fd.AcceptNonBlock(remote_address);
     if (!remote_fd.IsDefined()) {
         fprintf(stderr, "accept() failed: %s\n", strerror(errno));
         return;
