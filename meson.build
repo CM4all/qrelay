@@ -57,6 +57,14 @@ event = static_library('event',
     declare_dependency(link_with: util),
   ])
 
+io = static_library('io',
+  'libcommon/src/io/FileDescriptor.cxx',
+  include_directories: inc,
+  dependencies: [
+    libinline,
+  ])
+io_dep = declare_dependency(link_with: io)
+
 net = static_library('net',
   'libcommon/src/net/SocketAddress.cxx',
   'libcommon/src/net/StaticSocketAddress.cxx',
@@ -64,11 +72,13 @@ net = static_library('net',
   'libcommon/src/net/Resolver.cxx',
   'src/net/ServerSocket.cxx',
   'src/net/ConnectSocket.cxx',
+  'libcommon/src/net/SocketDescriptor.cxx',
   'libcommon/src/net/UniqueSocketDescriptor.cxx',
   include_directories: inc,
   dependencies: [
     libinline, libsocket,
     declare_dependency(link_with: event),
+    io_dep,
   ])
 
 executable('cm4all-qrelay',
