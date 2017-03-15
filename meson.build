@@ -36,9 +36,9 @@ util = static_library('util',
   ])
 
 lua = static_library('lua',
-  'src/lua/Error.cxx',
-  'src/lua/RunFile.cxx',
-  'src/lua/State.cxx',
+  'libcommon/src/lua/Error.cxx',
+  'libcommon/src/lua/RunFile.cxx',
+  'libcommon/src/lua/State.cxx',
   dependencies: [
     liblua,
   ]
