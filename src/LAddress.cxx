@@ -64,16 +64,18 @@ CheckLuaAddress(lua_State *L, int idx)
 AllocatedSocketAddress
 GetLuaAddress(lua_State *L, int idx)
 {
-    if (!lua_isstring(L, idx))
-        luaL_argerror(L, idx, "address expected");
+    if (lua_isstring(L, idx)) {
+        const char *s = lua_tostring(L, idx);
 
-    const char *s = lua_tostring(L, idx);
+        struct addrinfo hints;
+        memset(&hints, 0, sizeof(hints));
+        hints.ai_family = AF_UNSPEC;
+        hints.ai_socktype = SOCK_STREAM;
 
-    struct addrinfo hints;
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-
-    const auto ai = Resolve(s, 628, &hints);
-    return AllocatedSocketAddress(ai.front());
+        const auto ai = Resolve(s, 628, &hints);
+        return AllocatedSocketAddress(ai.front());
+    } else {
+        auto &a = *CheckLuaAddress(L, idx);
+        return a;
+    }
 }
