@@ -81,9 +81,17 @@ NewConnectAction(lua_State *L)
     if (lua_gettop(L) != 2)
       return luaL_error(L, "Invalid parameters");
 
+    AllocatedSocketAddress address;
+
+    try {
+        address = GetLuaAddress(L, 2);
+    } catch (const std::exception &e) {
+        return luaL_error(L, e.what());
+    }
+
     auto &action = *NewLuaAction(L, 1);
     action.type = Action::Type::CONNECT;
-    action.connect = GetLuaAddress(L, 2);
+    action.connect = std::move(address);
     return 1;
 }
 
