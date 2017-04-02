@@ -1,6 +1,6 @@
 cm4all-qrelay (0.6) unstable; urgency=medium
 
-  * 
+  * new Lua function qmqp_resolve() allows resolving during startup
 
  --
 

@@ -94,7 +94,8 @@ action objects; they do not actually perform the action.
 The following actions are possible:
 
 * :samp:`connect("ADDRESS")`: Connect to this address and relay the
-  email via QMQP.
+  email via QMQP.  The address is either a string containing a (numeric)
+  IP address, or an `address` object created by `qmqp_resolve()`.
 
 * :samp:`exec("PROGRAM", "ARG", ...)`: Execute the program and submit
   the email via QMQP on standard input.  Read the QMQP response from
@@ -103,6 +104,34 @@ The following actions are possible:
 * :samp:`discard()`: Discard the email, pretending delivery was successful.
 
 * :samp:`reject()`: Reject the email with a permanent error.
+
+
+Addresses
+^^^^^^^^^
+
+It is recommended to create all `address` objects during startup, to
+avoid putting unnecessary pressure on the Lua garbage collector, and
+to reduce the overhead for invoking the system resolver (which blocks
+qrelay execution).  The function `qmqp_resolve()` creates such an
+`address` object::
+
+  server1 = qmqp_resolve('192.168.0.2')
+  server2 = qmqp_resolve('[::1]:4321')
+  server3 = qmqp_resolve('server1.local:1234')
+  server4 = qmqp_resolve('/run/server5.sock')
+  server5 = qmqp_resolve('@server4')
+
+These examples do the following:
+
+- convert a numeric IPv4 address to an `address` object (port defaults
+  to 628, the QMQP standard port)
+- convert a numeric IPv6 address with a non-standard port to an
+  `address` object
+- invoke the system resolver to resolve a host name to an IP address
+  (which blocks qrelay startup; not recommended)
+- convert a path string to a "local" socket address
+- convert a name to an abstract "local" socket address (prefix '@' is
+  converted to a null byte, making the address "abstract")
 
 
 Examples

@@ -5,6 +5,7 @@
 #include "CommandLine.hxx"
 #include "Instance.hxx"
 #include "LAddress.hxx"
+#include "LResolver.hxx"
 #include "system/SetupProcess.hxx"
 #include "net/AllocatedSocketAddress.hxx"
 #include "lua/State.hxx"
@@ -69,6 +70,7 @@ SetupConfigState(lua_State *L, Instance &instance)
     luaL_openlibs(L);
 
     RegisterLuaAddress(L);
+    RegisterLuaResolver(L);
 
     Lua::SetGlobal(L, "systemd", Lua::LightUserData(&systemd_magic));
 
