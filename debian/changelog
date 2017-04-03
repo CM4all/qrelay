@@ -3,7 +3,7 @@ cm4all-qrelay (0.6) unstable; urgency=medium
   * new Lua function qmqp_resolve() allows resolving during startup
   * allow only numeric IP addresses in method mail.connect()
 
- --
+ -- Max Kellermann <mk@cm4all.com>  Mon, 03 Apr 2017 06:32:41 -0000
 
 cm4all-qrelay (0.5) unstable; urgency=low
 
