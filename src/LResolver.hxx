@@ -10,4 +10,7 @@ struct lua_State;
 void
 RegisterLuaResolver(lua_State *L);
 
+void
+UnregisterLuaResolver(lua_State *L);
+
 #endif

@@ -85,6 +85,8 @@ SetupRuntimeState(lua_State *L)
     Lua::SetGlobal(L, "qmqp_listen", nullptr);
 
     QmqpRelayConnection::Register(L);
+
+    UnregisterLuaResolver(L);
 }
 
 static int

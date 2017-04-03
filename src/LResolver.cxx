@@ -47,3 +47,9 @@ RegisterLuaResolver(lua_State *L)
 {
     Lua::SetGlobal(L, "qmqp_resolve", l_qmqp_resolve);
 }
+
+void
+UnregisterLuaResolver(lua_State *L)
+{
+    Lua::SetGlobal(L, "qmqp_resolve", nullptr);
+}
