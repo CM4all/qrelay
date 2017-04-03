@@ -6,9 +6,9 @@
 #define QMQP_RELAY_CONNECTION_HXX
 
 #include "Logger.hxx"
-#include "djb/NetstringServer.hxx"
-#include "djb/NetstringGenerator.hxx"
-#include "djb/NetstringClient.hxx"
+#include "net/djb/NetstringServer.hxx"
+#include "net/djb/NetstringGenerator.hxx"
+#include "net/djb/NetstringClient.hxx"
 #include "net/ConnectSocket.hxx"
 #include "lua/ValuePtr.hxx"
 #include "util/ConstBuffer.hxx"
