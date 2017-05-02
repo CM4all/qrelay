@@ -14,7 +14,7 @@ RegisterLuaMail(lua_State *L);
 MutableMail *
 NewLuaMail(lua_State *L, MutableMail &&src, int fd);
 
-MutableMail *
-CheckLuaMail(lua_State *L, int idx);
+MutableMail &
+CastLuaMail(lua_State *L, int idx);
 
 #endif

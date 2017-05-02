@@ -19,13 +19,19 @@ extern "C" {
 static constexpr char lua_address_class[] = "qrelay.address";
 typedef Lua::Class<AllocatedSocketAddress, lua_address_class> LuaAddress;
 
+static const AllocatedSocketAddress &
+CastLuaAddress(lua_State *L, int idx)
+{
+    return LuaAddress::Cast(L, idx);
+}
+
 static int
 LuaAddressToString(lua_State *L)
 {
     if (lua_gettop(L) != 1)
         return luaL_error(L, "Invalid parameters");
 
-    auto &a = *CheckLuaAddress(L, 1);
+    const auto &a = CastLuaAddress(L, 1);
 
     char buffer[256];
     if (!socket_address_to_string(buffer, sizeof(buffer), a, a.GetSize()))
@@ -55,12 +61,6 @@ NewLuaAddress(lua_State *L, AllocatedSocketAddress &&src)
     return LuaAddress::New(L, std::move(src));
 }
 
-AllocatedSocketAddress *
-CheckLuaAddress(lua_State *L, int idx)
-{
-    return LuaAddress::Check(L, idx);
-}
-
 AllocatedSocketAddress
 GetLuaAddress(lua_State *L, int idx)
 {
@@ -76,7 +76,6 @@ GetLuaAddress(lua_State *L, int idx)
         const auto ai = Resolve(s, 628, &hints);
         return AllocatedSocketAddress(ai.front());
     } else {
-        auto &a = *CheckLuaAddress(L, idx);
-        return a;
+        return CastLuaAddress(L, idx);
     }
 }

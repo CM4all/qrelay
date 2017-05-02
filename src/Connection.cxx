@@ -155,18 +155,18 @@ QmqpRelayConnection::Exec(const Action &action)
     OnConnect(stdin_pipe[1], stdout_pipe[0]);
 }
 
-static MutableMail *
-GetMail(lua_State *L, const Lua::Value &value)
+static MutableMail &
+CastMail(lua_State *L, const Lua::Value &value)
 {
     value.Push();
     AtScopeExit(L) { lua_pop(L, 1); };
-    return CheckLuaMail(L, -1);
+    return CastLuaMail(L, -1);
 }
 
 void
 QmqpRelayConnection::OnConnect(int out_fd, int in_fd)
 {
-    auto &mail = *GetMail(L, outgoing_mail);
+    auto &mail = CastMail(L, outgoing_mail);
 
     std::list<ConstBuffer<void>> request;
     request.push_back(mail.message.ToVoid());

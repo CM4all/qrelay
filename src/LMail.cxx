@@ -70,7 +70,7 @@ InsertHeader(lua_State *L)
     if (!lua_isstring(L, 3))
         luaL_argerror(L, 3, "string expected");
 
-    auto &mail = *(IncomingMail *)CheckLuaMail(L, 1);
+    auto &mail = (IncomingMail &)CastLuaMail(L, 1);
     mail.InsertHeader(lua_tostring(L, 2), lua_tostring(L, 3));
     return 0;
 }
@@ -143,7 +143,7 @@ try {
     if (lua_gettop(L) != 2)
       return luaL_error(L, "Invalid parameters");
 
-    auto &mail = *(IncomingMail *)CheckLuaMail(L, 1);
+    auto &mail = (IncomingMail &)CastLuaMail(L, 1);
 
     if (!lua_isstring(L, 2))
         luaL_argerror(L, 2, "string expected");
@@ -169,7 +169,7 @@ try {
     if (lua_gettop(L) != 2)
       return luaL_error(L, "Invalid parameters");
 
-    auto &mail = *(IncomingMail *)CheckLuaMail(L, 1);
+    auto &mail = (IncomingMail &)CastLuaMail(L, 1);
 
     if (!lua_isstring(L, 2))
         luaL_argerror(L, 2, "string expected");
@@ -228,7 +228,7 @@ LuaMailIndex(lua_State *L)
     if (lua_gettop(L) != 2)
         return luaL_error(L, "Invalid parameters");
 
-    auto &mail = *(IncomingMail *)CheckLuaMail(L, 1);
+    auto &mail = (IncomingMail &)CastLuaMail(L, 1);
 
     if (!lua_isstring(L, 2))
         luaL_argerror(L, 2, "string expected");
@@ -276,8 +276,8 @@ NewLuaMail(lua_State *L, MutableMail &&src, int fd)
     return LuaMail::New(L, std::move(src), fd);
 }
 
-MutableMail *
-CheckLuaMail(lua_State *L, int idx)
+MutableMail &
+CastLuaMail(lua_State *L, int idx)
 {
-    return LuaMail::Check(L, idx);
+    return LuaMail::Cast(L, idx);
 }
