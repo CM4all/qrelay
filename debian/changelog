@@ -1,6 +1,6 @@
 cm4all-qrelay (0.7) unstable; urgency=low
 
-  * 
+  * lua: don't crash when Lua "panics"
 
  --   
 

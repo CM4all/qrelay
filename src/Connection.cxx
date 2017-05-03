@@ -48,6 +48,9 @@ QmqpRelayConnection::OnRequest(AllocatedArray<uint8_t> &&payload)
     AtScopeExit(_L) { lua_pop(_L, 1); };
 
     auto *action = CheckLuaAction(L, -1);
+    if (action == nullptr)
+        throw std::runtime_error("Wrong return type from Lua handler");
+
     Do(*action);
 }
 
