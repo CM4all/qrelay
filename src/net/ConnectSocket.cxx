@@ -64,7 +64,7 @@ ConnectSocket::Connect(const SocketAddress address)
         return false;
     }
 
-    event.Set(fd.Get(), EV_WRITE|EV_TIMEOUT);
+    event.Set(fd.Get(), EV_WRITE);
     event.Add(connect_timeout);
     return true;
 }
