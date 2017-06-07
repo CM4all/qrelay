@@ -30,7 +30,7 @@ l_qmqp_resolve(lua_State *L)
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
 
-    AddressInfo ai;
+    AddressInfoList ai;
 
     try {
         ai = Resolve(s, 628, &hints);
