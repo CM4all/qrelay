@@ -79,6 +79,7 @@ net = static_library('net',
   'libcommon/src/net/djb/NetstringServer.cxx',
   'libcommon/src/net/djb/NetstringClient.cxx',
   'libcommon/src/net/djb/NetstringInput.cxx',
+  'libcommon/src/net/djb/NetstringHeader.cxx',
   'libcommon/src/net/djb/NetstringGenerator.cxx',
   include_directories: inc,
   dependencies: [
