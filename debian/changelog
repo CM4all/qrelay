@@ -3,7 +3,7 @@ cm4all-qrelay (0.7) unstable; urgency=low
   * lua: don't crash when Lua "panics"
   * fix assertion failure when inserting too many headers
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Tue, 20 Jun 2017 22:18:29 -0000
 
 cm4all-qrelay (0.6) unstable; urgency=medium
 
