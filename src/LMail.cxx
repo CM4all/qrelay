@@ -67,11 +67,15 @@ InsertHeader(lua_State *L)
     if (!lua_isstring(L, 2))
         luaL_argerror(L, 2, "string expected");
 
+    const char *name = lua_tostring(L, 2);
+
     if (!lua_isstring(L, 3))
         luaL_argerror(L, 3, "string expected");
 
+    const char *value = lua_tostring(L, 3);
+
     auto &mail = (IncomingMail &)CastLuaMail(L, 1);
-    mail.InsertHeader(lua_tostring(L, 2), lua_tostring(L, 3));
+    mail.InsertHeader(name, value);
     return 0;
 }
 
