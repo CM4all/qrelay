@@ -3,7 +3,7 @@ cm4all-qrelay (0.8) unstable; urgency=low
   * lua: fix mount_info parser, skip optional tagged fields properly
   * lua: insert_header() aborts if name or value are illegal
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Thu, 22 Jun 2017 10:05:18 -0000
 
 cm4all-qrelay (0.7) unstable; urgency=low
 
