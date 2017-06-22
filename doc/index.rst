@@ -83,6 +83,8 @@ the front of the email.  Example::
 
   m:insert_header('X-Cgroup', m:get_cgroup('cpuacct'))
 
+Both name and value must conform to RFC 2822 2.2.
+
 
 Actions
 ^^^^^^^

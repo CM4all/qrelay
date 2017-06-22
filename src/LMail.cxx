@@ -58,6 +58,52 @@ private:
 static constexpr char lua_mail_class[] = "qrelay.mail";
 typedef Lua::Class<IncomingMail, lua_mail_class> LuaMail;
 
+/**
+ * @see RFC2822 2.2
+ */
+static constexpr bool
+IsValidHeaderNameChar(char ch)
+{
+    return ch >= 33 && ch <= 126 && ch != ':';
+}
+
+/**
+ * Is this a valid header name according to RFC2822 2.2?
+ */
+static bool
+IsValidHeaderName(const char *p)
+{
+    do {
+        if (!IsValidHeaderNameChar(*p))
+            return false;
+    } while (*++p != 0);
+
+    return true;
+}
+
+/**
+ * Note that this is more strict than RFC2822 2.2; only printable
+ * characters are allowed.
+ */
+static constexpr bool
+IsValidHeaderValueChar(char ch)
+{
+    return ch >= ' ' && ch <= 126;
+}
+
+/**
+ * Is this a valid header value according to RFC2822 2.2?
+ */
+static bool
+IsValidHeaderValue(const char *p)
+{
+    for (; *p != 0; ++p)
+        if (!IsValidHeaderValueChar(*p))
+            return false;
+
+    return true;
+}
+
 static int
 InsertHeader(lua_State *L)
 {
@@ -68,11 +114,15 @@ InsertHeader(lua_State *L)
         luaL_argerror(L, 2, "string expected");
 
     const char *name = lua_tostring(L, 2);
+    if (!IsValidHeaderName(name))
+        luaL_argerror(L, 2, "Illegal header name");
 
     if (!lua_isstring(L, 3))
         luaL_argerror(L, 3, "string expected");
 
     const char *value = lua_tostring(L, 3);
+    if (!IsValidHeaderValue(value))
+        luaL_argerror(L, 2, "Illegal header value");
 
     auto &mail = (IncomingMail &)CastLuaMail(L, 1);
     mail.InsertHeader(name, value);
