@@ -1,6 +1,6 @@
 cm4all-qrelay (0.8) unstable; urgency=low
 
-  * 
+  * lua: fix mount_info parser, skip optional tagged fields properly
 
  --   
 

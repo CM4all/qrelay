@@ -43,10 +43,17 @@ ReadProcessMount(unsigned pid, const char *_mountpoint)
         std::array<StringView, 10> columns;
         SplitFill(columns, line, ' ');
 
-        if (columns[4].Equals(mountpoint))
-            return {{columns[3].data, columns[3].size},
-                    {columns[8].data, columns[8].size},
-                    {columns[9].data, columns[9].size}};
+        if (columns[4].Equals(mountpoint)) {
+            /* skip the optional tagged fields */
+            size_t i = 6;
+            while (i < columns.size() && !columns[i].Equals("-"))
+                ++i;
+
+            if (i + 2 < columns.size())
+                return {{columns[3].data, columns[3].size},
+                        {columns[i + 1].data, columns[i + 1].size},
+                        {columns[i + 2].data, columns[i + 2].size}};
+        }
     }
 
     /* not found: return empty string */
