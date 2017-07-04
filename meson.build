@@ -17,7 +17,6 @@ boost = dependency('boost', modules: ['program_options'], version: '>= 1.54')
 liblua = dependency('luajit')
 libevent = dependency('libevent', version: '>= 2.0.19')
 libsystemd = dependency('libsystemd')
-libinline = dependency('libcm4all-inline', version: '>= 0.3.4')
 libsocket = dependency('libcm4all-socket', version: '>= 0.3.5')
 
 inc = include_directories('src', 'libcommon/src')
@@ -31,8 +30,8 @@ util = static_library('util',
   'libcommon/src/util/StringParser.cxx',
   'libcommon/src/util/StringUtil.cxx',
   'libcommon/src/util/StringView.cxx',
+  include_directories: inc,
   dependencies: [
-    libinline
   ])
 util_dep = declare_dependency(link_with: util)
 
@@ -54,7 +53,6 @@ event = static_library('event',
   'libcommon/src/event/SignalEvent.cxx',
   include_directories: inc,
   dependencies: [
-    libinline,
     libevent,
     util_dep,
   ])
@@ -66,7 +64,6 @@ io = static_library('io',
   'libcommon/src/io/MultiWriteBuffer.cxx',
   include_directories: inc,
   dependencies: [
-    libinline,
   ])
 io_dep = declare_dependency(link_with: io)
 
@@ -86,7 +83,6 @@ net = static_library('net',
   'libcommon/src/net/djb/NetstringGenerator.cxx',
   include_directories: inc,
   dependencies: [
-    libinline, libsocket,
     declare_dependency(link_with: event),
     io_dep,
   ])
@@ -111,7 +107,7 @@ executable('cm4all-qrelay',
   dependencies: [
     boost, libevent, libsystemd,
     liblua,
-    libinline, libsocket,
+    libsocket,
     util_dep,
     lua_dep,
     net_dep,
