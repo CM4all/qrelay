@@ -34,6 +34,7 @@ util = static_library('util',
   dependencies: [
     libinline
   ])
+util_dep = declare_dependency(link_with: util)
 
 lua = static_library('lua',
   'libcommon/src/lua/Error.cxx',
@@ -43,6 +44,7 @@ lua = static_library('lua',
     liblua,
   ]
 )
+lua_dep = declare_dependency(link_with: lua)
 
 event = static_library('event',
   'libcommon/src/event/Loop.cxx',
@@ -54,8 +56,9 @@ event = static_library('event',
   dependencies: [
     libinline,
     libevent,
-    declare_dependency(link_with: util),
+    util_dep,
   ])
+event_dep = declare_dependency(link_with: event)
 
 io = static_library('io',
   'libcommon/src/io/FileDescriptor.cxx',
@@ -87,6 +90,7 @@ net = static_library('net',
     declare_dependency(link_with: event),
     io_dep,
   ])
+net_dep = declare_dependency(link_with: net)
 
 executable('cm4all-qrelay',
   'src/CommandLine.cxx',
@@ -108,8 +112,8 @@ executable('cm4all-qrelay',
     boost, libevent, libsystemd,
     liblua,
     libinline, libsocket,
-    declare_dependency(link_with: util),
-    declare_dependency(link_with: lua),
-    declare_dependency(link_with: net),
-    declare_dependency(link_with: event),
+    util_dep,
+    lua_dep,
+    net_dep,
+    event_dep,
   ])
