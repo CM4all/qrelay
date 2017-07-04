@@ -17,7 +17,6 @@ boost = dependency('boost', modules: ['program_options'], version: '>= 1.54')
 liblua = dependency('luajit')
 libevent = dependency('libevent', version: '>= 2.0.19')
 libsystemd = dependency('libsystemd')
-libsocket = dependency('libcm4all-socket', version: '>= 0.3.5')
 
 inc = include_directories('src', 'libcommon/src')
 
@@ -71,7 +70,9 @@ net = static_library('net',
   'libcommon/src/net/SocketAddress.cxx',
   'libcommon/src/net/StaticSocketAddress.cxx',
   'libcommon/src/net/AllocatedSocketAddress.cxx',
+  'libcommon/src/net/HostParser.cxx',
   'libcommon/src/net/Resolver.cxx',
+  'libcommon/src/net/ToString.cxx',
   'libcommon/src/net/ServerSocket.cxx',
   'libcommon/src/net/ConnectSocket.cxx',
   'libcommon/src/net/SocketDescriptor.cxx',
@@ -107,7 +108,6 @@ executable('cm4all-qrelay',
   dependencies: [
     boost, libevent, libsystemd,
     liblua,
-    libsocket,
     util_dep,
     lua_dep,
     net_dep,

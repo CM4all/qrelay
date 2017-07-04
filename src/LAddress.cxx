@@ -7,8 +7,7 @@
 #include "net/Resolver.hxx"
 #include "net/AddressInfo.hxx"
 #include "net/AllocatedSocketAddress.hxx"
-
-#include <socket/address.h>
+#include "net/ToString.hxx"
 
 extern "C" {
 #include <lauxlib.h>
@@ -34,7 +33,7 @@ LuaAddressToString(lua_State *L)
     const auto &a = CastLuaAddress(L, 1);
 
     char buffer[256];
-    if (!socket_address_to_string(buffer, sizeof(buffer), a, a.GetSize()))
+    if (!ToString(buffer, sizeof(buffer), a))
         return 0;
 
     Lua::Push(L, buffer);
