@@ -1,4 +1,4 @@
-project('CM4all qrelay', 'cpp', version: '0.8',
+project('CM4all qrelay', 'cpp', version: '0.9',
   default_options : ['cpp_std=c++14'])
 
 add_global_arguments('-D_REENTRANT', '-D_GNU_SOURCE',
