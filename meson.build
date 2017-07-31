@@ -1,6 +1,13 @@
 project('CM4all qrelay', 'cpp', version: '0.9',
   default_options : ['cpp_std=c++14'])
 
+# TODO: use get_option('b_ndebug'), but that doesn't work with Meson 0.37.1
+if get_option('buildtype') == 'debug'
+  debug = true
+else
+  debug = false
+endif
+
 common_flags = [
   '-D_GNU_SOURCE',
   '-Wall',
@@ -15,6 +22,10 @@ common_flags = [
 add_global_arguments(common_flags,
   '-Wno-non-virtual-dtor',
   language: 'cpp')
+
+if debug
+  common_flags += ['-DPOISON']
+endif
 
 boost = dependency('boost', modules: ['program_options'], version: '>= 1.54')
 liblua = dependency('luajit')
