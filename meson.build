@@ -1,7 +1,8 @@
 project('CM4all qrelay', 'cpp', version: '0.9',
   default_options : ['cpp_std=c++14'])
 
-add_global_arguments('-D_GNU_SOURCE',
+common_flags = [
+  '-D_GNU_SOURCE',
   '-Wall',
   '-Wextra',
   '-Wwrite-strings', '-Wcast-qual', '-Wcast-align', '-Wfloat-equal',
@@ -9,7 +10,9 @@ add_global_arguments('-D_GNU_SOURCE',
   '-Wmissing-declarations', '-Wmissing-noreturn', '-Wmissing-format-attribute',
   '-Wredundant-decls', '-Wno-long-long', '-Wundef',
   '-Wunused',
-  '-pedantic',
+]
+
+add_global_arguments(common_flags,
   '-Wno-non-virtual-dtor',
   language: 'cpp')
 
