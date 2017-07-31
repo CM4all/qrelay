@@ -4,8 +4,7 @@
 
 #include "LAddress.hxx"
 #include "lua/Class.hxx"
-#include "net/Resolver.hxx"
-#include "net/AddressInfo.hxx"
+#include "net/Parser.hxx"
 #include "net/AllocatedSocketAddress.hxx"
 #include "net/ToString.hxx"
 
@@ -66,14 +65,7 @@ GetLuaAddress(lua_State *L, int idx)
     if (lua_isstring(L, idx)) {
         const char *s = lua_tostring(L, idx);
 
-        struct addrinfo hints;
-        memset(&hints, 0, sizeof(hints));
-        hints.ai_flags = AI_NUMERICHOST|AI_NUMERICSERV;
-        hints.ai_family = AF_UNSPEC;
-        hints.ai_socktype = SOCK_STREAM;
-
-        const auto ai = Resolve(s, 628, &hints);
-        return AllocatedSocketAddress(ai.front());
+        return ParseSocketAddress(s, 628, false);
     } else {
         return CastLuaAddress(L, idx);
     }
