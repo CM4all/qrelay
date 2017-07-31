@@ -1,7 +1,7 @@
 project('CM4all qrelay', 'cpp', version: '0.9',
   default_options : ['cpp_std=c++14'])
 
-add_global_arguments('-D_REENTRANT', '-D_GNU_SOURCE',
+add_global_arguments('-D_GNU_SOURCE',
   '-Wall',
   '-Wextra',
   '-Wwrite-strings', '-Wcast-qual', '-Wcast-align', '-Wfloat-equal',
