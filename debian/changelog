@@ -1,6 +1,6 @@
 cm4all-qrelay (0.9) unstable; urgency=low
 
-  * 
+  * net: support interface name as scope id in IPv6 addresses
 
  --   
 
