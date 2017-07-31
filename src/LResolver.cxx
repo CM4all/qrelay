@@ -38,7 +38,7 @@ l_qmqp_resolve(lua_State *L)
         return luaL_error(L, e.what());
     }
 
-    NewLuaAddress(L, std::move(ai.front()));
+    NewLuaAddress(L, std::move(ai.GetBest()));
     return 1;
 }
 
