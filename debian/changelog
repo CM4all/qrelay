@@ -3,7 +3,7 @@ cm4all-qrelay (0.9) unstable; urgency=low
   * net: support interface name as scope id in IPv6 addresses
   * net: resolving "*" prefers the IPv6 wildcard "::"
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Tue, 01 Aug 2017 10:49:47 -0000
 
 cm4all-qrelay (0.8) unstable; urgency=low
 
