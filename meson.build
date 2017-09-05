@@ -1,4 +1,4 @@
-project('CM4all qrelay', 'cpp', version: '0.9',
+project('CM4all qrelay', 'cpp', version: '0.10',
   default_options : ['cpp_std=c++14'])
 
 # TODO: use get_option('b_ndebug'), but that doesn't work with Meson 0.37.1
