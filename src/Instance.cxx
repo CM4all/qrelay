@@ -26,12 +26,12 @@ Instance::AddSystemdQmqpRelayServer(lua_State *L,
 {
     int n = sd_listen_fds(true);
     if (n < 0) {
-        logger("sd_listen_fds() failed: ", strerror(errno));
+        logger(1, "sd_listen_fds() failed: ", strerror(errno));
         return;
     }
 
     if (n == 0) {
-        logger("No systemd socket");
+        logger(1, "No systemd socket");
         return;
     }
 

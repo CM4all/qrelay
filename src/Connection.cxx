@@ -195,7 +195,7 @@ QmqpRelayConnection::OnConnect(int out_fd, int in_fd)
 void
 QmqpRelayConnection::OnError(std::exception_ptr ep)
 {
-    logger(ep);
+    logger(1, ep);
     delete this;
 }
 
@@ -215,7 +215,7 @@ QmqpRelayConnection::OnSocketConnectSuccess(UniqueSocketDescriptor &&_fd)
 void
 QmqpRelayConnection::OnSocketConnectError(std::exception_ptr ep)
 {
-    logger(ep);
+    logger(1, ep);
     if (SendResponse("Zconnect failed"))
         delete this;
 }

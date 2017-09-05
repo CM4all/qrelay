@@ -75,6 +75,7 @@ io = static_library('io',
   'libcommon/src/io/FileDescriptor.cxx',
   'libcommon/src/io/WriteBuffer.cxx',
   'libcommon/src/io/MultiWriteBuffer.cxx',
+  'libcommon/src/io/Logger.cxx',
   include_directories: inc,
   dependencies: [
   ])

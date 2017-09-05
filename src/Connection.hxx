@@ -5,7 +5,7 @@
 #ifndef QMQP_RELAY_CONNECTION_HXX
 #define QMQP_RELAY_CONNECTION_HXX
 
-#include "Logger.hxx"
+#include "io/Logger.hxx"
 #include "net/djb/NetstringServer.hxx"
 #include "net/djb/NetstringGenerator.hxx"
 #include "net/djb/NetstringClient.hxx"
@@ -24,7 +24,7 @@ class QmqpRelayConnection final :
 
     lua_State *const L;
     Lua::ValuePtr handler;
-    Logger logger;
+    ChildLogger logger;
 
     NetstringGenerator generator;
 
@@ -41,7 +41,7 @@ class QmqpRelayConnection final :
 
 public:
     QmqpRelayConnection(lua_State *_L, Lua::ValuePtr _handler,
-                        const Logger &parent_logger,
+                        const RootLogger &parent_logger,
                         EventLoop &event_loop,
                         UniqueSocketDescriptor &&_fd)
         :NetstringServer(event_loop, std::move(_fd)),

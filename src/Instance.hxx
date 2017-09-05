@@ -5,7 +5,7 @@
 #ifndef INSTANCE_HXX
 #define INSTANCE_HXX
 
-#include "Logger.hxx"
+#include "io/Logger.hxx"
 #include "Server.hxx"
 #include "event/Loop.hxx"
 #include "event/ShutdownListener.hxx"
@@ -22,7 +22,7 @@ class Instance {
     std::forward_list<QmqpRelayServer> qmqp_relay_servers;
 
 public:
-    Logger logger;
+    RootLogger logger;
 
     Instance();
 
