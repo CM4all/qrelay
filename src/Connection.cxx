@@ -17,18 +17,35 @@
 
 #include <list>
 
+#include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/socket.h>
+
+static std::string
+MakeLoggerDomain(SocketDescriptor fd, SocketAddress)
+{
+    assert(fd.IsDefined());
+
+    struct ucred cred;
+    if (fd.GetOption(SOL_SOCKET, SO_PEERCRED,
+                     &cred, sizeof(cred)) < sizeof(cred))
+        return "connection";
+
+    char buffer[128];
+    snprintf(buffer, sizeof(buffer), "pid=%d uid=%d",
+             int(cred.pid), int(cred.uid));
+    return buffer;
+}
 
 QmqpRelayConnection::QmqpRelayConnection(Lua::ValuePtr _handler,
                                          const RootLogger &parent_logger,
                                          EventLoop &event_loop,
                                          UniqueSocketDescriptor &&_fd,
-                                         SocketAddress)
+                                         SocketAddress address)
     :NetstringServer(event_loop, std::move(_fd)),
      handler(std::move(_handler)),
-     logger(parent_logger, "connection"),
+     logger(parent_logger, MakeLoggerDomain(GetSocket(), address).c_str()),
      outgoing_mail(handler->GetState()),
      connect(event_loop, *this),
      client(event_loop, 256, *this) {}
