@@ -47,8 +47,7 @@ private:
 
         have_cred = true;
 
-        socklen_t len = sizeof(cred);
-        if (getsockopt(fd.Get(), SOL_SOCKET, SO_PEERCRED, &cred, &len) < 0) {
+        if (fd.GetOption(SOL_SOCKET, SO_PEERCRED, &cred, sizeof(cred)) < sizeof(cred)) {
             cred.pid = -1;
             cred.uid = -1;
             cred.gid = -1;
