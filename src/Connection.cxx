@@ -23,11 +23,8 @@
 #include <sys/socket.h>
 
 static std::string
-MakeLoggerDomain(SocketDescriptor fd, SocketAddress)
+MakeLoggerDomain(const struct ucred &cred, SocketAddress)
 {
-    assert(fd.IsDefined());
-
-    const auto cred = fd.GetPeerCredentials();
     if (cred.pid < 0)
         return "connection";
 
@@ -43,8 +40,9 @@ QmqpRelayConnection::QmqpRelayConnection(Lua::ValuePtr _handler,
                                          UniqueSocketDescriptor &&_fd,
                                          SocketAddress address)
     :NetstringServer(event_loop, std::move(_fd)),
+     peer_cred(GetSocket().GetPeerCredentials()),
      handler(std::move(_handler)),
-     logger(parent_logger, MakeLoggerDomain(GetSocket(), address).c_str()),
+     logger(parent_logger, MakeLoggerDomain(peer_cred, address).c_str()),
      outgoing_mail(handler->GetState()),
      connect(event_loop, *this),
      client(event_loop, 256, *this) {}
@@ -69,7 +67,7 @@ QmqpRelayConnection::OnRequest(AllocatedArray<uint8_t> &&payload)
     handler->Push();
 
     const auto L = handler->GetState();
-    NewLuaMail(L, std::move(mail), GetSocket().GetPeerCredentials());
+    NewLuaMail(L, std::move(mail), peer_cred);
     if (lua_pcall(L, 1, 1, 0))
         throw Lua::PopError(L);
 
@@ -203,11 +201,10 @@ QmqpRelayConnection::OnConnect(int out_fd, int in_fd)
     std::list<ConstBuffer<void>> request;
     request.push_back(mail.message.ToVoid());
 
-    const auto cred = GetSocket().GetPeerCredentials();
-    if (cred.pid >= 0) {
+    if (peer_cred.pid >= 0) {
         int length = sprintf(received_buffer,
                              "Received: from PID=%u UID=%u with QMQP\r\n",
-                             unsigned(cred.pid), unsigned(cred.uid));
+                             unsigned(peer_cred.pid), unsigned(peer_cred.uid));
         request.emplace_front(received_buffer, length);
     }
 

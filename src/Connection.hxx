@@ -22,6 +22,8 @@ class QmqpRelayConnection final :
     public NetstringServer, ConnectSocketHandler,
     NetstringClientHandler {
 
+    const struct ucred peer_cred;
+
     Lua::ValuePtr handler;
     ChildLogger logger;
 
