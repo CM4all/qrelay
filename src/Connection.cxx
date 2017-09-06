@@ -69,7 +69,7 @@ QmqpRelayConnection::OnRequest(AllocatedArray<uint8_t> &&payload)
     handler->Push();
 
     const auto L = handler->GetState();
-    NewLuaMail(L, std::move(mail), GetSocket());
+    NewLuaMail(L, std::move(mail), GetSocket().GetPeerCredentials());
     if (lua_pcall(L, 1, 1, 0))
         throw Lua::PopError(L);
 

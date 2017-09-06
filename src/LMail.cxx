@@ -10,51 +10,37 @@
 #include "lua/Class.hxx"
 #include "CgroupProc.hxx"
 #include "MountProc.hxx"
-#include "net/SocketDescriptor.hxx"
 
 #include <sys/socket.h>
 #include <string.h>
 
 class IncomingMail : public MutableMail {
-    const SocketDescriptor fd;
-
-    bool have_cred = false;
-    struct ucred cred;
+    const struct ucred cred;
 
 public:
-    IncomingMail(MutableMail &&src, SocketDescriptor _fd)
-        :MutableMail(std::move(src)), fd(_fd) {}
+    IncomingMail(MutableMail &&src, const struct ucred &_peer_cred)
+        :MutableMail(std::move(src)), cred(_peer_cred) {}
 
-    bool HavePeerCred() noexcept {
-        LoadPeerCred();
+    bool HavePeerCred() const noexcept {
         return cred.pid >= 0;
     }
 
     int GetPid() const noexcept {
-        assert(have_cred);
+        assert(HavePeerCred());
 
         return cred.pid;
     }
 
     int GetUid() const noexcept {
-        assert(have_cred);
+        assert(HavePeerCred());
 
         return cred.uid;
     }
 
     int GetGid() const noexcept{
-        assert(have_cred);
+        assert(HavePeerCred());
 
         return cred.gid;
-    }
-
-private:
-    void LoadPeerCred() {
-        if (have_cred)
-            return;
-
-        cred = fd.GetPeerCredentials();
-        have_cred = true;
     }
 };
 
@@ -326,9 +312,9 @@ RegisterLuaMail(lua_State *L)
 }
 
 MutableMail *
-NewLuaMail(lua_State *L, MutableMail &&src, SocketDescriptor fd)
+NewLuaMail(lua_State *L, MutableMail &&src, const struct ucred &peer_cred)
 {
-    return LuaMail::New(L, std::move(src), fd);
+    return LuaMail::New(L, std::move(src), peer_cred);
 }
 
 MutableMail &

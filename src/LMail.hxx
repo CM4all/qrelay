@@ -5,15 +5,15 @@
 #ifndef QRELAY_LMAIL_HXX
 #define QRELAY_LMAIL_HXX
 
+struct ucred;
 struct lua_State;
 struct MutableMail;
-class SocketDescriptor;
 
 void
 RegisterLuaMail(lua_State *L);
 
 MutableMail *
-NewLuaMail(lua_State *L, MutableMail &&src, SocketDescriptor fd);
+NewLuaMail(lua_State *L, MutableMail &&src, const struct ucred &peer_cred);
 
 MutableMail &
 CastLuaMail(lua_State *L, int idx);
