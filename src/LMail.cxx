@@ -25,18 +25,26 @@ public:
     IncomingMail(MutableMail &&src, SocketDescriptor _fd)
         :MutableMail(std::move(src)), fd(_fd) {}
 
-    int GetPid() {
+    bool HavePeerCred() noexcept {
         LoadPeerCred();
+        return cred.pid >= 0;
+    }
+
+    int GetPid() const noexcept {
+        assert(have_cred);
+
         return cred.pid;
     }
 
-    int GetUid() {
-        LoadPeerCred();
+    int GetUid() const noexcept {
+        assert(have_cred);
+
         return cred.uid;
     }
 
-    int GetGid() {
-        LoadPeerCred();
+    int GetGid() const noexcept{
+        assert(have_cred);
+
         return cred.gid;
     }
 
@@ -203,11 +211,10 @@ try {
         luaL_argerror(L, 2, "string expected");
     const char *controller = lua_tostring(L, 2);
 
-    const int pid = mail.GetPid();
-    if (pid < 0)
+    if (!mail.HavePeerCred())
         return 0;
 
-    const auto path = ReadProcessCgroup(pid, controller);
+    const auto path = ReadProcessCgroup(mail.GetPid(), controller);
     if (path.empty())
         return 0;
 
@@ -229,11 +236,10 @@ try {
         luaL_argerror(L, 2, "string expected");
     const char *mountpoint = lua_tostring(L, 2);
 
-    const int pid = mail.GetPid();
-    if (pid < 0)
+    if (!mail.HavePeerCred())
         return 0;
 
-    const auto m = ReadProcessMount(pid, mountpoint);
+    const auto m = ReadProcessMount(mail.GetPid(), mountpoint);
     if (!m.IsDefined())
         return 0;
 
@@ -267,15 +273,6 @@ PushArray(lua_State *L, const std::vector<StringView> &src)
         Lua::SetTable(L, -3, i++, value);
 }
 
-static void
-PushOptional(lua_State *L, int value)
-{
-    if (value >= 0)
-        Lua::Push(L, value);
-    else
-        Lua::Push(L, nullptr);
-}
-
 static int
 LuaMailIndex(lua_State *L)
 {
@@ -303,13 +300,22 @@ LuaMailIndex(lua_State *L)
         PushArray(L, mail.recipients);
         return 1;
     } else if (strcmp(name, "pid") == 0) {
-        PushOptional(L, mail.GetPid());
+        if (!mail.HavePeerCred())
+            return 0;
+
+        Lua::Push(L, mail.GetPid());
         return 1;
     } else if (strcmp(name, "uid") == 0) {
-        PushOptional(L, mail.GetUid());
+        if (!mail.HavePeerCred())
+            return 0;
+
+        Lua::Push(L, mail.GetUid());
         return 1;
     } else if (strcmp(name, "gid") == 0) {
-        PushOptional(L, mail.GetGid());
+        if (!mail.HavePeerCred())
+            return 0;
+
+        Lua::Push(L, mail.GetGid());
         return 1;
     }
 
