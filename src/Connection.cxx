@@ -53,7 +53,7 @@ QmqpRelayConnection::OnRequest(AllocatedArray<uint8_t> &&payload)
     handler->Push();
 
     const auto L = handler->GetState();
-    NewLuaMail(L, std::move(mail), GetFD());
+    NewLuaMail(L, std::move(mail), GetSocket());
     if (lua_pcall(L, 1, 1, 0))
         throw Lua::PopError(L);
 
@@ -189,7 +189,7 @@ QmqpRelayConnection::OnConnect(int out_fd, int in_fd)
 
     struct ucred cred;
     socklen_t len = sizeof (cred);
-    if (getsockopt(GetFD(), SOL_SOCKET, SO_PEERCRED, &cred, &len) == 0) {
+    if (getsockopt(GetSocket().Get(), SOL_SOCKET, SO_PEERCRED, &cred, &len) == 0) {
         int length = sprintf(received_buffer,
                              "Received: from PID=%u UID=%u with QMQP\r\n",
                              unsigned(cred.pid), unsigned(cred.uid));

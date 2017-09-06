@@ -10,18 +10,19 @@
 #include "lua/Class.hxx"
 #include "CgroupProc.hxx"
 #include "MountProc.hxx"
+#include "net/SocketDescriptor.hxx"
 
 #include <sys/socket.h>
 #include <string.h>
 
 class IncomingMail : public MutableMail {
-    const int fd;
+    const SocketDescriptor fd;
 
     bool have_cred = false;
     struct ucred cred;
 
 public:
-    IncomingMail(MutableMail &&src, int _fd)
+    IncomingMail(MutableMail &&src, SocketDescriptor _fd)
         :MutableMail(std::move(src)), fd(_fd) {}
 
     int GetPid() {
@@ -47,7 +48,7 @@ private:
         have_cred = true;
 
         socklen_t len = sizeof(cred);
-        if (getsockopt(fd, SOL_SOCKET, SO_PEERCRED, &cred, &len) < 0) {
+        if (getsockopt(fd.Get(), SOL_SOCKET, SO_PEERCRED, &cred, &len) < 0) {
             cred.pid = -1;
             cred.uid = -1;
             cred.gid = -1;
@@ -325,7 +326,7 @@ RegisterLuaMail(lua_State *L)
 }
 
 MutableMail *
-NewLuaMail(lua_State *L, MutableMail &&src, int fd)
+NewLuaMail(lua_State *L, MutableMail &&src, SocketDescriptor fd)
 {
     return LuaMail::New(L, std::move(src), fd);
 }
