@@ -24,7 +24,8 @@
 QmqpRelayConnection::QmqpRelayConnection(Lua::ValuePtr _handler,
                                          const RootLogger &parent_logger,
                                          EventLoop &event_loop,
-                                         UniqueSocketDescriptor &&_fd)
+                                         UniqueSocketDescriptor &&_fd,
+                                         SocketAddress)
     :NetstringServer(event_loop, std::move(_fd)),
      handler(std::move(_handler)),
      logger(parent_logger, "connection"),

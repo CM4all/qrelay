@@ -42,7 +42,7 @@ public:
     QmqpRelayConnection(Lua::ValuePtr _handler,
                         const RootLogger &parent_logger,
                         EventLoop &event_loop,
-                        UniqueSocketDescriptor &&_fd);
+                        UniqueSocketDescriptor &&_fd, SocketAddress address);
 
     static void Register(lua_State *L);
 
