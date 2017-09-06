@@ -40,12 +40,12 @@ QmqpRelayConnection::OnRequest(AllocatedArray<uint8_t> &&payload)
 
     handler->Push();
 
+    const auto L = handler->GetState();
     NewLuaMail(L, std::move(mail), GetFD());
     if (lua_pcall(L, 1, 1, 0))
         throw Lua::PopError(L);
 
-    const auto _L = L;
-    AtScopeExit(_L) { lua_pop(_L, 1); };
+    AtScopeExit(L) { lua_pop(L, 1); };
 
     auto *action = CheckLuaAction(L, -1);
     if (action == nullptr)
@@ -169,6 +169,7 @@ CastMail(lua_State *L, const Lua::Value &value)
 void
 QmqpRelayConnection::OnConnect(int out_fd, int in_fd)
 {
+    const auto L = outgoing_mail.GetState();
     auto &mail = CastMail(L, outgoing_mail);
 
     std::list<ConstBuffer<void>> request;

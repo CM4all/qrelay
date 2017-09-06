@@ -21,8 +21,7 @@ Instance::Instance()
 }
 
 void
-Instance::AddSystemdQmqpRelayServer(lua_State *L,
-                                    Lua::ValuePtr &&handler)
+Instance::AddSystemdQmqpRelayServer(Lua::ValuePtr &&handler)
 {
     int n = sd_listen_fds(true);
     if (n < 0) {
@@ -36,7 +35,7 @@ Instance::AddSystemdQmqpRelayServer(lua_State *L,
     }
 
     for (unsigned i = 0; i < unsigned(n); ++i) {
-        qmqp_relay_servers.emplace_front(event_loop, L,
+        qmqp_relay_servers.emplace_front(event_loop,
                                          Lua::ValuePtr(handler),
                                          logger, event_loop);
         qmqp_relay_servers.front().Listen(UniqueSocketDescriptor(SD_LISTEN_FDS_START + i));

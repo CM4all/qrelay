@@ -22,7 +22,6 @@ class QmqpRelayConnection final :
     public NetstringServer, ConnectSocketHandler,
     NetstringClientHandler {
 
-    lua_State *const L;
     Lua::ValuePtr handler;
     ChildLogger logger;
 
@@ -40,14 +39,14 @@ class QmqpRelayConnection final :
     NetstringClient client;
 
 public:
-    QmqpRelayConnection(lua_State *_L, Lua::ValuePtr _handler,
+    QmqpRelayConnection(Lua::ValuePtr _handler,
                         const RootLogger &parent_logger,
                         EventLoop &event_loop,
                         UniqueSocketDescriptor &&_fd)
         :NetstringServer(event_loop, std::move(_fd)),
-         L(_L), handler(std::move(_handler)),
+         handler(std::move(_handler)),
          logger(parent_logger, "connection"),
-         outgoing_mail(_L),
+         outgoing_mail(handler->GetState()),
          connect(event_loop, *this),
          client(event_loop, 256, *this) {}
 

@@ -11,7 +11,7 @@
 #include "lua/ValuePtr.hxx"
 
 typedef TemplateServerSocket<QmqpRelayConnection,
-                             lua_State *, Lua::ValuePtr,
+                             Lua::ValuePtr,
                              RootLogger, EventLoop &> QmqpRelayServer;
 
 #endif
