@@ -2,8 +2,8 @@ Source: cm4all-qrelay
 Section: non-free/mail
 Priority: extra
 Maintainer: Max Kellermann <mk@cm4all.com>
-Build-Depends: debhelper (>= 9), dh-autoreconf, dh-systemd,
- meson (>= 0.37), make,
+Build-Depends: debhelper (>= 9), dh-systemd,
+ meson (>= 0.37),
  g++ (>= 4:4.9),
  libc6-dev (>= 2.13),
  libboost-program-options-dev (>= 1.54),
