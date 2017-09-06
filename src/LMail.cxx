@@ -53,13 +53,8 @@ private:
         if (have_cred)
             return;
 
+        cred = fd.GetPeerCredentials();
         have_cred = true;
-
-        if (fd.GetOption(SOL_SOCKET, SO_PEERCRED, &cred, sizeof(cred)) < sizeof(cred)) {
-            cred.pid = -1;
-            cred.uid = -1;
-            cred.gid = -1;
-        }
     }
 };
 

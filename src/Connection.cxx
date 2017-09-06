@@ -27,9 +27,8 @@ MakeLoggerDomain(SocketDescriptor fd, SocketAddress)
 {
     assert(fd.IsDefined());
 
-    struct ucred cred;
-    if (fd.GetOption(SOL_SOCKET, SO_PEERCRED,
-                     &cred, sizeof(cred)) < sizeof(cred))
+    const auto cred = fd.GetPeerCredentials();
+    if (cred.pid < 0)
         return "connection";
 
     char buffer[128];
@@ -204,8 +203,8 @@ QmqpRelayConnection::OnConnect(int out_fd, int in_fd)
     std::list<ConstBuffer<void>> request;
     request.push_back(mail.message.ToVoid());
 
-    struct ucred cred;
-    if (GetSocket().GetOption(SOL_SOCKET, SO_PEERCRED, &cred, sizeof(cred)) >= sizeof(cred)) {
+    const auto cred = GetSocket().GetPeerCredentials();
+    if (cred.pid >= 0) {
         int length = sprintf(received_buffer,
                              "Received: from PID=%u UID=%u with QMQP\r\n",
                              unsigned(cred.pid), unsigned(cred.uid));
