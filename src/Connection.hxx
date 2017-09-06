@@ -42,13 +42,7 @@ public:
     QmqpRelayConnection(Lua::ValuePtr _handler,
                         const RootLogger &parent_logger,
                         EventLoop &event_loop,
-                        UniqueSocketDescriptor &&_fd)
-        :NetstringServer(event_loop, std::move(_fd)),
-         handler(std::move(_handler)),
-         logger(parent_logger, "connection"),
-         outgoing_mail(handler->GetState()),
-         connect(event_loop, *this),
-         client(event_loop, 256, *this) {}
+                        UniqueSocketDescriptor &&_fd);
 
     static void Register(lua_State *L);
 
