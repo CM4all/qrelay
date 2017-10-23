@@ -7,7 +7,7 @@
 
 #include "io/Logger.hxx"
 #include "Connection.hxx"
-#include "net/TemplateServerSocket.hxx"
+#include "event/net/TemplateServerSocket.hxx"
 #include "lua/ValuePtr.hxx"
 
 typedef TemplateServerSocket<QmqpRelayConnection,

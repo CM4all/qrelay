@@ -92,12 +92,8 @@ net = static_library('net',
   'libcommon/src/net/Resolver.cxx',
   'libcommon/src/net/Parser.cxx',
   'libcommon/src/net/ToString.cxx',
-  'libcommon/src/net/ServerSocket.cxx',
-  'libcommon/src/net/ConnectSocket.cxx',
   'libcommon/src/net/SocketDescriptor.cxx',
   'libcommon/src/net/UniqueSocketDescriptor.cxx',
-  'libcommon/src/net/djb/NetstringServer.cxx',
-  'libcommon/src/net/djb/NetstringClient.cxx',
   'libcommon/src/net/djb/NetstringInput.cxx',
   'libcommon/src/net/djb/NetstringHeader.cxx',
   'libcommon/src/net/djb/NetstringGenerator.cxx',
@@ -107,6 +103,21 @@ net = static_library('net',
     io_dep,
   ])
 net_dep = declare_dependency(link_with: net)
+
+event_net = static_library('event_net',
+  'libcommon/src/event/net/ConnectSocket.cxx',
+  'libcommon/src/event/net/ServerSocket.cxx',
+  'libcommon/src/event/net/djb/NetstringServer.cxx',
+  'libcommon/src/event/net/djb/NetstringClient.cxx',
+  'libcommon/src/event/net/djb/QmqpClient.cxx',
+  include_directories: inc,
+  dependencies: [
+    libevent,
+    event_dep,
+    net_dep,
+    util_dep,
+  ])
+event_net_dep = declare_dependency(link_with: event_net)
 
 executable('cm4all-qrelay',
   'src/CommandLine.cxx',
@@ -129,6 +140,5 @@ executable('cm4all-qrelay',
     liblua,
     util_dep,
     lua_dep,
-    net_dep,
-    event_dep,
+    event_net_dep,
   ])
