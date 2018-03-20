@@ -7,8 +7,8 @@ them to another QMQP server.
 For more information, read the manual in the `doc` directory.
 
 
-Building Workshop
------------------
+Building qrelay
+---------------
 
 You need:
 
