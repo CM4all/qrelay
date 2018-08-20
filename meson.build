@@ -41,7 +41,7 @@ util = static_library('util',
   'libcommon/src/util/PrintException.cxx',
   'libcommon/src/util/StringBuilder.cxx',
   'libcommon/src/util/StringParser.cxx',
-  'libcommon/src/util/StringUtil.cxx',
+  'libcommon/src/util/StringStrip.cxx',
   'libcommon/src/util/StringView.cxx',
   include_directories: inc,
   dependencies: [
