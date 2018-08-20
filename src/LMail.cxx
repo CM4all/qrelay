@@ -233,7 +233,7 @@ try {
     return luaL_error(L, e.what());
 }
 
-static constexpr struct luaL_reg mail_methods [] = {
+static constexpr struct luaL_Reg mail_methods [] = {
     {"insert_header", InsertHeader},
     {"connect", NewConnectAction},
     {"discard", NewDiscardAction},
