@@ -83,17 +83,17 @@ protected:
     void OnResponse(const void *data, size_t size);
 
     void OnRequest(AllocatedArray<uint8_t> &&payload) override;
-    void OnError(std::exception_ptr ep) override;
-    void OnDisconnect() override;
+    void OnError(std::exception_ptr ep) noexcept override;
+    void OnDisconnect() noexcept override;
 
 private:
     /* virtual methods from class ConnectSocketHandler */
-    void OnSocketConnectSuccess(UniqueSocketDescriptor &&fd) override;
-    void OnSocketConnectError(std::exception_ptr ep) override;
+    void OnSocketConnectSuccess(UniqueSocketDescriptor &&fd) noexcept override;
+    void OnSocketConnectError(std::exception_ptr ep) noexcept override;
 
     /* virtual methods from class NetstringClientHandler */
-    void OnNetstringResponse(AllocatedArray<uint8_t> &&payload) override;
-    void OnNetstringError(std::exception_ptr error) override;
+    void OnNetstringResponse(AllocatedArray<uint8_t> &&payload) noexcept override;
+    void OnNetstringError(std::exception_ptr error) noexcept override;
 };
 
 #endif

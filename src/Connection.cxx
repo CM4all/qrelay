@@ -246,27 +246,27 @@ QmqpRelayConnection::OnConnect(int out_fd, int in_fd)
 }
 
 void
-QmqpRelayConnection::OnError(std::exception_ptr ep)
+QmqpRelayConnection::OnError(std::exception_ptr ep) noexcept
 {
     logger(1, ep);
     delete this;
 }
 
 void
-QmqpRelayConnection::OnDisconnect()
+QmqpRelayConnection::OnDisconnect() noexcept
 {
     delete this;
 }
 
 void
-QmqpRelayConnection::OnSocketConnectSuccess(UniqueSocketDescriptor &&_fd)
+QmqpRelayConnection::OnSocketConnectSuccess(UniqueSocketDescriptor &&_fd) noexcept
 {
     const int connection_fd = _fd.Steal();
     OnConnect(connection_fd, connection_fd);
 }
 
 void
-QmqpRelayConnection::OnSocketConnectError(std::exception_ptr ep)
+QmqpRelayConnection::OnSocketConnectError(std::exception_ptr ep) noexcept
 {
     logger(1, ep);
     if (SendResponse("Zconnect failed"))
@@ -274,14 +274,14 @@ QmqpRelayConnection::OnSocketConnectError(std::exception_ptr ep)
 }
 
 void
-QmqpRelayConnection::OnNetstringResponse(AllocatedArray<uint8_t> &&payload)
+QmqpRelayConnection::OnNetstringResponse(AllocatedArray<uint8_t> &&payload) noexcept
 {
     if (SendResponse(&payload.front(), payload.size()))
         delete this;
 }
 
 void
-QmqpRelayConnection::OnNetstringError(std::exception_ptr)
+QmqpRelayConnection::OnNetstringError(std::exception_ptr) noexcept
 {
     if (SendResponse("Zrelay failed"))
         delete this;
