@@ -8,6 +8,8 @@ else
   debug = false
 endif
 
+compiler = meson.get_compiler('cpp')
+
 common_flags = [
   '-D_GNU_SOURCE',
   '-Wall',
@@ -19,9 +21,20 @@ common_flags = [
   '-Wunused',
 ]
 
-add_global_arguments(common_flags,
+test_common_flags = [
+]
+
+test_cxxflags = test_common_flags + [
   '-Wno-non-virtual-dtor',
-  language: 'cpp')
+]
+
+add_global_arguments(common_flags, language: 'cpp')
+
+foreach f: test_cxxflags
+  if compiler.has_argument(f)
+    add_global_arguments(f, language: 'cpp')
+  endif
+endforeach
 
 if debug
   common_flags += ['-DPOISON']
