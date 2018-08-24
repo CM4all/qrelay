@@ -22,9 +22,13 @@ common_flags = [
 ]
 
 test_common_flags = [
+  '-fvisibility=hidden',
 ]
 
 test_cxxflags = test_common_flags + [
+  '-fno-threadsafe-statics',
+  '-fmerge-all-constants',
+
   '-Wno-non-virtual-dtor',
 ]
 
