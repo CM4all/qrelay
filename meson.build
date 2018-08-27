@@ -1,6 +1,5 @@
-project('CM4all qrelay', ['c', 'cpp'], version: '0.10',
+project('CM4all qrelay', 'cpp', version: '0.10',
   default_options: [
-    'c_std=c99',
     'cpp_std=c++14'
   ],
 )
@@ -13,7 +12,6 @@ else
 endif
 
 compiler = meson.get_compiler('cpp')
-c_compiler = meson.get_compiler('c')
 
 common_flags = [
   '-D_GNU_SOURCE',
@@ -37,26 +35,11 @@ test_cxxflags = test_common_flags + [
   '-Wno-non-virtual-dtor',
 ]
 
-test_cflags = test_common_flags + [
-  '-Wmissing-prototypes', '-Wstrict-prototypes',
-  '-Wbad-function-cast',
-  '-Waggregate-return',
-  '-Wnested-externs',
-  '-pedantic',
-]
-
 add_global_arguments(common_flags, language: 'cpp')
-add_global_arguments(common_flags, language: 'c')
 
 foreach f: test_cxxflags
   if compiler.has_argument(f)
     add_global_arguments(f, language: 'cpp')
-  endif
-endforeach
-
-foreach f: test_cflags
-  if c_compiler.has_argument(f)
-    add_global_arguments(f, language: 'c')
   endif
 endforeach
 
@@ -70,11 +53,10 @@ libsystemd = dependency('libsystemd')
 inc = include_directories(
   'src',
   'libcommon/src',
-
-  # This is for the BufferedSocket class which this project doesn't
-  # use
-  'libcommon/fake',
 )
+
+libcommon_enable_c = false
+libcommon_enable_DefaultFifoBuffer = false
 
 subdir('libcommon/src/util')
 subdir('libcommon/src/lua')
