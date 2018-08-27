@@ -1,5 +1,9 @@
-project('CM4all qrelay', 'cpp', version: '0.10',
-  default_options : ['cpp_std=c++14'])
+project('CM4all qrelay', ['c', 'cpp'], version: '0.10',
+  default_options: [
+    'c_std=c99',
+    'cpp_std=c++14'
+  ],
+)
 
 # TODO: use get_option('b_ndebug'), but that doesn't work with Meson 0.37.1
 if get_option('buildtype') == 'debug'
@@ -9,6 +13,7 @@ else
 endif
 
 compiler = meson.get_compiler('cpp')
+c_compiler = meson.get_compiler('c')
 
 common_flags = [
   '-D_GNU_SOURCE',
@@ -32,7 +37,16 @@ test_cxxflags = test_common_flags + [
   '-Wno-non-virtual-dtor',
 ]
 
+test_cflags = test_common_flags + [
+  '-Wmissing-prototypes', '-Wstrict-prototypes',
+  '-Wbad-function-cast',
+  '-Waggregate-return',
+  '-Wnested-externs',
+  '-pedantic',
+]
+
 add_global_arguments(common_flags, language: 'cpp')
+add_global_arguments(common_flags, language: 'c')
 
 foreach f: test_cxxflags
   if compiler.has_argument(f)
@@ -40,107 +54,41 @@ foreach f: test_cxxflags
   endif
 endforeach
 
+foreach f: test_cflags
+  if c_compiler.has_argument(f)
+    add_global_arguments(f, language: 'c')
+  endif
+endforeach
+
 if debug
   common_flags += ['-DPOISON']
 endif
 
-boost = dependency('boost', modules: ['program_options'], version: '>= 1.54')
-liblua = dependency('luajit')
+boost_program_options = dependency('boost', modules: ['program_options'], version: '>= 1.54')
 libsystemd = dependency('libsystemd')
 
-inc = include_directories('src', 'libcommon/src')
+inc = include_directories(
+  'src',
+  'libcommon/src',
 
-util = static_library('util',
-  'libcommon/src/util/AllocatedString.cxx',
-  'libcommon/src/util/Exception.cxx',
-  'libcommon/src/util/LeakDetector.cxx',
-  'libcommon/src/util/PrintException.cxx',
-  'libcommon/src/util/StringBuilder.cxx',
-  'libcommon/src/util/StringParser.cxx',
-  'libcommon/src/util/StringStrip.cxx',
-  'libcommon/src/util/StringView.cxx',
-  include_directories: inc,
-  dependencies: [
-  ])
-util_dep = declare_dependency(link_with: util)
-
-lua = static_library('lua',
-  'libcommon/src/lua/Error.cxx',
-  'libcommon/src/lua/RunFile.cxx',
-  'libcommon/src/lua/State.cxx',
-  dependencies: [
-    liblua,
-  ]
+  # This is for the BufferedSocket class which this project doesn't
+  # use
+  'libcommon/fake',
 )
-lua_dep = declare_dependency(link_with: lua)
 
-event = static_library('event',
-  'libcommon/src/event/Loop.cxx',
-  'libcommon/src/event/ShutdownListener.cxx',
-  'libcommon/src/event/CleanupTimer.cxx',
-  'libcommon/src/event/TimerEvent.cxx',
-  'libcommon/src/event/DeferEvent.cxx',
-  'libcommon/src/event/SocketEvent.cxx',
-  'libcommon/src/event/SignalEvent.cxx',
-  include_directories: inc,
-  dependencies: [
-    util_dep,
-  ])
-event_dep = declare_dependency(link_with: event)
-
-io = static_library('io',
-  'libcommon/src/io/FileDescriptor.cxx',
-  'libcommon/src/io/WriteBuffer.cxx',
-  'libcommon/src/io/MultiWriteBuffer.cxx',
-  'libcommon/src/io/Logger.cxx',
-  include_directories: inc,
-  dependencies: [
-  ])
-io_dep = declare_dependency(link_with: io)
-
-net = static_library('net',
-  'libcommon/src/net/SocketAddress.cxx',
-  'libcommon/src/net/StaticSocketAddress.cxx',
-  'libcommon/src/net/AllocatedSocketAddress.cxx',
-  'libcommon/src/net/IPv4Address.cxx',
-  'libcommon/src/net/IPv6Address.cxx',
-  'libcommon/src/net/HostParser.cxx',
-  'libcommon/src/net/AddressInfo.cxx',
-  'libcommon/src/net/Resolver.cxx',
-  'libcommon/src/net/Parser.cxx',
-  'libcommon/src/net/ToString.cxx',
-  'libcommon/src/net/SocketDescriptor.cxx',
-  'libcommon/src/net/UniqueSocketDescriptor.cxx',
-  'libcommon/src/net/djb/NetstringInput.cxx',
-  'libcommon/src/net/djb/NetstringHeader.cxx',
-  'libcommon/src/net/djb/NetstringGenerator.cxx',
-  include_directories: inc,
-  dependencies: [
-    declare_dependency(link_with: event),
-    io_dep,
-  ])
-net_dep = declare_dependency(link_with: net)
-
-event_net = static_library('event_net',
-  'libcommon/src/event/net/ConnectSocket.cxx',
-  'libcommon/src/event/net/ServerSocket.cxx',
-  'libcommon/src/event/net/djb/NetstringServer.cxx',
-  'libcommon/src/event/net/djb/NetstringClient.cxx',
-  'libcommon/src/event/net/djb/QmqpClient.cxx',
-  include_directories: inc,
-  dependencies: [
-    event_dep,
-    net_dep,
-    util_dep,
-  ])
-event_net_dep = declare_dependency(link_with: event_net)
+subdir('libcommon/src/util')
+subdir('libcommon/src/lua')
+subdir('libcommon/src/io')
+subdir('libcommon/src/system')
+subdir('libcommon/src/event')
+subdir('libcommon/src/net')
+subdir('libcommon/src/event/net')
 
 executable('cm4all-qrelay',
   'src/CommandLine.cxx',
   'src/djb/NetstringParser.cxx',
   'src/djb/QmqpMail.cxx',
   'src/system/SetupProcess.cxx',
-  'libcommon/src/system/EpollFD.cxx',
   'src/CgroupProc.cxx',
   'src/MountProc.cxx',
   'src/Instance.cxx',
@@ -153,7 +101,7 @@ executable('cm4all-qrelay',
   'src/Main.cxx',
   include_directories: inc,
   dependencies: [
-    boost, libsystemd,
+    boost_program_options, libsystemd,
     liblua,
     util_dep,
     lua_dep,
