@@ -7,7 +7,6 @@ Build-Depends: debhelper (>= 9), dh-systemd,
  g++ (>= 4:4.9),
  libc6-dev (>= 2.13),
  libboost-program-options-dev (>= 1.54),
- libevent-dev (>= 2.0.19),
  libsystemd-dev,
  libluajit-5.1-dev,
  python3-sphinx

@@ -14,7 +14,6 @@ You need:
 
 - a C++14 compliant compiler (e.g. gcc or clang)
 - `LuaJIT <http://luajit.org/>`__
-- `libevent <http://libevent.org/>`__
 - `Boost <http://www.boost.org/>`__
 - `D-Bus <https://www.freedesktop.org/wiki/Software/dbus/>`__
 - `systemd <https://www.freedesktop.org/wiki/Software/systemd/>`__
