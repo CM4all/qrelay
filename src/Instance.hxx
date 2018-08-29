@@ -33,10 +33,11 @@
 #ifndef INSTANCE_HXX
 #define INSTANCE_HXX
 
-#include "io/Logger.hxx"
 #include "Listener.hxx"
+#include "io/Logger.hxx"
 #include "event/Loop.hxx"
 #include "event/ShutdownListener.hxx"
+#include "lua/State.hxx"
 #include "lua/ValuePtr.hxx"
 
 #include <forward_list>
@@ -47,6 +48,8 @@ class Instance {
 	EventLoop event_loop;
 	ShutdownListener shutdown_listener;
 
+	Lua::State lua_state;
+
 	std::forward_list<QmqpRelayListener> listeners;
 
 public:
@@ -56,6 +59,10 @@ public:
 
 	EventLoop &GetEventLoop() {
 		return event_loop;
+	}
+
+	lua_State *GetLuaState() {
+		return lua_state.get();
 	}
 
 	void AddListener(UniqueSocketDescriptor &&fd,

@@ -33,6 +33,10 @@
 #include "Instance.hxx"
 #include "net/SocketConfig.hxx"
 
+extern "C" {
+#include <lauxlib.h>
+}
+
 #include <systemd/sd-daemon.h>
 
 #include <stdexcept>
@@ -44,7 +48,8 @@ using std::endl;
 #include <string.h>
 
 Instance::Instance()
-	:shutdown_listener(event_loop, BIND_THIS_METHOD(ShutdownCallback))
+	:shutdown_listener(event_loop, BIND_THIS_METHOD(ShutdownCallback)),
+	 lua_state(luaL_newstate())
 {
 	shutdown_listener.Enable();
 }

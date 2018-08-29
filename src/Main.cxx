@@ -36,7 +36,6 @@
 #include "LResolver.hxx"
 #include "system/SetupProcess.hxx"
 #include "net/AllocatedSocketAddress.hxx"
-#include "lua/State.hxx"
 #include "lua/Value.hxx"
 #include "lua/Util.hxx"
 #include "lua/Error.hxx"
@@ -124,16 +123,14 @@ SetupRuntimeState(lua_State *L)
 static int
 Run(const CommandLine &cmdline)
 {
-	Lua::State state(luaL_newstate());
-
 	Instance instance;
-	SetupConfigState(state.get(), instance);
+	SetupConfigState(instance.GetLuaState(), instance);
 
-	Lua::RunFile(state.get(), cmdline.config_path.c_str());
+	Lua::RunFile(instance.GetLuaState(), cmdline.config_path.c_str());
 
 	instance.Check();
 
-	SetupRuntimeState(state.get());
+	SetupRuntimeState(instance.GetLuaState());
 
 	/* tell systemd we're ready */
 	sd_notify(0, "READY=1");
