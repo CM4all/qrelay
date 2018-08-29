@@ -1,6 +1,7 @@
 cm4all-qrelay (0.10) unstable; urgency=low
 
   * show connection's pid and uid in log messages
+  * fix passage_listen() error message
   * eliminate dependency on libevent
 
  --   

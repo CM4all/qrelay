@@ -39,6 +39,7 @@
 #include "lua/State.hxx"
 #include "lua/Value.hxx"
 #include "lua/Util.hxx"
+#include "lua/Error.hxx"
 #include "lua/RunFile.hxx"
 #include "util/OstreamException.hxx"
 
@@ -66,7 +67,7 @@ IsSystemdMagic(lua_State *L, int idx)
 
 static int
 l_qmqp_listen(lua_State *L)
-{
+try {
   auto &instance = *(Instance *)lua_touserdata(L, lua_upvalueindex(1));
 
   if (lua_gettop(L) != 2)
@@ -90,6 +91,9 @@ l_qmqp_listen(lua_State *L)
       luaL_argerror(L, 1, "path expected");
 
   return 0;
+} catch (...) {
+    Lua::Push(L, std::current_exception());
+    return lua_error(L);
 }
 
 static void
