@@ -47,22 +47,22 @@ using std::endl;
 CommandLine
 ParseCommandLine(int argc, char **argv)
 {
-    po::options_description desc("Allowed options");
-    desc.add_options()
-        ("help", "produce help message")
-        ("config", po::value<std::string>()->required(),
-         "load this configuration file")
-        ;
+	po::options_description desc("Allowed options");
+	desc.add_options()
+		("help", "produce help message")
+		("config", po::value<std::string>()->required(),
+		 "load this configuration file")
+		;
 
-    po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, desc), vm);
+	po::variables_map vm;
+	po::store(po::parse_command_line(argc, argv, desc), vm);
 
-    if (vm.count("help")) {
-        cout << desc << endl;
-        exit(EXIT_SUCCESS);
-    }
+	if (vm.count("help")) {
+		cout << desc << endl;
+		exit(EXIT_SUCCESS);
+	}
 
-    po::notify(vm);
+	po::notify(vm);
 
-    return { vm["config"].as<std::string>() };
+	return { vm["config"].as<std::string>() };
 }

@@ -46,26 +46,26 @@
  * the mail.
  */
 struct MutableMail : QmqpMail {
-    /**
-     * The buffer where the #QmqpMail's #StringView instances point
-     * into.
-     */
-    AllocatedArray<uint8_t> buffer;
+	/**
+	 * The buffer where the #QmqpMail's #StringView instances point
+	 * into.
+	 */
+	AllocatedArray<uint8_t> buffer;
 
-    /**
-     * A list of additional header lines (each ending with "\r\n")
-     * which get inserted at the top of the mail.
-     */
-    std::forward_list<std::string> headers;
+	/**
+	 * A list of additional header lines (each ending with "\r\n")
+	 * which get inserted at the top of the mail.
+	 */
+	std::forward_list<std::string> headers;
 
-    explicit MutableMail(AllocatedArray<uint8_t> &&_buffer)
-        :buffer(_buffer) {}
+	explicit MutableMail(AllocatedArray<uint8_t> &&_buffer)
+		:buffer(_buffer) {}
 
-    bool Parse() {
-        return QmqpMail::Parse({&buffer.front(), buffer.size()});
-    }
+	bool Parse() {
+		return QmqpMail::Parse({&buffer.front(), buffer.size()});
+	}
 
-    void InsertHeader(const char *name, const char *value);
+	void InsertHeader(const char *name, const char *value);
 };
 
 #endif

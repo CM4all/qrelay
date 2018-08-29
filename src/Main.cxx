@@ -61,99 +61,99 @@ static int systemd_magic = 42;
 static bool
 IsSystemdMagic(lua_State *L, int idx)
 {
-    return lua_islightuserdata(L, idx) &&
-        lua_touserdata(L, idx) == &systemd_magic;
+	return lua_islightuserdata(L, idx) &&
+		lua_touserdata(L, idx) == &systemd_magic;
 }
 
 static int
 l_qmqp_listen(lua_State *L)
 try {
-  auto &instance = *(Instance *)lua_touserdata(L, lua_upvalueindex(1));
+	auto &instance = *(Instance *)lua_touserdata(L, lua_upvalueindex(1));
 
-  if (lua_gettop(L) != 2)
-      return luaL_error(L, "Invalid parameter count");
+	if (lua_gettop(L) != 2)
+		return luaL_error(L, "Invalid parameter count");
 
-  if (!lua_isfunction(L, 2))
-      luaL_argerror(L, 2, "function expected");
+	if (!lua_isfunction(L, 2))
+		luaL_argerror(L, 2, "function expected");
 
-  auto handler = std::make_shared<Lua::Value>(L, Lua::StackIndex(2));
+	auto handler = std::make_shared<Lua::Value>(L, Lua::StackIndex(2));
 
-  if (IsSystemdMagic(L, 1)) {
-      instance.AddSystemdQmqpRelayServer(std::move(handler));
-  } else if (lua_isstring(L, 1)) {
-      const char *address_string = lua_tostring(L, 1);
+	if (IsSystemdMagic(L, 1)) {
+		instance.AddSystemdQmqpRelayServer(std::move(handler));
+	} else if (lua_isstring(L, 1)) {
+		const char *address_string = lua_tostring(L, 1);
 
-      AllocatedSocketAddress address;
-      address.SetLocal(address_string);
+		AllocatedSocketAddress address;
+		address.SetLocal(address_string);
 
-      instance.AddQmqpRelayServer(address, std::move(handler));
-  } else
-      luaL_argerror(L, 1, "path expected");
+		instance.AddQmqpRelayServer(address, std::move(handler));
+	} else
+		luaL_argerror(L, 1, "path expected");
 
-  return 0;
+	return 0;
 } catch (...) {
-    Lua::Push(L, std::current_exception());
-    return lua_error(L);
+	Lua::Push(L, std::current_exception());
+	return lua_error(L);
 }
 
 static void
 SetupConfigState(lua_State *L, Instance &instance)
 {
-    luaL_openlibs(L);
+	luaL_openlibs(L);
 
-    RegisterLuaAddress(L);
-    RegisterLuaResolver(L);
+	RegisterLuaAddress(L);
+	RegisterLuaResolver(L);
 
-    Lua::SetGlobal(L, "systemd", Lua::LightUserData(&systemd_magic));
+	Lua::SetGlobal(L, "systemd", Lua::LightUserData(&systemd_magic));
 
-    Lua::SetGlobal(L, "qmqp_listen",
-                   Lua::MakeCClosure(l_qmqp_listen,
-                                     Lua::LightUserData(&instance)));
+	Lua::SetGlobal(L, "qmqp_listen",
+		       Lua::MakeCClosure(l_qmqp_listen,
+					 Lua::LightUserData(&instance)));
 }
 
 static void
 SetupRuntimeState(lua_State *L)
 {
-    Lua::SetGlobal(L, "qmqp_listen", nullptr);
+	Lua::SetGlobal(L, "qmqp_listen", nullptr);
 
-    QmqpRelayConnection::Register(L);
+	QmqpRelayConnection::Register(L);
 
-    UnregisterLuaResolver(L);
+	UnregisterLuaResolver(L);
 }
 
 static int
 Run(const CommandLine &cmdline)
 {
-    Lua::State state(luaL_newstate());
+	Lua::State state(luaL_newstate());
 
-    Instance instance;
-    SetupConfigState(state.get(), instance);
+	Instance instance;
+	SetupConfigState(state.get(), instance);
 
-    Lua::RunFile(state.get(), cmdline.config_path.c_str());
+	Lua::RunFile(state.get(), cmdline.config_path.c_str());
 
-    instance.Check();
+	instance.Check();
 
-    SetupRuntimeState(state.get());
+	SetupRuntimeState(state.get());
 
-    /* tell systemd we're ready */
-    sd_notify(0, "READY=1");
+	/* tell systemd we're ready */
+	sd_notify(0, "READY=1");
 
-    instance.GetEventLoop().Dispatch();
+	instance.GetEventLoop().Dispatch();
 
-    return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 }
 
 int
 main(int argc, char **argv)
 try {
-    const auto cmdline = ParseCommandLine(argc, argv);
+	const auto cmdline = ParseCommandLine(argc, argv);
 
-    SetupProcess();
+	SetupProcess();
 
-    const int result = Run(cmdline);
-    cerr << "exiting" << endl;
-    return result;
+	const int result = Run(cmdline);
+	cerr << "exiting" << endl;
+	return result;
 } catch (const std::exception &e) {
-    cerr << "error: " << e << endl;
-    return EXIT_FAILURE;
+	cerr << "error: " << e << endl;
+	return EXIT_FAILURE;
 }

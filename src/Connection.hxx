@@ -48,54 +48,54 @@
 struct Action;
 
 class QmqpRelayConnection final :
-    public boost::intrusive::list_base_hook<boost::intrusive::link_mode<boost::intrusive::auto_unlink>>,
-    public NetstringServer, ConnectSocketHandler,
-    NetstringClientHandler {
+	public boost::intrusive::list_base_hook<boost::intrusive::link_mode<boost::intrusive::auto_unlink>>,
+	public NetstringServer, ConnectSocketHandler,
+	NetstringClientHandler {
 
-    const struct ucred peer_cred;
+	const struct ucred peer_cred;
 
-    Lua::ValuePtr handler;
-    ChildLogger logger;
+	Lua::ValuePtr handler;
+	ChildLogger logger;
 
-    NetstringGenerator generator;
+	NetstringGenerator generator;
 
-    char received_buffer[256];
+	char received_buffer[256];
 
-    /**
-     * The #LuaMail that is going to be sent once we've connected to
-     * the outgoing QMQP server.
-     */
-    Lua::Value outgoing_mail;
+	/**
+	 * The #LuaMail that is going to be sent once we've connected to
+	 * the outgoing QMQP server.
+	 */
+	Lua::Value outgoing_mail;
 
-    ConnectSocket connect;
-    NetstringClient client;
+	ConnectSocket connect;
+	NetstringClient client;
 
 public:
-    QmqpRelayConnection(Lua::ValuePtr _handler,
-                        const RootLogger &parent_logger,
-                        EventLoop &event_loop,
-                        UniqueSocketDescriptor &&_fd, SocketAddress address);
+	QmqpRelayConnection(Lua::ValuePtr _handler,
+			    const RootLogger &parent_logger,
+			    EventLoop &event_loop,
+			    UniqueSocketDescriptor &&_fd, SocketAddress address);
 
-    static void Register(lua_State *L);
+	static void Register(lua_State *L);
 
 protected:
-    void Do(const Action &action);
-    void Exec(const Action &action);
-    void OnConnect(int out_fd, int in_fd);
-    void OnResponse(const void *data, size_t size);
+	void Do(const Action &action);
+	void Exec(const Action &action);
+	void OnConnect(int out_fd, int in_fd);
+	void OnResponse(const void *data, size_t size);
 
-    void OnRequest(AllocatedArray<uint8_t> &&payload) override;
-    void OnError(std::exception_ptr ep) noexcept override;
-    void OnDisconnect() noexcept override;
+	void OnRequest(AllocatedArray<uint8_t> &&payload) override;
+	void OnError(std::exception_ptr ep) noexcept override;
+	void OnDisconnect() noexcept override;
 
 private:
-    /* virtual methods from class ConnectSocketHandler */
-    void OnSocketConnectSuccess(UniqueSocketDescriptor &&fd) noexcept override;
-    void OnSocketConnectError(std::exception_ptr ep) noexcept override;
+	/* virtual methods from class ConnectSocketHandler */
+	void OnSocketConnectSuccess(UniqueSocketDescriptor &&fd) noexcept override;
+	void OnSocketConnectError(std::exception_ptr ep) noexcept override;
 
-    /* virtual methods from class NetstringClientHandler */
-    void OnNetstringResponse(AllocatedArray<uint8_t> &&payload) noexcept override;
-    void OnNetstringError(std::exception_ptr error) noexcept override;
+	/* virtual methods from class NetstringClientHandler */
+	void OnNetstringResponse(AllocatedArray<uint8_t> &&payload) noexcept override;
+	void OnNetstringError(std::exception_ptr error) noexcept override;
 };
 
 #endif

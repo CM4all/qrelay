@@ -36,25 +36,25 @@
 #include <string>
 
 struct MountInfo {
-    /**
-     * The relative path inside the file system which was mounted on
-     * the given mount point.  This is relevant for bind mounts.
-     */
-    std::string root;
+	/**
+	 * The relative path inside the file system which was mounted on
+	 * the given mount point.  This is relevant for bind mounts.
+	 */
+	std::string root;
 
-    /**
-     * The filesystem type.
-     */
-    std::string filesystem;
+	/**
+	 * The filesystem type.
+	 */
+	std::string filesystem;
 
-    /**
-     * The device which was mounted on the given mount point.
-     */
-    std::string source;
+	/**
+	 * The device which was mounted on the given mount point.
+	 */
+	std::string source;
 
-    bool IsDefined() const {
-        return !root.empty() || !source.empty();
-    }
+	bool IsDefined() const {
+		return !root.empty() || !source.empty();
+	}
 };
 
 /**

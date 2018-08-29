@@ -37,28 +37,28 @@
  */
 template<class I>
 class Range {
-  I begin_, end_;
+	I begin_, end_;
 
 public:
-  Range() = default;
-  Range(I _begin, I _end)
-    :begin_(_begin), end_(_end) {}
+	Range() = default;
+	Range(I _begin, I _end)
+		:begin_(_begin), end_(_end) {}
 
-  I begin() const {
-    return begin_;
-  }
+	I begin() const {
+		return begin_;
+	}
 
-  I end() const {
-    return end_;
-  }
+	I end() const {
+		return end_;
+	}
 
-  bool empty() const {
-    return begin() == end();
-  }
+	bool empty() const {
+		return begin() == end();
+	}
 
-  size_t size() const {
-    return end() - begin();
-  }
+	size_t size() const {
+		return end() - begin();
+	}
 };
 
 #endif

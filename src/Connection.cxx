@@ -53,236 +53,226 @@
 static std::string
 MakeLoggerDomain(const struct ucred &cred, SocketAddress)
 {
-    if (cred.pid < 0)
-        return "connection";
+	if (cred.pid < 0)
+		return "connection";
 
-    char buffer[128];
-    snprintf(buffer, sizeof(buffer), "pid=%d uid=%d",
-             int(cred.pid), int(cred.uid));
-    return buffer;
+	char buffer[128];
+	snprintf(buffer, sizeof(buffer), "pid=%d uid=%d",
+		 int(cred.pid), int(cred.uid));
+	return buffer;
 }
 
 QmqpRelayConnection::QmqpRelayConnection(Lua::ValuePtr _handler,
-                                         const RootLogger &parent_logger,
-                                         EventLoop &event_loop,
-                                         UniqueSocketDescriptor &&_fd,
-                                         SocketAddress address)
-    :NetstringServer(event_loop, std::move(_fd)),
-     peer_cred(GetSocket().GetPeerCredentials()),
-     handler(std::move(_handler)),
-     logger(parent_logger, MakeLoggerDomain(peer_cred, address).c_str()),
-     outgoing_mail(handler->GetState()),
-     connect(event_loop, *this),
-     client(event_loop, 256, *this) {}
+					 const RootLogger &parent_logger,
+					 EventLoop &event_loop,
+					 UniqueSocketDescriptor &&_fd,
+					 SocketAddress address)
+	:NetstringServer(event_loop, std::move(_fd)),
+	 peer_cred(GetSocket().GetPeerCredentials()),
+	 handler(std::move(_handler)),
+	 logger(parent_logger, MakeLoggerDomain(peer_cred, address).c_str()),
+	 outgoing_mail(handler->GetState()),
+	 connect(event_loop, *this),
+	 client(event_loop, 256, *this) {}
 
 void
 QmqpRelayConnection::Register(lua_State *L)
 {
-    RegisterLuaAction(L);
-    RegisterLuaMail(L);
+	RegisterLuaAction(L);
+	RegisterLuaMail(L);
 }
 
 void
 QmqpRelayConnection::OnRequest(AllocatedArray<uint8_t> &&payload)
 {
-    MutableMail mail(std::move(payload));
-    if (!mail.Parse()) {
-        if (SendResponse("Dmalformed input"))
-            delete this;
-        return;
-    }
+	MutableMail mail(std::move(payload));
+	if (!mail.Parse()) {
+		if (SendResponse("Dmalformed input"))
+			delete this;
+		return;
+	}
 
-    handler->Push();
+	handler->Push();
 
-    const auto L = handler->GetState();
-    NewLuaMail(L, std::move(mail), peer_cred);
-    if (lua_pcall(L, 1, 1, 0))
-        throw Lua::PopError(L);
+	const auto L = handler->GetState();
+	NewLuaMail(L, std::move(mail), peer_cred);
+	if (lua_pcall(L, 1, 1, 0))
+		throw Lua::PopError(L);
 
-    AtScopeExit(L) { lua_pop(L, 1); };
+	AtScopeExit(L) { lua_pop(L, 1); };
 
-    auto *action = CheckLuaAction(L, -1);
-    if (action == nullptr)
-        throw std::runtime_error("Wrong return type from Lua handler");
+	auto *action = CheckLuaAction(L, -1);
+	if (action == nullptr)
+		throw std::runtime_error("Wrong return type from Lua handler");
 
-    Do(*action);
+	Do(*action);
 }
-
-/*
-static const MutableMail &
-GetMail(lua_State *L, const Action &action)
-{
-    PushLuaActionMail(action);
-    AtScopeExit(L) { lua_pop(L, 1); };
-    return *CheckLuaMail(L, -1);
-}
-*/
 
 static void
 SetActionMail(Lua::Value &dest, const Action &action)
 {
-    dest.Set(Lua::Lambda([&](){ PushLuaActionMail(action); }));
+	dest.Set(Lua::Lambda([&](){ PushLuaActionMail(action); }));
 }
 
 void
 QmqpRelayConnection::Do(const Action &action)
 {
-    switch (action.type) {
-    case Action::Type::UNDEFINED:
-        assert(false);
-        gcc_unreachable();
+	switch (action.type) {
+	case Action::Type::UNDEFINED:
+		assert(false);
+		gcc_unreachable();
 
-    case Action::Type::DISCARD:
-        if (SendResponse("Kdiscarded"))
-            delete this;
-        break;
+	case Action::Type::DISCARD:
+		if (SendResponse("Kdiscarded"))
+			delete this;
+		break;
 
-    case Action::Type::REJECT:
-        if (SendResponse("Drejected"))
-            delete this;
-        break;
+	case Action::Type::REJECT:
+		if (SendResponse("Drejected"))
+			delete this;
+		break;
 
-    case Action::Type::CONNECT:
-        SetActionMail(outgoing_mail, action);
-        connect.Connect(action.connect);
-        break;
+	case Action::Type::CONNECT:
+		SetActionMail(outgoing_mail, action);
+		connect.Connect(action.connect);
+		break;
 
-    case Action::Type::EXEC:
-        Exec(action);
-        break;
-    }
+	case Action::Type::EXEC:
+		Exec(action);
+		break;
+	}
 }
 
 void
 QmqpRelayConnection::Exec(const Action &action)
 {
-    assert(action.type == Action::Type::EXEC);
-    assert(!action.exec.empty());
+	assert(action.type == Action::Type::EXEC);
+	assert(!action.exec.empty());
 
-    int stdin_pipe[2], stdout_pipe[2];
+	int stdin_pipe[2], stdout_pipe[2];
 
-    if (pipe2(stdin_pipe, O_CLOEXEC|O_NONBLOCK) < 0) {
-        OnError(std::make_exception_ptr(MakeErrno("pipe() failed")));
-        return;
-    }
+	if (pipe2(stdin_pipe, O_CLOEXEC|O_NONBLOCK) < 0) {
+		OnError(std::make_exception_ptr(MakeErrno("pipe() failed")));
+		return;
+	}
 
-    if (pipe2(stdout_pipe, O_CLOEXEC|O_NONBLOCK) < 0) {
-        const int e = errno;
-        close(stdin_pipe[0]);
-        close(stdin_pipe[1]);
-        OnError(std::make_exception_ptr(MakeErrno(e, "pipe() failed")));
-        return;
-    }
+	if (pipe2(stdout_pipe, O_CLOEXEC|O_NONBLOCK) < 0) {
+		const int e = errno;
+		close(stdin_pipe[0]);
+		close(stdin_pipe[1]);
+		OnError(std::make_exception_ptr(MakeErrno(e, "pipe() failed")));
+		return;
+	}
 
-    pid_t pid = fork();
-    if (pid < 0) {
-        const int e = errno;
-        close(stdin_pipe[0]);
-        close(stdin_pipe[1]);
-        close(stdout_pipe[0]);
-        close(stdout_pipe[1]);
-        OnError(std::make_exception_ptr(MakeErrno(e, "fork() failed")));
-        return;
-    }
+	pid_t pid = fork();
+	if (pid < 0) {
+		const int e = errno;
+		close(stdin_pipe[0]);
+		close(stdin_pipe[1]);
+		close(stdout_pipe[0]);
+		close(stdout_pipe[1]);
+		OnError(std::make_exception_ptr(MakeErrno(e, "fork() failed")));
+		return;
+	}
 
-    if (pid == 0) {
-        dup2(stdin_pipe[0], 0);
-        dup2(stdout_pipe[1], 1);
+	if (pid == 0) {
+		dup2(stdin_pipe[0], 0);
+		dup2(stdout_pipe[1], 1);
 
-        /* disable O_NONBLOCK */
-        fcntl(0, F_SETFL, fcntl(0, F_GETFL) & ~O_NONBLOCK);
-        fcntl(1, F_SETFL, fcntl(1, F_GETFL) & ~O_NONBLOCK);
+		/* disable O_NONBLOCK */
+		fcntl(0, F_SETFL, fcntl(0, F_GETFL) & ~O_NONBLOCK);
+		fcntl(1, F_SETFL, fcntl(1, F_GETFL) & ~O_NONBLOCK);
 
-        char *argv[Action::MAX_EXEC + 1];
+		char *argv[Action::MAX_EXEC + 1];
 
-        unsigned n = 0;
-        for (const auto &i : action.exec)
-            argv[n++] = const_cast<char *>(i.c_str());
+		unsigned n = 0;
+		for (const auto &i : action.exec)
+			argv[n++] = const_cast<char *>(i.c_str());
 
-        argv[n] = nullptr;
+		argv[n] = nullptr;
 
-        execv(argv[0], argv);
-        _exit(1);
-    }
+		execv(argv[0], argv);
+		_exit(1);
+	}
 
-    close(stdin_pipe[0]);
-    close(stdout_pipe[1]);
+	close(stdin_pipe[0]);
+	close(stdout_pipe[1]);
 
-    SetActionMail(outgoing_mail, action);
-    OnConnect(stdin_pipe[1], stdout_pipe[0]);
+	SetActionMail(outgoing_mail, action);
+	OnConnect(stdin_pipe[1], stdout_pipe[0]);
 }
 
 static MutableMail &
 CastMail(lua_State *L, const Lua::Value &value)
 {
-    value.Push();
-    AtScopeExit(L) { lua_pop(L, 1); };
-    return CastLuaMail(L, -1);
+	value.Push();
+	AtScopeExit(L) { lua_pop(L, 1); };
+	return CastLuaMail(L, -1);
 }
 
 void
 QmqpRelayConnection::OnConnect(int out_fd, int in_fd)
 {
-    const auto L = outgoing_mail.GetState();
-    auto &mail = CastMail(L, outgoing_mail);
+	const auto L = outgoing_mail.GetState();
+	auto &mail = CastMail(L, outgoing_mail);
 
-    std::list<ConstBuffer<void>> request;
-    request.push_back(mail.message.ToVoid());
+	std::list<ConstBuffer<void>> request;
+	request.push_back(mail.message.ToVoid());
 
-    if (peer_cred.pid >= 0) {
-        int length = sprintf(received_buffer,
-                             "Received: from PID=%u UID=%u with QMQP\r\n",
-                             unsigned(peer_cred.pid), unsigned(peer_cred.uid));
-        request.emplace_front(received_buffer, length);
-    }
+	if (peer_cred.pid >= 0) {
+		int length = sprintf(received_buffer,
+				     "Received: from PID=%u UID=%u with QMQP\r\n",
+				     unsigned(peer_cred.pid), unsigned(peer_cred.uid));
+		request.emplace_front(received_buffer, length);
+	}
 
-    for (const auto &i : mail.headers)
-        request.emplace_front(i.data(), i.length());
+	for (const auto &i : mail.headers)
+		request.emplace_front(i.data(), i.length());
 
-    generator(request, false);
-    request.push_back(mail.tail.ToVoid());
+	generator(request, false);
+	request.push_back(mail.tail.ToVoid());
 
-    client.Request(out_fd, in_fd, std::move(request));
+	client.Request(out_fd, in_fd, std::move(request));
 }
 
 void
 QmqpRelayConnection::OnError(std::exception_ptr ep) noexcept
 {
-    logger(1, ep);
-    delete this;
+	logger(1, ep);
+	delete this;
 }
 
 void
 QmqpRelayConnection::OnDisconnect() noexcept
 {
-    delete this;
+	delete this;
 }
 
 void
 QmqpRelayConnection::OnSocketConnectSuccess(UniqueSocketDescriptor &&_fd) noexcept
 {
-    const int connection_fd = _fd.Steal();
-    OnConnect(connection_fd, connection_fd);
+	const int connection_fd = _fd.Steal();
+	OnConnect(connection_fd, connection_fd);
 }
 
 void
 QmqpRelayConnection::OnSocketConnectError(std::exception_ptr ep) noexcept
 {
-    logger(1, ep);
-    if (SendResponse("Zconnect failed"))
-        delete this;
+	logger(1, ep);
+	if (SendResponse("Zconnect failed"))
+		delete this;
 }
 
 void
 QmqpRelayConnection::OnNetstringResponse(AllocatedArray<uint8_t> &&payload) noexcept
 {
-    if (SendResponse(&payload.front(), payload.size()))
-        delete this;
+	if (SendResponse(&payload.front(), payload.size()))
+		delete this;
 }
 
 void
 QmqpRelayConnection::OnNetstringError(std::exception_ptr) noexcept
 {
-    if (SendResponse("Zrelay failed"))
-        delete this;
+	if (SendResponse("Zrelay failed"))
+		delete this;
 }

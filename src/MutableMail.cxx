@@ -35,10 +35,10 @@
 void
 MutableMail::InsertHeader(const char *name, const char *value)
 {
-    std::string line(name);
-    line += ": ";
-    line += value;
-    line += "\r\n";
+	std::string line(name);
+	line += ": ";
+	line += value;
+	line += "\r\n";
 
-    headers.emplace_front(std::move(line));
+	headers.emplace_front(std::move(line));
 }

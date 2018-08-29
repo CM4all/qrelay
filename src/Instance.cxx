@@ -43,43 +43,43 @@ using std::endl;
 #include <string.h>
 
 Instance::Instance()
-    :shutdown_listener(event_loop, BIND_THIS_METHOD(ShutdownCallback))
+	:shutdown_listener(event_loop, BIND_THIS_METHOD(ShutdownCallback))
 {
-    shutdown_listener.Enable();
+	shutdown_listener.Enable();
 }
 
 void
 Instance::AddSystemdQmqpRelayServer(Lua::ValuePtr &&handler)
 {
-    int n = sd_listen_fds(true);
-    if (n < 0) {
-        logger(1, "sd_listen_fds() failed: ", strerror(errno));
-        return;
-    }
+	int n = sd_listen_fds(true);
+	if (n < 0) {
+		logger(1, "sd_listen_fds() failed: ", strerror(errno));
+		return;
+	}
 
-    if (n == 0) {
-        logger(1, "No systemd socket");
-        return;
-    }
+	if (n == 0) {
+		logger(1, "No systemd socket");
+		return;
+	}
 
-    for (unsigned i = 0; i < unsigned(n); ++i) {
-        qmqp_relay_servers.emplace_front(event_loop,
-                                         Lua::ValuePtr(handler),
-                                         logger, event_loop);
-        qmqp_relay_servers.front().Listen(UniqueSocketDescriptor(SD_LISTEN_FDS_START + i));
-    }
+	for (unsigned i = 0; i < unsigned(n); ++i) {
+		qmqp_relay_servers.emplace_front(event_loop,
+						 Lua::ValuePtr(handler),
+						 logger, event_loop);
+		qmqp_relay_servers.front().Listen(UniqueSocketDescriptor(SD_LISTEN_FDS_START + i));
+	}
 }
 
 void
 Instance::Check()
 {
-    if (qmqp_relay_servers.empty())
-        throw std::runtime_error("No QMQP listeners configured");
+	if (qmqp_relay_servers.empty())
+		throw std::runtime_error("No QMQP listeners configured");
 }
 
 void
 Instance::ShutdownCallback()
 {
-    cerr << "quit" << endl;
-    event_loop.Break();
+	cerr << "quit" << endl;
+	event_loop.Break();
 }

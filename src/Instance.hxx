@@ -44,37 +44,37 @@
 namespace Lua { class Value; }
 
 class Instance {
-    EventLoop event_loop;
-    ShutdownListener shutdown_listener;
+	EventLoop event_loop;
+	ShutdownListener shutdown_listener;
 
-    std::forward_list<QmqpRelayServer> qmqp_relay_servers;
+	std::forward_list<QmqpRelayServer> qmqp_relay_servers;
 
 public:
-    RootLogger logger;
+	RootLogger logger;
 
-    Instance();
+	Instance();
 
-    EventLoop &GetEventLoop() {
-        return event_loop;
-    }
+	EventLoop &GetEventLoop() {
+		return event_loop;
+	}
 
-    void AddQmqpRelayServer(SocketAddress address,
-                            Lua::ValuePtr &&handler) {
-        qmqp_relay_servers.emplace_front(event_loop, handler,
-                                         logger, event_loop);
-        qmqp_relay_servers.front().Listen(address);
-    }
+	void AddQmqpRelayServer(SocketAddress address,
+				Lua::ValuePtr &&handler) {
+		qmqp_relay_servers.emplace_front(event_loop, handler,
+						 logger, event_loop);
+		qmqp_relay_servers.front().Listen(address);
+	}
 
-    /**
-     * Listen for incoming connections on sockets passed by systemd
-     * (systemd socket activation).
-     */
-    void AddSystemdQmqpRelayServer(Lua::ValuePtr &&handler);
+	/**
+	 * Listen for incoming connections on sockets passed by systemd
+	 * (systemd socket activation).
+	 */
+	void AddSystemdQmqpRelayServer(Lua::ValuePtr &&handler);
 
-    void Check();
+	void Check();
 
 private:
-    void ShutdownCallback();
+	void ShutdownCallback();
 };
 
 #endif

@@ -41,29 +41,29 @@ template<class _Traits>
 inline basic_ostream<char, _Traits> &
 operator<<(basic_ostream<char, _Traits> &out, const exception &e)
 {
-    out << e.what();
+	out << e.what();
 
-    try {
-        std::rethrow_if_nested(e);
-        return out;
-    } catch (const std::exception &nested) {
-        return out << "; " << nested;
-    } catch (...) {
-        return out << "; Unrecognized nested exception";
-    }
+	try {
+		std::rethrow_if_nested(e);
+		return out;
+	} catch (const std::exception &nested) {
+		return out << "; " << nested;
+	} catch (...) {
+		return out << "; Unrecognized nested exception";
+	}
 }
 
 template<class _Traits>
 inline basic_ostream<char, _Traits> &
 operator<<(basic_ostream<char, _Traits> &out, exception_ptr ep)
 {
-    try {
-        std::rethrow_exception(ep);
-    } catch (const std::exception &e) {
-        return out << e;
-    } catch (...) {
-        return out << "Unrecognized exception";
-    }
+	try {
+		std::rethrow_exception(ep);
+	} catch (const std::exception &e) {
+		return out << e;
+	} catch (...) {
+		return out << "Unrecognized exception";
+	}
 }
 
 }

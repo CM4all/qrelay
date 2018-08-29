@@ -40,50 +40,50 @@
 static bool
 ListContains(StringView haystack, char separator, StringView needle)
 {
-    for (auto value : IterableSplitString(haystack, separator))
-        if (value.Equals(needle))
-            return true;
+	for (auto value : IterableSplitString(haystack, separator))
+		if (value.Equals(needle))
+			return true;
 
-    return false;
+	return false;
 }
 
 static std::string
 StripTrailingNewline(char *line)
 {
-    size_t length = strlen(line);
-    if (length > 0 && line[length - 1] == '\n')
-        --length;
-    return {line, length};
+	size_t length = strlen(line);
+	if (length > 0 && line[length - 1] == '\n')
+		--length;
+	return {line, length};
 }
 
 std::string
 ReadProcessCgroup(unsigned pid, const char *_controller)
 {
-    char path[64];
-    sprintf(path, "/proc/%u/cgroup", pid);
-    FILE *file = fopen(path, "r");
-    if (file == nullptr)
-        throw FormatErrno("Failed to open %s", path);
+	char path[64];
+	sprintf(path, "/proc/%u/cgroup", pid);
+	FILE *file = fopen(path, "r");
+	if (file == nullptr)
+		throw FormatErrno("Failed to open %s", path);
 
-    AtScopeExit(file) { fclose(file); };
+	AtScopeExit(file) { fclose(file); };
 
-    const StringView controller(_controller);
+	const StringView controller(_controller);
 
-    char line[4096];
-    while (fgets(line, sizeof(line), file) != nullptr) {
-        char *colon = strchr(line, ':');
-        if (colon == nullptr)
-            continue;
+	char line[4096];
+	while (fgets(line, sizeof(line), file) != nullptr) {
+		char *colon = strchr(line, ':');
+		if (colon == nullptr)
+			continue;
 
-        char *s = colon + 1;
-        colon = strchr(s, ':');
-        if (colon == nullptr)
-            continue;
+		char *s = colon + 1;
+		colon = strchr(s, ':');
+		if (colon == nullptr)
+			continue;
 
-        if (ListContains(StringView(s, colon), ',', controller))
-            return StripTrailingNewline(colon + 1);
-    }
+		if (ListContains(StringView(s, colon), ',', controller))
+			return StripTrailingNewline(colon + 1);
+	}
 
-    /* not found: return empty string */
-    return std::string();
+	/* not found: return empty string */
+	return std::string();
 }
