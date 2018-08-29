@@ -61,7 +61,7 @@ Instance::AddListener(UniqueSocketDescriptor &&fd,
 static UniqueSocketDescriptor
 MakeListener(SocketAddress address)
 {
-	constexpr int socktype = SOCK_SEQPACKET;
+	constexpr int socktype = SOCK_STREAM;
 
 	SocketConfig config(address);
 	config.mode = 0666;
