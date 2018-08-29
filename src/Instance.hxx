@@ -34,7 +34,7 @@
 #define INSTANCE_HXX
 
 #include "io/Logger.hxx"
-#include "Server.hxx"
+#include "Listener.hxx"
 #include "event/Loop.hxx"
 #include "event/ShutdownListener.hxx"
 #include "lua/ValuePtr.hxx"
@@ -47,7 +47,7 @@ class Instance {
 	EventLoop event_loop;
 	ShutdownListener shutdown_listener;
 
-	std::forward_list<QmqpRelayServer> qmqp_relay_servers;
+	std::forward_list<QmqpRelayListener> listeners;
 
 public:
 	RootLogger logger;
@@ -58,18 +58,18 @@ public:
 		return event_loop;
 	}
 
-	void AddQmqpRelayServer(SocketAddress address,
-				Lua::ValuePtr &&handler) {
-		qmqp_relay_servers.emplace_front(event_loop, handler,
-						 logger, event_loop);
-		qmqp_relay_servers.front().Listen(address);
+	void AddListener(SocketAddress address,
+			 Lua::ValuePtr &&handler) {
+		listeners.emplace_front(event_loop, handler,
+					logger, event_loop);
+		listeners.front().Listen(address);
 	}
 
 	/**
 	 * Listen for incoming connections on sockets passed by systemd
 	 * (systemd socket activation).
 	 */
-	void AddSystemdQmqpRelayServer(Lua::ValuePtr &&handler);
+	void AddSystemdListener(Lua::ValuePtr &&handler);
 
 	void Check();
 

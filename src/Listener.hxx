@@ -40,6 +40,6 @@
 
 typedef TemplateServerSocket<QmqpRelayConnection,
 			     Lua::ValuePtr,
-			     RootLogger, EventLoop &> QmqpRelayServer;
+			     RootLogger, EventLoop &> QmqpRelayListener;
 
 #endif

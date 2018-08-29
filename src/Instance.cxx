@@ -49,7 +49,7 @@ Instance::Instance()
 }
 
 void
-Instance::AddSystemdQmqpRelayServer(Lua::ValuePtr &&handler)
+Instance::AddSystemdListener(Lua::ValuePtr &&handler)
 {
 	int n = sd_listen_fds(true);
 	if (n < 0) {
@@ -63,17 +63,17 @@ Instance::AddSystemdQmqpRelayServer(Lua::ValuePtr &&handler)
 	}
 
 	for (unsigned i = 0; i < unsigned(n); ++i) {
-		qmqp_relay_servers.emplace_front(event_loop,
-						 Lua::ValuePtr(handler),
-						 logger, event_loop);
-		qmqp_relay_servers.front().Listen(UniqueSocketDescriptor(SD_LISTEN_FDS_START + i));
+		listeners.emplace_front(event_loop,
+					Lua::ValuePtr(handler),
+					logger, event_loop);
+		listeners.front().Listen(UniqueSocketDescriptor(SD_LISTEN_FDS_START + i));
 	}
 }
 
 void
 Instance::Check()
 {
-	if (qmqp_relay_servers.empty())
+	if (listeners.empty())
 		throw std::runtime_error("No QMQP listeners configured");
 }
 

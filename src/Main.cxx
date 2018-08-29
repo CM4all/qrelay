@@ -79,14 +79,14 @@ try {
 	auto handler = std::make_shared<Lua::Value>(L, Lua::StackIndex(2));
 
 	if (IsSystemdMagic(L, 1)) {
-		instance.AddSystemdQmqpRelayServer(std::move(handler));
+		instance.AddSystemdListener(std::move(handler));
 	} else if (lua_isstring(L, 1)) {
 		const char *address_string = lua_tostring(L, 1);
 
 		AllocatedSocketAddress address;
 		address.SetLocal(address_string);
 
-		instance.AddQmqpRelayServer(address, std::move(handler));
+		instance.AddListener(address, std::move(handler));
 	} else
 		luaL_argerror(L, 1, "path expected");
 
