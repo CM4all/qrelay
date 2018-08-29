@@ -31,6 +31,7 @@
  */
 
 #include "Instance.hxx"
+#include "net/SocketConfig.hxx"
 
 #include <systemd/sd-daemon.h>
 
@@ -55,6 +56,27 @@ Instance::AddListener(UniqueSocketDescriptor &&fd,
 	listeners.emplace_front(event_loop, std::move(handler),
 				logger, event_loop);
 	listeners.front().Listen(std::move(fd));
+}
+
+static UniqueSocketDescriptor
+MakeListener(SocketAddress address)
+{
+	constexpr int socktype = SOCK_SEQPACKET;
+
+	SocketConfig config(address);
+
+	/* we want to receive the client's UID */
+	config.pass_cred = true;
+
+	config.listen = 64;
+
+	return config.Create(socktype);
+}
+
+void
+Instance::AddListener(SocketAddress address, Lua::ValuePtr &&handler)
+{
+	AddListener(MakeListener(address), std::move(handler));
 }
 
 void

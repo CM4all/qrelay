@@ -62,11 +62,7 @@ public:
 			 Lua::ValuePtr &&handler) noexcept;
 
 	void AddListener(SocketAddress address,
-			 Lua::ValuePtr &&handler) {
-		listeners.emplace_front(event_loop, handler,
-					logger, event_loop);
-		listeners.front().Listen(address);
-	}
+			 Lua::ValuePtr &&handler);
 
 	/**
 	 * Listen for incoming connections on sockets passed by systemd
