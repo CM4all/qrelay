@@ -58,6 +58,9 @@ public:
 		return event_loop;
 	}
 
+	void AddListener(UniqueSocketDescriptor &&fd,
+			 Lua::ValuePtr &&handler) noexcept;
+
 	void AddListener(SocketAddress address,
 			 Lua::ValuePtr &&handler) {
 		listeners.emplace_front(event_loop, handler,

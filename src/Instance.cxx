@@ -48,6 +48,15 @@ Instance::Instance()
 	shutdown_listener.Enable();
 }
 
+inline void
+Instance::AddListener(UniqueSocketDescriptor &&fd,
+		      Lua::ValuePtr &&handler) noexcept
+{
+	listeners.emplace_front(event_loop, std::move(handler),
+				logger, event_loop);
+	listeners.front().Listen(std::move(fd));
+}
+
 void
 Instance::AddSystemdListener(Lua::ValuePtr &&handler)
 {
@@ -62,12 +71,9 @@ Instance::AddSystemdListener(Lua::ValuePtr &&handler)
 		return;
 	}
 
-	for (unsigned i = 0; i < unsigned(n); ++i) {
-		listeners.emplace_front(event_loop,
-					Lua::ValuePtr(handler),
-					logger, event_loop);
-		listeners.front().Listen(UniqueSocketDescriptor(SD_LISTEN_FDS_START + i));
-	}
+	for (unsigned i = 0; i < unsigned(n); ++i)
+		AddListener(UniqueSocketDescriptor(SD_LISTEN_FDS_START + i),
+			    Lua::ValuePtr(handler));
 }
 
 void
