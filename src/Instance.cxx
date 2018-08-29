@@ -64,6 +64,7 @@ MakeListener(SocketAddress address)
 	constexpr int socktype = SOCK_SEQPACKET;
 
 	SocketConfig config(address);
+	config.mode = 0666;
 
 	/* we want to receive the client's UID */
 	config.pass_cred = true;
