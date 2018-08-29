@@ -33,6 +33,7 @@
 #include "LResolver.hxx"
 #include "LAddress.hxx"
 #include "lua/Util.hxx"
+#include "lua/Error.hxx"
 #include "net/Resolver.hxx"
 #include "net/AddressInfo.hxx"
 
@@ -62,8 +63,9 @@ l_qmqp_resolve(lua_State *L)
 
 	try {
 		ai = Resolve(s, 628, &hints);
-	} catch (const std::exception &e) {
-		return luaL_error(L, e.what());
+	} catch (...) {
+		Lua::Push(L, std::current_exception());
+		return lua_error(L);
 	}
 
 	NewLuaAddress(L, std::move(ai.GetBest()));
