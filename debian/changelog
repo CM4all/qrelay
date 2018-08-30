@@ -1,7 +1,7 @@
 cm4all-qrelay (0.10) unstable; urgency=low
 
   * show connection's pid and uid in log messages
-  * fix passage_listen() error message
+  * fix qmqp_listen() error message
   * set local socket permissions to 0666
   * eliminate dependency on libevent
 
