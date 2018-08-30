@@ -64,7 +64,7 @@ for name, data in flavors.items():
     if 'options' in data:
         cmdline.extend(data['options'])
 
-    prefix = os.path.join(prefix_root, 'cm4all-beng-proxy-' + name)
+    prefix = os.path.join(prefix_root, 'cm4all-qrelay-' + name)
 
     cmdline += ('--prefix', prefix)
 
