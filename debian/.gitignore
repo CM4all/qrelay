@@ -8,6 +8,7 @@
 /*.log
 /tmp
 
+/build/
 /cm4all-qrelay
 
 /stamp-*

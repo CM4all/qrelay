@@ -8,12 +8,12 @@ MESON_BUILDTYPE = debugoptimized
 
 MESON_OPTIONS = --buildtype $(MESON_BUILDTYPE) --werror
 
-build/build.ninja: meson.build
-	rm -rf build
-	meson . build $(MESON_OPTIONS)
+debian/build/build.ninja: meson.build
+	rm -rf debian/build
+	meson . debian/build $(MESON_OPTIONS)
 
-debian/stamp-build: build/build.ninja
-	ninja -C build
+debian/stamp-build: debian/build/build.ninja
+	ninja -C debian/build
 	touch $@
 
 doc/_build/html/.buildinfo: doc/*.rst
@@ -30,7 +30,7 @@ clean:
 	dh_testroot
 	rm -f debian/stamp-*
 
-	rm -rf build doc/_build
+	rm -rf debian/build doc/_build
 
 	dh_clean
 
