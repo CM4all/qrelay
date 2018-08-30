@@ -1,3 +1,2 @@
-debian/build/cm4all-qrelay usr/sbin
+usr/sbin/cm4all-qrelay
 config.lua etc/cm4all/qrelay
-debian/cm4all-qrelay.service debian/cm4all-qrelay.socket lib/systemd/system

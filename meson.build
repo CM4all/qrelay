@@ -88,6 +88,9 @@ executable('cm4all-qrelay',
     util_dep,
     lua_dep,
     event_net_dep,
-  ])
+  ],
+  install: true,
+  install_dir: 'sbin',
+)
 
 subdir('doc')

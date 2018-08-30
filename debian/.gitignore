@@ -1,18 +1,9 @@
-/*.after
-/*.before
-/substvars
-/stamp-*
-/files
-/*.substvars
 /*.debhelper
-/*.log
-/tmp
+/*.substvars
+/*-stamp
+/files
 
 /build/
-/cm4all-qrelay
-
-/stamp-*
-
-/cm4all-qrelay
-/cm4all-qrelay-dbg
-/cm4all-qrelay-doc
+/tmp/
+/cm4all-qrelay/
+/cm4all-qrelay-doc/
