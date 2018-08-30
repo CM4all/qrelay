@@ -6,7 +6,7 @@ cm4all-qrelay (0.10) unstable; urgency=low
   * eliminate dependency on libevent
   * debian: enable compiler optimization
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Thu, 30 Aug 2018 11:56:39 -0000
 
 cm4all-qrelay (0.9) unstable; urgency=low
 
