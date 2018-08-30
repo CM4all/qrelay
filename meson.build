@@ -89,3 +89,5 @@ executable('cm4all-qrelay',
     lua_dep,
     event_net_dep,
   ])
+
+subdir('doc')
