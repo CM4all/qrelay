@@ -11,6 +11,8 @@ them to another QMQP server.
 Configuration
 -------------
 
+.. highlight:: lua
+
 The file :file:`/etc/cm4all/qrelay/config.lua` is a `Lua
 <http://www.lua.org/>`_ script which is executed at startup.  It
 contains at least one :samp:`qmqp_listen()` call, for example::
