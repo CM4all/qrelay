@@ -134,7 +134,7 @@ QmqpRelayConnection::Do(const Action &action)
 
 	case Action::Type::CONNECT:
 		SetActionMail(outgoing_mail, action);
-		connect.Connect(action.connect);
+		connect.Connect(action.connect, std::chrono::seconds(20));
 		break;
 
 	case Action::Type::EXEC:
