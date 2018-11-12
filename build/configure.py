@@ -13,7 +13,7 @@ flavors = {
     'asan': {
         'options': [
             '-Db_sanitize=address',
-            '-Ddocumentation=false',
+            '-Ddocumentation=disabled',
         ],
     },
 
@@ -21,7 +21,7 @@ flavors = {
         'options': [
             '--buildtype', 'release',
             '-Db_ndebug=true',
-            '-Ddocumentation=false',
+            '-Ddocumentation=disabled',
         ],
         'env': {
             'CXXFLAGS': '-ffunction-sections -fdata-sections',
@@ -34,13 +34,13 @@ flavors = {
             '--buildtype', 'release',
             '-Db_ndebug=true',
             '-Db_lto=true',
-            '-Ddocumentation=false',
+            '-Ddocumentation=disabled',
         ],
     },
 
     'clang': {
         'options': [
-            '-Ddocumentation=false',
+            '-Ddocumentation=disabled',
         ],
         'env': {
             'CC': 'clang',
