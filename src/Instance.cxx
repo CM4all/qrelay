@@ -112,7 +112,7 @@ Instance::Check()
 }
 
 void
-Instance::ShutdownCallback()
+Instance::ShutdownCallback() noexcept
 {
 	cerr << "quit" << endl;
 	event_loop.Break();

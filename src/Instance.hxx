@@ -80,7 +80,7 @@ public:
 	void Check();
 
 private:
-	void ShutdownCallback();
+	void ShutdownCallback() noexcept;
 };
 
 #endif
