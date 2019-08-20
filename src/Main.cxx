@@ -55,6 +55,10 @@ using std::endl;
 
 #include <stdlib.h>
 
+/**
+ * A "magic" pointer used to identify our artificial "systemd" Lua
+ * keyword, which is wrapped as "light user data".
+ */
 static int systemd_magic = 42;
 
 static bool
