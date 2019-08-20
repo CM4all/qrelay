@@ -50,6 +50,15 @@ it must not do any network I/O, launch child processes, and should
 avoid anything but querying the email's parameters.
 
 
+Global Variables
+^^^^^^^^^^^^^^^^
+
+* ``max_size`` is the maximum size of an incoming email in bytes (used
+  only during startup).  There must be a reasonable upper limit to
+  avoid consuming too many resources.  The default value is
+  ``16777216`` (``16 MiB``).
+
+
 Inspecting Incoming Mail
 ^^^^^^^^^^^^^^^^^^^^^^^^
 

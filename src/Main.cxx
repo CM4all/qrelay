@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 Content Management AG
+ * Copyright 2014-2019 Content Management AG
  * All rights reserved.
  *
  * author: Max Kellermann <mk@cm4all.com>
@@ -41,6 +41,8 @@
 #include "lua/Error.hxx"
 #include "lua/RunFile.hxx"
 #include "util/OstreamException.hxx"
+#include "util/RuntimeError.hxx"
+#include "util/ScopeExit.hxx"
 
 extern "C" {
 #include <lauxlib.h>
@@ -68,6 +70,18 @@ IsSystemdMagic(lua_State *L, int idx)
 		lua_touserdata(L, idx) == &systemd_magic;
 }
 
+static auto
+GetGlobalInt(lua_State *L, const char *name)
+{
+	lua_getglobal(L, name);
+	AtScopeExit(L) { lua_pop(L, 1); };
+
+	if (!lua_isnumber(L, -1))
+		throw FormatRuntimeError("`%s` must be a number", name);
+
+	return lua_tointeger(L, -1);
+}
+
 static int
 l_qmqp_listen(lua_State *L)
 try {
@@ -79,7 +93,11 @@ try {
 	if (!lua_isfunction(L, 2))
 		return luaL_argerror(L, 2, "function expected");
 
-	size_t max_size = 16 * 1024 * 1024;
+	const auto max_size = GetGlobalInt(L, "max_size");
+	if (max_size < 1024)
+		throw std::runtime_error("`max_size` is too small");
+	if (max_size > 1024 * 1024 * 1024)
+		throw std::runtime_error("`max_size` is too large");
 
 	auto handler = std::make_shared<Lua::Value>(L, Lua::StackIndex(2));
 
@@ -108,6 +126,8 @@ SetupConfigState(lua_State *L, Instance &instance)
 	RegisterLuaAddress(L);
 	RegisterLuaResolver(L);
 
+	Lua::SetGlobal(L, "max_size", 16 * 1024 * 1024);
+
 	Lua::SetGlobal(L, "systemd", Lua::LightUserData(&systemd_magic));
 
 	Lua::SetGlobal(L, "qmqp_listen",
@@ -118,6 +138,7 @@ SetupConfigState(lua_State *L, Instance &instance)
 static void
 SetupRuntimeState(lua_State *L)
 {
+	Lua::SetGlobal(L, "max_size", nullptr);
 	Lua::SetGlobal(L, "qmqp_listen", nullptr);
 
 	QmqpRelayConnection::Register(L);
