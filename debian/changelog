@@ -1,6 +1,7 @@
 cm4all-qrelay (0.12) unstable; urgency=low
 
   * systemd: enable crash dumps
+  * systemd: configure resource limits
   * systemd: paranoid security settings
 
  --   

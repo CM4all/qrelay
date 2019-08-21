@@ -13,6 +13,11 @@ CPUSchedulingPolicy=batch
 # enable crash dumps
 LimitCORE=infinity
 
+# Resource limits
+MemoryMax=1G
+TasksMax=16
+LimitNOFILE=16384
+
 # Paranoid security settings
 NoNewPrivileges=yes
 ProtectSystem=yes
