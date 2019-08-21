@@ -77,7 +77,7 @@ try {
 		return luaL_error(L, "Invalid parameter count");
 
 	if (!lua_isfunction(L, 2))
-		luaL_argerror(L, 2, "function expected");
+		return luaL_argerror(L, 2, "function expected");
 
 	auto handler = std::make_shared<Lua::Value>(L, Lua::StackIndex(2));
 
