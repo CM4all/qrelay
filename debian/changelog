@@ -1,6 +1,6 @@
 cm4all-qrelay (0.12) unstable; urgency=low
 
-  * 
+  * systemd: enable crash dumps
 
  --   
 
