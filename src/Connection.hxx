@@ -71,7 +71,7 @@ class QmqpRelayConnection final :
 	NetstringClient client;
 
 public:
-	QmqpRelayConnection(Lua::ValuePtr _handler,
+	QmqpRelayConnection(size_t max_size, Lua::ValuePtr _handler,
 			    const RootLogger &parent_logger,
 			    EventLoop &event_loop,
 			    UniqueSocketDescriptor &&_fd, SocketAddress address);

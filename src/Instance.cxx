@@ -56,9 +56,10 @@ Instance::Instance()
 
 inline void
 Instance::AddListener(UniqueSocketDescriptor &&fd,
+		      size_t max_size,
 		      Lua::ValuePtr &&handler) noexcept
 {
-	listeners.emplace_front(event_loop, std::move(handler),
+	listeners.emplace_front(event_loop, max_size, std::move(handler),
 				logger, event_loop);
 	listeners.front().Listen(std::move(fd));
 }
@@ -80,13 +81,15 @@ MakeListener(SocketAddress address)
 }
 
 void
-Instance::AddListener(SocketAddress address, Lua::ValuePtr &&handler)
+Instance::AddListener(SocketAddress address,
+		      size_t max_size,
+		      Lua::ValuePtr &&handler)
 {
-	AddListener(MakeListener(address), std::move(handler));
+	AddListener(MakeListener(address), max_size, std::move(handler));
 }
 
 void
-Instance::AddSystemdListener(Lua::ValuePtr &&handler)
+Instance::AddSystemdListener(size_t max_size, Lua::ValuePtr &&handler)
 {
 	int n = sd_listen_fds(true);
 	if (n < 0) {
@@ -101,6 +104,7 @@ Instance::AddSystemdListener(Lua::ValuePtr &&handler)
 
 	for (unsigned i = 0; i < unsigned(n); ++i)
 		AddListener(UniqueSocketDescriptor(SD_LISTEN_FDS_START + i),
+			    max_size,
 			    Lua::ValuePtr(handler));
 }
 

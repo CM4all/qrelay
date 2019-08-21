@@ -39,7 +39,7 @@
 #include "lua/ValuePtr.hxx"
 
 typedef TemplateServerSocket<QmqpRelayConnection,
-			     Lua::ValuePtr,
+			     size_t, Lua::ValuePtr,
 			     RootLogger, EventLoop &> QmqpRelayListener;
 
 #endif

@@ -66,16 +66,18 @@ public:
 	}
 
 	void AddListener(UniqueSocketDescriptor &&fd,
+			 size_t max_size,
 			 Lua::ValuePtr &&handler) noexcept;
 
 	void AddListener(SocketAddress address,
+			 size_t max_size,
 			 Lua::ValuePtr &&handler);
 
 	/**
 	 * Listen for incoming connections on sockets passed by systemd
 	 * (systemd socket activation).
 	 */
-	void AddSystemdListener(Lua::ValuePtr &&handler);
+	void AddSystemdListener(size_t max_size, Lua::ValuePtr &&handler);
 
 	void Check();
 

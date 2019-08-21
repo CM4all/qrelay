@@ -62,12 +62,13 @@ MakeLoggerDomain(const struct ucred &cred, SocketAddress)
 	return buffer;
 }
 
-QmqpRelayConnection::QmqpRelayConnection(Lua::ValuePtr _handler,
+QmqpRelayConnection::QmqpRelayConnection(size_t max_size,
+					 Lua::ValuePtr _handler,
 					 const RootLogger &parent_logger,
 					 EventLoop &event_loop,
 					 UniqueSocketDescriptor &&_fd,
 					 SocketAddress address)
-	:NetstringServer(event_loop, std::move(_fd)),
+	:NetstringServer(event_loop, std::move(_fd), max_size),
 	 peer_cred(GetSocket().GetPeerCredentials()),
 	 handler(std::move(_handler)),
 	 logger(parent_logger, MakeLoggerDomain(peer_cred, address).c_str()),

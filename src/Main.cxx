@@ -79,17 +79,19 @@ try {
 	if (!lua_isfunction(L, 2))
 		return luaL_argerror(L, 2, "function expected");
 
+	size_t max_size = 16 * 1024 * 1024;
+
 	auto handler = std::make_shared<Lua::Value>(L, Lua::StackIndex(2));
 
 	if (IsSystemdMagic(L, 1)) {
-		instance.AddSystemdListener(std::move(handler));
+		instance.AddSystemdListener(max_size, std::move(handler));
 	} else if (lua_isstring(L, 1)) {
 		const char *address_string = lua_tostring(L, 1);
 
 		AllocatedSocketAddress address;
 		address.SetLocal(address_string);
 
-		instance.AddListener(address, std::move(handler));
+		instance.AddListener(address, max_size, std::move(handler));
 	} else
 		luaL_argerror(L, 1, "path expected");
 
