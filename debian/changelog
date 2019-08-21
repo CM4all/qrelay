@@ -4,7 +4,7 @@ cm4all-qrelay (0.11) unstable; urgency=low
   * debian: use debhelper 12
   * debian/rules: use dh_sphinxdoc
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Wed, 21 Aug 2019 14:43:07 +0200
 
 cm4all-qrelay (0.10) unstable; urgency=low
 
