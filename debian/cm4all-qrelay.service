@@ -12,3 +12,12 @@ CPUSchedulingPolicy=batch
 
 # enable crash dumps
 LimitCORE=infinity
+
+# Paranoid security settings
+NoNewPrivileges=yes
+ProtectSystem=yes
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
