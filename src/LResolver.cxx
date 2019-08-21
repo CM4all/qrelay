@@ -64,7 +64,7 @@ l_qmqp_resolve(lua_State *L)
 	try {
 		ai = Resolve(s, 628, &hints);
 	} catch (...) {
-		Lua::Raise(L, std::current_exception());
+		Lua::RaiseCurrent(L);
 	}
 
 	NewLuaAddress(L, std::move(ai.GetBest()));

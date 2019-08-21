@@ -1,5 +1,6 @@
 cm4all-qrelay (0.11) unstable; urgency=low
 
+  * fix crash after raising a Lua error
   * debian: use debhelper 12
   * debian/rules: use dh_sphinxdoc
 

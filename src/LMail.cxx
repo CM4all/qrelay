@@ -158,7 +158,7 @@ NewConnectAction(lua_State *L)
 	try {
 		address = GetLuaAddress(L, 2);
 	} catch (...) {
-		Lua::Raise(L, std::current_exception());
+		Lua::RaiseCurrent(L);
 	}
 
 	auto &action = *NewLuaAction(L, 1);
@@ -231,7 +231,7 @@ try {
 	Lua::Push(L, path.c_str());
 	return 1;
 } catch (...) {
-	Lua::Raise(L, std::current_exception());
+	Lua::RaiseCurrent(L);
 }
 
 static int
@@ -259,7 +259,7 @@ try {
 	Lua::SetField(L, -2, "source", m.source.c_str());
 	return 1;
 } catch (...) {
-	Lua::Raise(L, std::current_exception());
+	Lua::RaiseCurrent(L);
 }
 
 static constexpr struct luaL_Reg mail_methods [] = {
