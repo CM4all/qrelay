@@ -46,6 +46,7 @@
 #include <sys/socket.h>
 
 struct Action;
+class FileDescriptor;
 
 class QmqpRelayConnection final :
 	public boost::intrusive::list_base_hook<boost::intrusive::link_mode<boost::intrusive::auto_unlink>>,
@@ -81,7 +82,7 @@ public:
 protected:
 	void Do(const Action &action);
 	void Exec(const Action &action);
-	void OnConnect(int out_fd, int in_fd);
+	void OnConnect(FileDescriptor out_fd, FileDescriptor in_fd);
 	void OnResponse(const void *data, size_t size);
 
 	void OnRequest(AllocatedArray<uint8_t> &&payload) override;

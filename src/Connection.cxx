@@ -200,7 +200,8 @@ QmqpRelayConnection::Exec(const Action &action)
 	close(stdout_pipe[1]);
 
 	SetActionMail(outgoing_mail, action);
-	OnConnect(stdin_pipe[1], stdout_pipe[0]);
+	OnConnect(FileDescriptor(stdin_pipe[1]),
+		  FileDescriptor(stdout_pipe[0]));
 }
 
 static MutableMail &
@@ -212,7 +213,7 @@ CastMail(lua_State *L, const Lua::Value &value)
 }
 
 void
-QmqpRelayConnection::OnConnect(int out_fd, int in_fd)
+QmqpRelayConnection::OnConnect(FileDescriptor out_fd, FileDescriptor in_fd)
 {
 	const auto L = outgoing_mail.GetState();
 	auto &mail = CastMail(L, outgoing_mail);
@@ -252,7 +253,7 @@ QmqpRelayConnection::OnDisconnect() noexcept
 void
 QmqpRelayConnection::OnSocketConnectSuccess(UniqueSocketDescriptor &&_fd) noexcept
 {
-	const int connection_fd = _fd.Steal();
+	const auto connection_fd = _fd.Release().ToFileDescriptor();
 	OnConnect(connection_fd, connection_fd);
 }
 
