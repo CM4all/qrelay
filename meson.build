@@ -1,7 +1,8 @@
 project('CM4all qrelay', 'cpp', version: '0.12',
   meson_version: '>= 0.47',
   default_options: [
-    'cpp_std=c++17'
+    'cpp_std=c++17',
+    'warning_level=3',
   ],
 )
 
@@ -16,8 +17,6 @@ compiler = meson.get_compiler('cpp')
 
 common_flags = [
   '-D_GNU_SOURCE',
-  '-Wall',
-  '-Wextra',
   '-Wwrite-strings', '-Wcast-qual', '-Wcast-align', '-Wfloat-equal',
   '-Wshadow', '-Wpointer-arith', '-Wsign-compare',
   '-Wmissing-declarations', '-Wmissing-noreturn', '-Wmissing-format-attribute',
