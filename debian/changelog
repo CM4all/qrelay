@@ -2,7 +2,7 @@ cm4all-qrelay (0.13) unstable; urgency=low
 
   * eliminate runtime Boost dependency
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Wed, 16 Dec 2020 22:08:53 +0100
 
 cm4all-qrelay (0.12) unstable; urgency=low
 
