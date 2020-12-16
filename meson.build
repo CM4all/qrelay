@@ -1,4 +1,4 @@
-project('CM4all qrelay', 'cpp', version: '0.12',
+project('CM4all qrelay', 'cpp', version: '0.13',
   meson_version: '>= 0.47',
   default_options: [
     'cpp_std=c++17',
