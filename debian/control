@@ -4,7 +4,7 @@ Priority: extra
 Maintainer: Max Kellermann <mk@cm4all.com>
 Build-Depends: debhelper (>= 12~), dh-systemd,
  meson (>= 0.47),
- g++ (>= 4:4.9),
+ g++ (>= 4:8),
  libc6-dev (>= 2.13),
  libboost-dev (>= 1.62),
  libsystemd-dev,
