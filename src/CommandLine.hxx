@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 Content Management AG
+ * Copyright 2014-2020 CM4all GmbH
  * All rights reserved.
  *
  * author: Max Kellermann <mk@cm4all.com>
@@ -30,16 +30,13 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef QRELAY_COMMAND_LINE_HXX
-#define QRELAY_COMMAND_LINE_HXX
+#pragma once
 
 #include <string>
 
 struct CommandLine {
-	std::string config_path;
+	std::string config_path = "/etc/cm4all/qrelay/config.lua";
 };
 
 CommandLine
 ParseCommandLine(int argc, char **argv);
-
-#endif

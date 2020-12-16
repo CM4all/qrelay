@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 Content Management AG
+ * Copyright 2014-2020 CM4all GmbH
  * All rights reserved.
  *
  * author: Max Kellermann <mk@cm4all.com>
@@ -167,9 +167,9 @@ Run(const CommandLine &cmdline)
 }
 
 int
-main(int argc, char **argv)
+main(int, char **) noexcept
 try {
-	const auto cmdline = ParseCommandLine(argc, argv);
+	const CommandLine cmdline;
 
 	SetupProcess();
 

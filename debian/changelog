@@ -1,6 +1,6 @@
 cm4all-qrelay (0.13) unstable; urgency=low
 
-  * 
+  * eliminate runtime Boost dependency
 
  --   
 

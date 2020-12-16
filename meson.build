@@ -57,7 +57,6 @@ if debug
   common_flags += ['-DPOISON']
 endif
 
-boost_program_options = dependency('boost', modules: ['program_options'], version: '>= 1.54')
 libsystemd = dependency('libsystemd')
 
 inc = include_directories(
@@ -78,7 +77,6 @@ subdir('libcommon/src/net')
 subdir('libcommon/src/event/net')
 
 executable('cm4all-qrelay',
-  'src/CommandLine.cxx',
   'src/djb/NetstringParser.cxx',
   'src/djb/QmqpMail.cxx',
   'src/system/SetupProcess.cxx',
@@ -94,7 +92,7 @@ executable('cm4all-qrelay',
   'src/Main.cxx',
   include_directories: inc,
   dependencies: [
-    boost_program_options, libsystemd,
+    libsystemd,
     liblua,
     util_dep,
     lua_dep,
