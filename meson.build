@@ -59,10 +59,6 @@ test_cxxflags = test_common_flags + [
 add_global_arguments(common_flags, language: 'cpp')
 add_global_arguments(compiler.get_supported_arguments(test_cxxflags), language: 'cpp')
 
-if debug
-  common_flags += ['-DPOISON']
-endif
-
 libsystemd = dependency('libsystemd')
 
 inc = include_directories(
