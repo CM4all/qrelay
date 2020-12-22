@@ -1,6 +1,6 @@
 cm4all-qrelay (0.14) unstable; urgency=low
 
-  * 
+  * debian: move postinst code to sysusers.d
 
  --   
 

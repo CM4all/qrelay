@@ -2,7 +2,7 @@ Source: cm4all-qrelay
 Section: non-free/mail
 Priority: extra
 Maintainer: Max Kellermann <mk@cm4all.com>
-Build-Depends: debhelper (>= 12~), dh-systemd,
+Build-Depends: debhelper (>= 13~), dh-systemd,
  meson (>= 0.47),
  g++ (>= 4:8),
  libc6-dev (>= 2.13),
