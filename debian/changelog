@@ -4,7 +4,7 @@ cm4all-qrelay (0.15) unstable; urgency=low
   * fix assertion failure
   * fix double close() bug
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Wed, 13 Jan 2021 11:07:14 +0100
 
 cm4all-qrelay (0.14) unstable; urgency=low
 
