@@ -79,6 +79,7 @@ subdir('libcommon/src/net')
 subdir('libcommon/src/event/net')
 
 executable('cm4all-qrelay',
+  'src/CommandLine.cxx',
   'src/djb/NetstringParser.cxx',
   'src/djb/QmqpMail.cxx',
   'src/system/SetupProcess.cxx',
