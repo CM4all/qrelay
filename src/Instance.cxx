@@ -40,9 +40,6 @@ extern "C" {
 #include <systemd/sd-daemon.h>
 
 #include <stdexcept>
-#include <iostream>
-using std::cerr;
-using std::endl;
 
 #include <errno.h>
 #include <string.h>
@@ -118,6 +115,5 @@ Instance::Check()
 void
 Instance::ShutdownCallback() noexcept
 {
-	cerr << "quit" << endl;
 	event_loop.Break();
 }

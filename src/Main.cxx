@@ -51,10 +51,6 @@ extern "C" {
 
 #include <systemd/sd-daemon.h>
 
-#include <iostream>
-using std::cerr;
-using std::endl;
-
 #include <stdlib.h>
 
 /**
@@ -173,9 +169,7 @@ try {
 
 	SetupProcess();
 
-	const int result = Run(cmdline);
-	cerr << "exiting" << endl;
-	return result;
+	return Run(cmdline);
 } catch (...) {
 	PrintException(std::current_exception());
 	return EXIT_FAILURE;
