@@ -40,7 +40,7 @@
 #include "lua/Util.hxx"
 #include "lua/Error.hxx"
 #include "lua/RunFile.hxx"
-#include "util/OstreamException.hxx"
+#include "util/PrintException.hxx"
 #include "util/RuntimeError.hxx"
 #include "util/ScopeExit.hxx"
 
@@ -176,7 +176,7 @@ try {
 	const int result = Run(cmdline);
 	cerr << "exiting" << endl;
 	return result;
-} catch (const std::exception &e) {
-	cerr << "error: " << e << endl;
+} catch (...) {
+	PrintException(std::current_exception());
 	return EXIT_FAILURE;
 }

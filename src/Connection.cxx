@@ -40,7 +40,6 @@
 #include "net/AllocatedSocketAddress.hxx"
 #include "lua/Util.hxx"
 #include "lua/Error.hxx"
-#include "util/OstreamException.hxx"
 #include "util/ScopeExit.hxx"
 
 #include <list>
