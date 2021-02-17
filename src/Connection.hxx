@@ -91,7 +91,7 @@ protected:
 
 private:
 	/* virtual methods from class ConnectSocketHandler */
-	void OnSocketConnectSuccess(UniqueSocketDescriptor &&fd) noexcept override;
+	void OnSocketConnectSuccess(UniqueSocketDescriptor fd) noexcept override;
 	void OnSocketConnectError(std::exception_ptr ep) noexcept override;
 
 	/* virtual methods from class NetstringClientHandler */

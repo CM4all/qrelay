@@ -250,7 +250,7 @@ QmqpRelayConnection::OnDisconnect() noexcept
 }
 
 void
-QmqpRelayConnection::OnSocketConnectSuccess(UniqueSocketDescriptor &&_fd) noexcept
+QmqpRelayConnection::OnSocketConnectSuccess(UniqueSocketDescriptor _fd) noexcept
 {
 	const auto connection_fd = _fd.Release().ToFileDescriptor();
 	OnConnect(connection_fd, connection_fd);
