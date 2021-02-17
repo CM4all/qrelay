@@ -40,8 +40,7 @@
 #include "net/djb/NetstringGenerator.hxx"
 #include "lua/ValuePtr.hxx"
 #include "util/ConstBuffer.hxx"
-
-#include <boost/intrusive/list.hpp>
+#include "util/IntrusiveList.hxx"
 
 #include <sys/socket.h>
 
@@ -49,7 +48,7 @@ struct Action;
 class FileDescriptor;
 
 class QmqpRelayConnection final :
-	public boost::intrusive::list_base_hook<boost::intrusive::link_mode<boost::intrusive::auto_unlink>>,
+	public AutoUnlinkIntrusiveListHook,
 	public NetstringServer, ConnectSocketHandler,
 	NetstringClientHandler {
 
