@@ -212,14 +212,18 @@ NewExecAction(lua_State *L)
 static int
 GetCgroup(lua_State *L)
 try {
-	if (lua_gettop(L) != 2)
+	const auto top = lua_gettop(L);
+	if (top < 1 || top > 2)
 		return luaL_error(L, "Invalid parameters");
 
 	auto &mail = (IncomingMail &)CastLuaMail(L, 1);
 
-	if (!lua_isstring(L, 2))
-		luaL_argerror(L, 2, "string expected");
-	const char *controller = lua_tostring(L, 2);
+	const char *controller = "";
+	if (top >= 2) {
+		if (!lua_isstring(L, 2))
+			luaL_argerror(L, 2, "string expected");
+		controller = lua_tostring(L, 2);
+	}
 
 	if (!mail.HavePeerCred())
 		return 0;
