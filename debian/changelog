@@ -2,7 +2,7 @@ cm4all-qrelay (0.16) unstable; urgency=low
 
   * cgroup2 support for get_cgroup()
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Fri, 23 Apr 2021 18:13:31 +0200
 
 cm4all-qrelay (0.15) unstable; urgency=low
 
