@@ -2,7 +2,7 @@ cm4all-qrelay (0.17) unstable; urgency=low
 
   * add local socket support to qmqp_resolve()
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Thu, 20 May 2021 16:42:20 +0200
 
 cm4all-qrelay (0.16) unstable; urgency=low
 
