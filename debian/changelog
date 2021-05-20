@@ -1,6 +1,6 @@
 cm4all-qrelay (0.17) unstable; urgency=low
 
-  * 
+  * add local socket support to qmqp_resolve()
 
  --   
 

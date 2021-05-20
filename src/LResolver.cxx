@@ -36,6 +36,7 @@
 #include "lua/Error.hxx"
 #include "net/Resolver.hxx"
 #include "net/AddressInfo.hxx"
+#include "net/AllocatedSocketAddress.hxx"
 
 extern "C" {
 #include <lauxlib.h>
@@ -53,6 +54,13 @@ l_qmqp_resolve(lua_State *L)
 		luaL_argerror(L, 1, "string expected");
 
 	const char *s = lua_tostring(L, 1);
+
+	if (*s == '/' || *s == '@') {
+		AllocatedSocketAddress address;
+		address.SetLocal(s);
+		NewLuaAddress(L, std::move(address));
+		return 1;
+	}
 
 	struct addrinfo hints;
 	memset(&hints, 0, sizeof(hints));
