@@ -39,6 +39,7 @@
 #include "lua/Value.hxx"
 #include "lua/Util.hxx"
 #include "lua/Error.hxx"
+#include "lua/PushCClosure.hxx"
 #include "lua/RunFile.hxx"
 #include "util/PrintException.hxx"
 #include "util/RuntimeError.hxx"
