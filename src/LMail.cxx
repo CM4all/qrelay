@@ -241,6 +241,8 @@ try {
 static int
 GetMountInfo(lua_State *L)
 try {
+	using namespace Lua;
+
 	if (lua_gettop(L) != 2)
 		return luaL_error(L, "Invalid parameters");
 
@@ -258,9 +260,9 @@ try {
 		return 0;
 
 	lua_newtable(L);
-	Lua::SetField(L, -2, "root", m.root);
-	Lua::SetField(L, -2, "filesystem", m.filesystem);
-	Lua::SetField(L, -2, "source", m.source);
+	SetField(L, RelativeStackIndex{-1}, "root", m.root);
+	SetField(L, RelativeStackIndex{-1}, "filesystem", m.filesystem);
+	SetField(L, RelativeStackIndex{-1}, "source", m.source);
 	return 1;
 } catch (...) {
 	Lua::RaiseCurrent(L);
@@ -280,11 +282,13 @@ static constexpr struct luaL_Reg mail_methods [] = {
 static void
 PushArray(lua_State *L, const std::vector<StringView> &src)
 {
+	using namespace Lua;
+
 	lua_createtable(L, src.size(), 0);
 
 	int i = 1;
 	for (const auto &value : src)
-		Lua::SetTable(L, -3, i++, value);
+		SetTable(L, RelativeStackIndex{-1}, i++, value);
 }
 
 static int
@@ -339,8 +343,10 @@ LuaMailIndex(lua_State *L)
 void
 RegisterLuaMail(lua_State *L)
 {
+	using namespace Lua;
+
 	LuaMail::Register(L);
-	Lua::SetTable(L, -3, "__index", LuaMailIndex);
+	SetTable(L, RelativeStackIndex{-1}, "__index", LuaMailIndex);
 	lua_pop(L, 1);
 }
 

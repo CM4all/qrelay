@@ -70,8 +70,10 @@ LuaAddressToString(lua_State *L)
 void
 RegisterLuaAddress(lua_State *L)
 {
+	using namespace Lua;
+
 	LuaAddress::Register(L);
-	Lua::SetTable(L, -3, "__tostring", LuaAddressToString);
+	SetTable(L, RelativeStackIndex{-1}, "__tostring", LuaAddressToString);
 	lua_pop(L, 1);
 }
 
