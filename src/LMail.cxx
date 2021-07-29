@@ -340,6 +340,15 @@ LuaMailIndex(lua_State *L)
 	return luaL_error(L, "Unknown attribute");
 }
 
+static int
+LuaMailNewIndex(lua_State *L)
+{
+	if (lua_gettop(L) != 3)
+		return luaL_error(L, "Invalid parameters");
+
+	return luaL_error(L, "Cannot change this attribute");
+}
+
 void
 RegisterLuaMail(lua_State *L)
 {
@@ -347,6 +356,7 @@ RegisterLuaMail(lua_State *L)
 
 	LuaMail::Register(L);
 	SetTable(L, RelativeStackIndex{-1}, "__index", LuaMailIndex);
+	SetTable(L, RelativeStackIndex{-1}, "__newindex", LuaMailNewIndex);
 	lua_pop(L, 1);
 }
 
