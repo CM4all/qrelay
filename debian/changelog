@@ -2,7 +2,7 @@ cm4all-qrelay (0.18) unstable; urgency=low
 
   * allow changing the envelope sender
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Thu, 29 Jul 2021 16:38:07 +0200
 
 cm4all-qrelay (0.17) unstable; urgency=low
 
