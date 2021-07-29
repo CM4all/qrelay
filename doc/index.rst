@@ -64,7 +64,8 @@ Inspecting Incoming Mail
 
 The following attributes can be queried:
 
-* :samp:`sender`: The sender envelope address.
+* :samp:`sender`: The sender envelope address.  This attribute can
+  also be written to.
 
 * :samp:`recipients`: A list of recipient envelope addresses.
 

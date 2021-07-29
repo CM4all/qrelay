@@ -48,10 +48,10 @@ struct QmqpMail {
 	std::string_view message;
 
 	/**
-	 * The QMQP tail after the message, including the message's
-	 * trailing comma and the netstrings describing sender and all
-	 * recipients.  This is used to forward the message efficiently
-	 * after the message has been edited.
+	 * The QMQP tail after the message and the sender, including
+	 * the message's trailing comma and the netstrings describing
+	 * all recipients.  This is used to forward the message
+	 * efficiently after the message has been edited.
 	 */
 	std::string_view tail;
 

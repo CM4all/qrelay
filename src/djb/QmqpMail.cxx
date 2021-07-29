@@ -52,13 +52,13 @@ QmqpMail::Parse(ConstBuffer<void> __input)
 
 	message = _message;
 
-	tail = MakeStringView(input.begin() - 1, input.end());
-
 	auto _sender = ParseNetstring(input);
 	if (_sender == nullptr)
 		return false;
 
 	sender = _sender;
+
+	tail = MakeStringView(input.begin() - 1, input.end());
 
 	do {
 		auto value = ParseNetstring(input);

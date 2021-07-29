@@ -53,6 +53,12 @@ struct MutableMail : QmqpMail {
 	AllocatedArray<uint8_t> buffer;
 
 	/**
+	 * If the sender was modified, then this object owns the
+	 * memory pointed to by QmqpMail::sender.
+	 */
+	std::string sender_buffer;
+
+	/**
 	 * A list of additional header lines (each ending with "\r\n")
 	 * which get inserted at the top of the mail.
 	 */
@@ -63,6 +69,11 @@ struct MutableMail : QmqpMail {
 
 	bool Parse() {
 		return QmqpMail::Parse({&buffer.front(), buffer.size()});
+	}
+
+	template<typename T>
+	void SetSender(T &&new_sender) noexcept {
+		sender = sender_buffer = std::forward<T>(new_sender);
 	}
 
 	void InsertHeader(const char *name, const char *value);

@@ -37,6 +37,7 @@
 #include "LAddress.hxx"
 #include "lua/Class.hxx"
 #include "lua/Error.hxx"
+#include "util/StringAPI.hxx"
 #include "CgroupProc.hxx"
 #include "MountProc.hxx"
 
@@ -346,7 +347,20 @@ LuaMailNewIndex(lua_State *L)
 	if (lua_gettop(L) != 3)
 		return luaL_error(L, "Invalid parameters");
 
-	return luaL_error(L, "Cannot change this attribute");
+	auto &mail = (IncomingMail &)CastLuaMail(L, 1);
+
+	if (!lua_isstring(L, 2))
+		luaL_argerror(L, 2, "string expected");
+
+	const char *name = lua_tostring(L, 2);
+	if (StringIsEqual(name, "sender")) {
+		if (!lua_isstring(L, 3))
+			luaL_argerror(L, 3, "string expected");
+
+		mail.SetSender(lua_tostring(L, 3));
+		return 0;
+	} else
+		return luaL_error(L, "Cannot change this attribute");
 }
 
 void

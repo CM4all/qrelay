@@ -58,6 +58,7 @@ class QmqpRelayConnection final :
 	ChildLogger logger;
 
 	NetstringGenerator generator;
+	NetstringHeader sender_header;
 
 	char received_buffer[256];
 

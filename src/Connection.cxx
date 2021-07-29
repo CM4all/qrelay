@@ -231,7 +231,9 @@ QmqpRelayConnection::OnConnect(FileDescriptor out_fd, FileDescriptor in_fd)
 	for (const auto &i : mail.headers)
 		request.emplace_front(i.data(), i.length());
 
-	generator(request, false);
+	generator(request, true);
+	request.emplace_back(sender_header(mail.sender.size()).ToVoid());
+	request.emplace_back(StringView{mail.sender}.ToVoid());
 	request.push_back(StringView{mail.tail}.ToVoid());
 
 	client.Request(out_fd, in_fd, std::move(request));
