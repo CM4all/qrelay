@@ -33,9 +33,10 @@
 #ifndef MAIL_HXX
 #define MAIL_HXX
 
-#include "util/StringView.hxx"
-
+#include <string_view>
 #include <vector>
+
+template<typename T> struct ConstBuffer;
 
 /**
  * An email received via QMQP.
@@ -44,7 +45,7 @@ struct QmqpMail {
 	/**
 	 * The message.
 	 */
-	StringView message;
+	std::string_view message;
 
 	/**
 	 * The QMQP tail after the message, including the message's
@@ -52,17 +53,17 @@ struct QmqpMail {
 	 * recipients.  This is used to forward the message efficiently
 	 * after the message has been edited.
 	 */
-	StringView tail;
+	std::string_view tail;
 
 	/**
 	 * The sender email address.
 	 */
-	StringView sender;
+	std::string_view sender;
 
 	/**
 	 * The list of recipient email addresses.
 	 */
-	std::vector<StringView> recipients;
+	std::vector<std::string_view> recipients;
 
 	bool Parse(ConstBuffer<void> input);
 };

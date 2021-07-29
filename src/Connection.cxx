@@ -219,7 +219,7 @@ QmqpRelayConnection::OnConnect(FileDescriptor out_fd, FileDescriptor in_fd)
 	auto &mail = CastMail(L, outgoing_mail);
 
 	std::list<ConstBuffer<void>> request;
-	request.push_back(mail.message.ToVoid());
+	request.push_back(StringView{mail.message}.ToVoid());
 
 	if (peer_cred.pid >= 0) {
 		int length = sprintf(received_buffer,
@@ -232,7 +232,7 @@ QmqpRelayConnection::OnConnect(FileDescriptor out_fd, FileDescriptor in_fd)
 		request.emplace_front(i.data(), i.length());
 
 	generator(request, false);
-	request.push_back(mail.tail.ToVoid());
+	request.push_back(StringView{mail.tail}.ToVoid());
 
 	client.Request(out_fd, in_fd, std::move(request));
 }

@@ -47,8 +47,8 @@
  */
 struct MutableMail : QmqpMail {
 	/**
-	 * The buffer where the #QmqpMail's #StringView instances point
-	 * into.
+	 * The buffer where the #QmqpMail's #std::string_view
+	 * instances point into.
 	 */
 	AllocatedArray<uint8_t> buffer;
 
