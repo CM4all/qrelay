@@ -72,6 +72,7 @@ libcommon_enable_DefaultFifoBuffer = false
 libcommon_enable_net_log = false
 
 subdir('libcommon/src/util')
+subdir('libcommon/src/uri')
 subdir('libcommon/src/lua')
 subdir('libcommon/src/io')
 subdir('libcommon/src/system')
@@ -98,6 +99,7 @@ executable('cm4all-qrelay',
   dependencies: [
     libsystemd,
     liblua,
+    uri_dep,
     util_dep,
     lua_dep,
     event_net_dep,

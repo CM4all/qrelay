@@ -37,6 +37,7 @@
 #include "LAddress.hxx"
 #include "lua/Class.hxx"
 #include "lua/Error.hxx"
+#include "uri/EmailAddress.hxx"
 #include "util/StringAPI.hxx"
 #include "CgroupProc.hxx"
 #include "MountProc.hxx"
@@ -357,7 +358,11 @@ LuaMailNewIndex(lua_State *L)
 		if (!lua_isstring(L, 3))
 			luaL_argerror(L, 3, "string expected");
 
-		mail.SetSender(lua_tostring(L, 3));
+		const char *new_value = lua_tostring(L, 3);
+		if (!VerifyEmailAddress(new_value))
+			luaL_argerror(L, 3, "Malformed email address");
+
+		mail.SetSender(new_value);
 		return 0;
 	} else
 		return luaL_error(L, "Cannot change this attribute");
