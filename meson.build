@@ -98,7 +98,6 @@ executable('cm4all-qrelay',
   include_directories: inc,
   dependencies: [
     libsystemd,
-    liblua,
     uri_dep,
     util_dep,
     lua_dep,
