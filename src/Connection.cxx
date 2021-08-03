@@ -41,6 +41,7 @@
 #include "lua/PushLambda.hxx"
 #include "lua/Util.hxx"
 #include "lua/Error.hxx"
+#include "io/UniqueFileDescriptor.hxx"
 #include "util/ScopeExit.hxx"
 
 #include <list>
@@ -150,31 +151,21 @@ try {
 	assert(action.type == Action::Type::EXEC);
 	assert(!action.exec.empty());
 
-	int stdin_pipe[2], stdout_pipe[2];
+	UniqueFileDescriptor stdin_r, stdin_w, stdout_r, stdout_w;
 
-	if (pipe2(stdin_pipe, O_CLOEXEC|O_NONBLOCK) < 0)
+	if (!UniqueFileDescriptor::CreatePipeNonBlock(stdin_r, stdin_w))
 		throw MakeErrno("pipe() failed");
 
-	if (pipe2(stdout_pipe, O_CLOEXEC|O_NONBLOCK) < 0) {
-		const int e = errno;
-		close(stdin_pipe[0]);
-		close(stdin_pipe[1]);
-		throw MakeErrno(e, "pipe() failed");
-	}
+	if (!UniqueFileDescriptor::CreatePipeNonBlock(stdout_r, stdout_w))
+		throw MakeErrno("pipe() failed");
 
 	pid_t pid = fork();
-	if (pid < 0) {
-		const int e = errno;
-		close(stdin_pipe[0]);
-		close(stdin_pipe[1]);
-		close(stdout_pipe[0]);
-		close(stdout_pipe[1]);
-		throw MakeErrno(e, "fork() failed");
-	}
+	if (pid < 0)
+		throw MakeErrno("fork() failed");
 
 	if (pid == 0) {
-		dup2(stdin_pipe[0], 0);
-		dup2(stdout_pipe[1], 1);
+		stdin_r.CheckDuplicate(FileDescriptor{STDIN_FILENO});
+		stdout_w.CheckDuplicate(FileDescriptor{STDOUT_FILENO});
 
 		/* disable O_NONBLOCK */
 		fcntl(0, F_SETFL, fcntl(0, F_GETFL) & ~O_NONBLOCK);
@@ -192,12 +183,11 @@ try {
 		_exit(1);
 	}
 
-	close(stdin_pipe[0]);
-	close(stdout_pipe[1]);
+	stdin_r.Close();
+	stdout_w.Close();
 
 	SetActionMail(outgoing_mail, action);
-	OnConnect(FileDescriptor(stdin_pipe[1]),
-		  FileDescriptor(stdout_pipe[0]));
+	OnConnect(stdin_w.Release(), stdout_r.Release());
 } catch (...) {
 	OnError(std::current_exception());
 }
