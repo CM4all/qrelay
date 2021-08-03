@@ -51,6 +51,8 @@
 #include <fcntl.h>
 #include <sys/socket.h>
 
+using namespace Lua;
+
 static std::string
 MakeLoggerDomain(const struct ucred &cred, SocketAddress)
 {
@@ -73,9 +75,23 @@ QmqpRelayConnection::QmqpRelayConnection(size_t max_size,
 	 peer_cred(GetSocket().GetPeerCredentials()),
 	 handler(std::move(_handler)),
 	 logger(parent_logger, MakeLoggerDomain(peer_cred, address).c_str()),
+	 thread(handler->GetState()),
 	 outgoing_mail(handler->GetState()),
 	 connect(event_loop, *this),
 	 client(event_loop, 256, *this) {}
+
+QmqpRelayConnection::~QmqpRelayConnection() noexcept
+{
+	const auto main_L = thread.GetState();
+	const ScopeCheckStack check_main_stack(main_L);
+	thread.Push(main_L);
+	if (const auto L = lua_tothread(main_L, -1); L != nullptr) {
+		const ScopeCheckStack check_thread_stack(L);
+		UnsetResumeListener(L);
+	}
+
+	lua_pop(main_L, 1);
+}
 
 void
 QmqpRelayConnection::Register(lua_State *L)
@@ -96,21 +112,15 @@ QmqpRelayConnection::OnRequest(AllocatedArray<uint8_t> &&payload)
 
 	const auto main_L = handler->GetState();
 	const auto L = lua_newthread(main_L);
-	AtScopeExit(main_L) { lua_pop(main_L, 1); };
+	thread.Set(RelativeStackIndex{-1});
+	SetResumeListener(L, *this);
 
 	handler->Push(L);
 
 	NewLuaMail(L, std::move(mail), peer_cred);
-	if (lua_pcall(L, 1, 1, 0))
-		throw Lua::PopError(L);
 
-	AtScopeExit(L) { lua_pop(L, 1); };
-
-	auto *action = CheckLuaAction(L, -1);
-	if (action == nullptr)
-		throw std::runtime_error("Wrong return type from Lua handler");
-
-	Do(L, *action);
+	Resume(L, 1);
+	lua_pop(L, 1);
 }
 
 static void
@@ -270,4 +280,31 @@ QmqpRelayConnection::OnNetstringError(std::exception_ptr) noexcept
 {
 	if (SendResponse("Zrelay failed"))
 		delete this;
+}
+
+void
+QmqpRelayConnection::OnLuaFinished() noexcept
+try {
+	const auto main_L = thread.GetState();
+	const ScopeCheckStack check_main_stack(main_L);
+	thread.Push(main_L);
+	const auto L = lua_tothread(main_L, -1);
+	assert(L != nullptr);
+	lua_pop(main_L, 1);
+
+	const ScopeCheckStack check_thread_stack(L);
+
+	auto *action = CheckLuaAction(L, -1);
+	if (action == nullptr)
+		throw std::runtime_error("Wrong return type from Lua handler");
+
+	Do(L, *action);
+} catch (...) {
+	OnError(std::current_exception());
+}
+
+void
+QmqpRelayConnection::OnLuaError(std::exception_ptr e) noexcept
+{
+	OnError(std::move(e));
 }

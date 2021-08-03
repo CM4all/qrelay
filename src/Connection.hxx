@@ -38,6 +38,7 @@
 #include "event/net/djb/NetstringServer.hxx"
 #include "event/net/djb/NetstringClient.hxx"
 #include "net/djb/NetstringGenerator.hxx"
+#include "lua/Resume.hxx"
 #include "lua/ValuePtr.hxx"
 #include "util/ConstBuffer.hxx"
 #include "util/IntrusiveList.hxx"
@@ -50,6 +51,7 @@ class FileDescriptor;
 class QmqpRelayConnection final :
 	public AutoUnlinkIntrusiveListHook,
 	public NetstringServer, ConnectSocketHandler,
+	Lua::ResumeListener,
 	NetstringClientHandler {
 
 	const struct ucred peer_cred;
@@ -61,6 +63,11 @@ class QmqpRelayConnection final :
 	NetstringHeader sender_header;
 
 	char received_buffer[256];
+
+	/**
+	 * The Lua thread which runs the handler coroutine.
+	 */
+	Lua::Value thread;
 
 	/**
 	 * The #LuaMail that is going to be sent once we've connected to
@@ -76,6 +83,7 @@ public:
 			    const RootLogger &parent_logger,
 			    EventLoop &event_loop,
 			    UniqueSocketDescriptor &&_fd, SocketAddress address);
+	~QmqpRelayConnection() noexcept;
 
 	static void Register(lua_State *L);
 
@@ -97,6 +105,10 @@ private:
 	/* virtual methods from class NetstringClientHandler */
 	void OnNetstringResponse(AllocatedArray<uint8_t> &&payload) noexcept override;
 	void OnNetstringError(std::exception_ptr error) noexcept override;
+
+	/* virtual methods from class Lua::ResumeListener */
+	void OnLuaFinished() noexcept override;
+	void OnLuaError(std::exception_ptr e) noexcept override;
 };
 
 #endif
