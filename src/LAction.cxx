@@ -65,8 +65,8 @@ CheckLuaAction(lua_State *L, int idx)
 }
 
 void
-PushLuaActionMail(const Action &_action)
+PushLuaActionMail(lua_State *L, const Action &_action)
 {
 	auto &action = (const LAction &)_action;
-	action.mail.Push();
+	action.mail.Push(L);
 }

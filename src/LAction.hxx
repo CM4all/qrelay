@@ -53,6 +53,6 @@ CheckLuaAction(lua_State *L, int idx);
  * Push the associated mail object on the Lua stack.
  */
 void
-PushLuaActionMail(const Action &action);
+PushLuaActionMail(lua_State *L, const Action &action);
 
 #endif

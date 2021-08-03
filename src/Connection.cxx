@@ -94,9 +94,12 @@ QmqpRelayConnection::OnRequest(AllocatedArray<uint8_t> &&payload)
 		return;
 	}
 
-	handler->Push();
+	const auto main_L = handler->GetState();
+	const auto L = lua_newthread(main_L);
+	AtScopeExit(main_L) { lua_pop(main_L, 1); };
 
-	const auto L = handler->GetState();
+	handler->Push(L);
+
 	NewLuaMail(L, std::move(mail), peer_cred);
 	if (lua_pcall(L, 1, 1, 0))
 		throw Lua::PopError(L);
@@ -107,17 +110,17 @@ QmqpRelayConnection::OnRequest(AllocatedArray<uint8_t> &&payload)
 	if (action == nullptr)
 		throw std::runtime_error("Wrong return type from Lua handler");
 
-	Do(*action);
+	Do(L, *action);
 }
 
 static void
-SetActionMail(Lua::Value &dest, const Action &action)
+SetActionMail(lua_State *L, Lua::Value &dest, const Action &action)
 {
-	dest.Set(Lua::Lambda([&](){ PushLuaActionMail(action); }));
+	dest.Set(L, Lua::Lambda([&](){ PushLuaActionMail(L, action); }));
 }
 
 void
-QmqpRelayConnection::Do(const Action &action)
+QmqpRelayConnection::Do(lua_State *L, const Action &action)
 {
 	switch (action.type) {
 	case Action::Type::UNDEFINED:
@@ -135,18 +138,18 @@ QmqpRelayConnection::Do(const Action &action)
 		break;
 
 	case Action::Type::CONNECT:
-		SetActionMail(outgoing_mail, action);
+		SetActionMail(L, outgoing_mail, action);
 		connect.Connect(action.connect, std::chrono::seconds(20));
 		break;
 
 	case Action::Type::EXEC:
-		Exec(action);
+		Exec(L, action);
 		break;
 	}
 }
 
 void
-QmqpRelayConnection::Exec(const Action &action)
+QmqpRelayConnection::Exec(lua_State *L, const Action &action)
 try {
 	assert(action.type == Action::Type::EXEC);
 	assert(!action.exec.empty());
@@ -186,7 +189,7 @@ try {
 	stdin_r.Close();
 	stdout_w.Close();
 
-	SetActionMail(outgoing_mail, action);
+	SetActionMail(L, outgoing_mail, action);
 	OnConnect(stdin_w.Release(), stdout_r.Release());
 } catch (...) {
 	OnError(std::current_exception());
@@ -195,7 +198,7 @@ try {
 static MutableMail &
 CastMail(lua_State *L, const Lua::Value &value)
 {
-	value.Push();
+	value.Push(L);
 	AtScopeExit(L) { lua_pop(L, 1); };
 	return CastLuaMail(L, -1);
 }
