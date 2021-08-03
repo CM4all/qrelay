@@ -79,6 +79,7 @@ subdir('libcommon/src/system')
 subdir('libcommon/src/event')
 subdir('libcommon/src/net')
 subdir('libcommon/src/event/net')
+subdir('libcommon/src/lua/event')
 
 executable('cm4all-qrelay',
   'src/CommandLine.cxx',
@@ -101,6 +102,7 @@ executable('cm4all-qrelay',
     uri_dep,
     util_dep,
     lua_dep,
+    lua_event_dep,
     event_net_dep,
   ],
   install: true,
