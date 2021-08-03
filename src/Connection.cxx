@@ -38,6 +38,7 @@
 #include "LAddress.hxx"
 #include "system/Error.hxx"
 #include "net/AllocatedSocketAddress.hxx"
+#include "net/UniqueSocketDescriptor.hxx"
 #include "lua/PushLambda.hxx"
 #include "lua/Util.hxx"
 #include "lua/Error.hxx"
