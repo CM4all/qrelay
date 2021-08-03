@@ -86,12 +86,20 @@ QmqpRelayConnection::~QmqpRelayConnection() noexcept
 	const ScopeCheckStack check_main_stack(main_L);
 
 	thread.Push(main_L);
+
+	bool need_gc = false;
 	if (const auto L = lua_tothread(main_L, -1); L != nullptr) {
 		const ScopeCheckStack check_thread_stack(L);
-		UnsetResumeListener(L);
+		need_gc = UnsetResumeListener(L) != nullptr;
 	}
 
 	lua_pop(main_L, 1);
+
+	if (need_gc)
+		/* force a full GC so all pending operations are
+		   cancelled */
+		// TODO: is there a more elegant way without forcing a full GC?
+		lua_gc(main_L, LUA_GCCOLLECT, 0);
 }
 
 void
