@@ -146,23 +146,20 @@ QmqpRelayConnection::Do(const Action &action)
 
 void
 QmqpRelayConnection::Exec(const Action &action)
-{
+try {
 	assert(action.type == Action::Type::EXEC);
 	assert(!action.exec.empty());
 
 	int stdin_pipe[2], stdout_pipe[2];
 
-	if (pipe2(stdin_pipe, O_CLOEXEC|O_NONBLOCK) < 0) {
-		OnError(std::make_exception_ptr(MakeErrno("pipe() failed")));
-		return;
-	}
+	if (pipe2(stdin_pipe, O_CLOEXEC|O_NONBLOCK) < 0)
+		throw MakeErrno("pipe() failed");
 
 	if (pipe2(stdout_pipe, O_CLOEXEC|O_NONBLOCK) < 0) {
 		const int e = errno;
 		close(stdin_pipe[0]);
 		close(stdin_pipe[1]);
-		OnError(std::make_exception_ptr(MakeErrno(e, "pipe() failed")));
-		return;
+		throw MakeErrno(e, "pipe() failed");
 	}
 
 	pid_t pid = fork();
@@ -172,8 +169,7 @@ QmqpRelayConnection::Exec(const Action &action)
 		close(stdin_pipe[1]);
 		close(stdout_pipe[0]);
 		close(stdout_pipe[1]);
-		OnError(std::make_exception_ptr(MakeErrno(e, "fork() failed")));
-		return;
+		throw MakeErrno(e, "fork() failed");
 	}
 
 	if (pid == 0) {
@@ -202,6 +198,8 @@ QmqpRelayConnection::Exec(const Action &action)
 	SetActionMail(outgoing_mail, action);
 	OnConnect(FileDescriptor(stdin_pipe[1]),
 		  FileDescriptor(stdout_pipe[0]));
+} catch (...) {
+	OnError(std::current_exception());
 }
 
 static MutableMail &
