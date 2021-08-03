@@ -84,6 +84,7 @@ QmqpRelayConnection::~QmqpRelayConnection() noexcept
 {
 	const auto main_L = thread.GetState();
 	const ScopeCheckStack check_main_stack(main_L);
+
 	thread.Push(main_L);
 	if (const auto L = lua_tothread(main_L, -1); L != nullptr) {
 		const ScopeCheckStack check_thread_stack(L);
@@ -111,8 +112,15 @@ QmqpRelayConnection::OnRequest(AllocatedArray<uint8_t> &&payload)
 	}
 
 	const auto main_L = handler->GetState();
+	const ScopeCheckStack check_main_stack(main_L);
+
+	/* create a new thread for the handler coroutine */
 	const auto L = lua_newthread(main_L);
+	const ScopeCheckStack check_thread_stack(L);
 	thread.Set(RelativeStackIndex{-1});
+	/* pop the new thread from the main stack */
+	lua_pop(main_L, 1);
+
 	SetResumeListener(L, *this);
 
 	handler->Push(L);
