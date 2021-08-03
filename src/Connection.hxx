@@ -54,7 +54,7 @@ class QmqpRelayConnection final :
 
 	const struct ucred peer_cred;
 
-	Lua::ValuePtr handler;
+	const Lua::ValuePtr handler;
 	ChildLogger logger;
 
 	NetstringGenerator generator;
