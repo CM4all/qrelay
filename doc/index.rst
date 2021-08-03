@@ -148,6 +148,22 @@ These examples do the following:
   converted to a null byte, making the address "abstract")
 
 
+PostgreSQL Client
+^^^^^^^^^^^^^^^^^
+
+The Lua script can query a PostgreSQL database.  First, a connection
+should be established during initialization::
+
+  db = pg:new('dbname=foo', 'schemaname')
+
+In the handler function, queries can be executed like this (the API is
+similar to `LuaSQL <https://keplerproject.github.io/luasql/>`__)::
+
+  local result = assert(db:execute('SELECT id, name FROM bar'))
+  local row = result:fetch({}, "a")
+  print(row.id, row.name)
+
+
 Examples
 ^^^^^^^^
 

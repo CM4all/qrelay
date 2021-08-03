@@ -42,6 +42,7 @@
 #include "lua/PushCClosure.hxx"
 #include "lua/RunFile.hxx"
 #include "lua/event/Init.hxx"
+#include "lua/pg/Init.hxx"
 #include "util/PrintException.hxx"
 #include "util/RuntimeError.hxx"
 #include "util/ScopeExit.hxx"
@@ -122,6 +123,7 @@ SetupConfigState(lua_State *L, Instance &instance)
 	luaL_openlibs(L);
 
 	Lua::InitEvent(L, instance.GetEventLoop());
+	Lua::InitPg(L, instance.GetEventLoop());
 
 	RegisterLuaAddress(L);
 	RegisterLuaResolver(L);
