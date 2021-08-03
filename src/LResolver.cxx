@@ -50,10 +50,7 @@ l_qmqp_resolve(lua_State *L)
 	if (lua_gettop(L) != 1)
 		return luaL_error(L, "Invalid parameter count");
 
-	if (!lua_isstring(L, 1))
-		luaL_argerror(L, 1, "string expected");
-
-	const char *s = lua_tostring(L, 1);
+	const char *s = luaL_checkstring(L, 1);
 
 	if (*s == '/' || *s == '@') {
 		AllocatedSocketAddress address;

@@ -42,6 +42,10 @@
 #include "CgroupProc.hxx"
 #include "MountProc.hxx"
 
+extern "C" {
+#include <lauxlib.h>
+}
+
 #include <sys/socket.h>
 #include <string.h>
 
@@ -130,17 +134,11 @@ InsertHeader(lua_State *L)
 	if (lua_gettop(L) != 3)
 		return luaL_error(L, "Invalid parameters");
 
-	if (!lua_isstring(L, 2))
-		luaL_argerror(L, 2, "string expected");
-
-	const char *name = lua_tostring(L, 2);
+	const char *name = luaL_checkstring(L, 2);
 	if (!IsValidHeaderName(name))
 		luaL_argerror(L, 2, "Illegal header name");
 
-	if (!lua_isstring(L, 3))
-		luaL_argerror(L, 3, "string expected");
-
-	const char *value = lua_tostring(L, 3);
+	const char *value = luaL_checkstring(L, 3);
 	if (!IsValidHeaderValue(value))
 		luaL_argerror(L, 2, "Illegal header value");
 
@@ -202,10 +200,7 @@ NewExecAction(lua_State *L)
 
 	const unsigned n = lua_gettop(L);
 	for (unsigned i = 2; i <= n; ++i) {
-		if (!lua_isstring(L, i))
-			luaL_argerror(L, i, "string expected");
-
-		action.exec.emplace_back(lua_tostring(L, i));
+		action.exec.emplace_back(luaL_checkstring(L, i));
 	}
 
 	return 1;
@@ -220,12 +215,7 @@ try {
 
 	auto &mail = (IncomingMail &)CastLuaMail(L, 1);
 
-	const char *controller = "";
-	if (top >= 2) {
-		if (!lua_isstring(L, 2))
-			luaL_argerror(L, 2, "string expected");
-		controller = lua_tostring(L, 2);
-	}
+	const char *controller = luaL_optstring(L, 2, "");
 
 	if (!mail.HavePeerCred())
 		return 0;
@@ -250,9 +240,7 @@ try {
 
 	auto &mail = (IncomingMail &)CastLuaMail(L, 1);
 
-	if (!lua_isstring(L, 2))
-		luaL_argerror(L, 2, "string expected");
-	const char *mountpoint = lua_tostring(L, 2);
+	const char *mountpoint = luaL_checkstring(L, 2);
 
 	if (!mail.HavePeerCred())
 		return 0;
@@ -301,10 +289,7 @@ LuaMailIndex(lua_State *L)
 
 	auto &mail = (IncomingMail &)CastLuaMail(L, 1);
 
-	if (!lua_isstring(L, 2))
-		luaL_argerror(L, 2, "string expected");
-
-	const char *name = lua_tostring(L, 2);
+	const char *name = luaL_checkstring(L, 2);
 
 	for (const auto *i = mail_methods; i->name != nullptr; ++i) {
 		if (strcmp(i->name, name) == 0) {
@@ -350,15 +335,9 @@ LuaMailNewIndex(lua_State *L)
 
 	auto &mail = (IncomingMail &)CastLuaMail(L, 1);
 
-	if (!lua_isstring(L, 2))
-		luaL_argerror(L, 2, "string expected");
-
-	const char *name = lua_tostring(L, 2);
+	const char *name = luaL_checkstring(L, 2);
 	if (StringIsEqual(name, "sender")) {
-		if (!lua_isstring(L, 3))
-			luaL_argerror(L, 3, "string expected");
-
-		const char *new_value = lua_tostring(L, 3);
+		const char *new_value = luaL_checkstring(L, 3);
 		if (!VerifyEmailAddress(new_value))
 			luaL_argerror(L, 3, "Malformed email address");
 
