@@ -163,6 +163,12 @@ similar to `LuaSQL <https://keplerproject.github.io/luasql/>`__)::
   local row = result:fetch({}, "a")
   print(row.id, row.name)
 
+Query parameters are passed to `db:execute()` as an array after the
+SQL string::
+
+  local result = assert(
+    db:execute('SELECT name FROM bar WHERE id=$1', {42}))
+
 
 Examples
 ^^^^^^^^
