@@ -219,7 +219,7 @@ try {
 	SetActionMail(L, outgoing_mail, action);
 	OnConnect(stdin_w.Release(), stdout_r.Release());
 } catch (...) {
-	logger(1, e);
+	logger(1, std::current_exception());
 
 	if (SendResponse("Zinternal server error"))
 		delete this;
