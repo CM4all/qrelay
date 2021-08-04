@@ -5,7 +5,7 @@ cm4all-qrelay (0.19) unstable; urgency=low
   * add PostgreSQL client
   * reply with temporary error if Lua script fails
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Wed, 04 Aug 2021 14:57:01 +0200
 
 cm4all-qrelay (0.18) unstable; urgency=low
 
