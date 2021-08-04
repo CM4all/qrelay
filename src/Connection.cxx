@@ -219,7 +219,10 @@ try {
 	SetActionMail(L, outgoing_mail, action);
 	OnConnect(stdin_w.Release(), stdout_r.Release());
 } catch (...) {
-	OnError(std::current_exception());
+	logger(1, e);
+
+	if (SendResponse("Zinternal server error"))
+		delete this;
 }
 
 static MutableMail &
