@@ -49,8 +49,6 @@
 
 #include <stdio.h>
 #include <unistd.h>
-#include <fcntl.h>
-#include <sys/socket.h>
 
 using namespace Lua;
 
@@ -198,8 +196,8 @@ try {
 		stdout_w.CheckDuplicate(FileDescriptor{STDOUT_FILENO});
 
 		/* disable O_NONBLOCK */
-		fcntl(0, F_SETFL, fcntl(0, F_GETFL) & ~O_NONBLOCK);
-		fcntl(1, F_SETFL, fcntl(1, F_GETFL) & ~O_NONBLOCK);
+		FileDescriptor{STDIN_FILENO}.SetBlocking();
+		FileDescriptor{STDOUT_FILENO}.SetBlocking();
 
 		char *argv[Action::MAX_EXEC + 1];
 
