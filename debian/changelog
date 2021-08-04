@@ -3,6 +3,7 @@ cm4all-qrelay (0.19) unstable; urgency=low
   * verify the new envelope sender
   * run Lua code as coroutine
   * add PostgreSQL client
+  * reply with temporary error if Lua script fails
 
  --   
 

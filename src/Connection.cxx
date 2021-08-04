@@ -317,11 +317,14 @@ try {
 
 	Do(L, *action);
 } catch (...) {
-	OnError(std::current_exception());
+	OnLuaError(std::current_exception());
 }
 
 void
 QmqpRelayConnection::OnLuaError(std::exception_ptr e) noexcept
 {
-	OnError(std::move(e));
+	logger(1, e);
+
+	if (SendResponse("Zscript failed"))
+		delete this;
 }
