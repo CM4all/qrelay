@@ -137,13 +137,13 @@ QmqpRelayConnection::OnRequest(AllocatedArray<uint8_t> &&payload)
 }
 
 static void
-SetActionMail(lua_State *L, Lua::Value &dest, const Action &action)
+SetActionMail(lua_State *L, Lua::Value &dest, int action_idx)
 {
-	dest.Set(L, Lua::Lambda([&](){ PushLuaActionMail(L, action); }));
+	dest.Set(L, Lua::Lambda([&](){ PushLuaActionMail(L, action_idx); }));
 }
 
-void
-QmqpRelayConnection::Do(lua_State *L, const Action &action)
+inline void
+QmqpRelayConnection::Do(lua_State *L, const Action &action, int action_idx)
 {
 	switch (action.type) {
 	case Action::Type::UNDEFINED:
@@ -161,18 +161,18 @@ QmqpRelayConnection::Do(lua_State *L, const Action &action)
 		break;
 
 	case Action::Type::CONNECT:
-		SetActionMail(L, outgoing_mail, action);
+		SetActionMail(L, outgoing_mail, action_idx);
 		connect.Connect(action.connect, std::chrono::seconds(20));
 		break;
 
 	case Action::Type::EXEC:
-		Exec(L, action);
+		Exec(L, action, action_idx);
 		break;
 	}
 }
 
-void
-QmqpRelayConnection::Exec(lua_State *L, const Action &action)
+inline void
+QmqpRelayConnection::Exec(lua_State *L, const Action &action, int action_idx)
 try {
 	assert(action.type == Action::Type::EXEC);
 	assert(!action.exec.empty());
@@ -212,7 +212,7 @@ try {
 	stdin_r.Close();
 	stdout_w.Close();
 
-	SetActionMail(L, outgoing_mail, action);
+	SetActionMail(L, outgoing_mail, action_idx);
 	OnConnect(stdin_w.Release(), stdout_r.Release());
 } catch (...) {
 	logger(1, std::current_exception());
@@ -314,7 +314,8 @@ try {
 	if (action == nullptr)
 		throw std::runtime_error("Wrong return type from Lua handler");
 
-	Do(L, *action);
+	// TODO: remove the lua_gettop() kludge
+	Do(L, *action, lua_gettop(L));
 } catch (...) {
 	OnLuaError(std::current_exception());
 }

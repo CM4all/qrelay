@@ -1,6 +1,6 @@
 cm4all-qrelay (0.20) unstable; urgency=low
 
-  * 
+  * fix use-after-free bug (coroutine regression)
 
  --   
 

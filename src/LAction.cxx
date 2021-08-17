@@ -33,13 +33,21 @@
 #include "LAction.hxx"
 #include "Action.hxx"
 #include "lua/Class.hxx"
-#include "lua/Value.hxx"
 
 struct LAction : Action {
-	Lua::Value mail;
+	LAction(lua_State *L, int mail_idx) {
+		// fenv.mail = mail
+		lua_newtable(L);
+		lua_pushvalue(L, mail_idx);
+		lua_setfield(L, -2, "mail");
+		lua_setfenv(L, -2);
+	}
 
-	LAction(lua_State *L, Lua::StackIndex mail_idx)
-		:mail(L, mail_idx) {}
+	static void PushMail(lua_State *L, int action_idx) {
+		lua_getfenv(L, action_idx);
+		lua_getfield(L, -1, "mail");
+		lua_replace(L, -2);
+	}
 };
 
 static constexpr char lua_action_class[] = "qrelay.action";
@@ -55,7 +63,7 @@ RegisterLuaAction(lua_State *L)
 Action *
 NewLuaAction(lua_State *L, int mail_idx)
 {
-	return LuaAction::New(L, L, Lua::StackIndex(mail_idx));
+	return LuaAction::New(L, L, mail_idx);
 }
 
 Action *
@@ -65,8 +73,7 @@ CheckLuaAction(lua_State *L, int idx)
 }
 
 void
-PushLuaActionMail(lua_State *L, const Action &_action)
+PushLuaActionMail(lua_State *L, int idx)
 {
-	auto &action = (const LAction &)_action;
-	action.mail.Push(L);
+	LAction::PushMail(L, idx);
 }

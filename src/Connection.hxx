@@ -88,8 +88,8 @@ public:
 	static void Register(lua_State *L);
 
 protected:
-	void Do(lua_State *L, const Action &action);
-	void Exec(lua_State *L, const Action &action);
+	void Do(lua_State *L, const Action &action, int action_idx);
+	void Exec(lua_State *L, const Action &action, int action_idx);
 	void OnConnect(FileDescriptor out_fd, FileDescriptor in_fd);
 	void OnResponse(const void *data, size_t size);
 
