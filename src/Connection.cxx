@@ -85,6 +85,7 @@ QmqpRelayConnection::~QmqpRelayConnection() noexcept
 	const ScopeCheckStack check_main_stack(main_L);
 
 	thread.Push(main_L);
+	thread.Set(main_L, nullptr);
 
 	bool need_gc = false;
 	if (const auto L = lua_tothread(main_L, -1); L != nullptr) {
