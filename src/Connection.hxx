@@ -107,8 +107,8 @@ private:
 	void OnNetstringError(std::exception_ptr error) noexcept override;
 
 	/* virtual methods from class Lua::ResumeListener */
-	void OnLuaFinished() noexcept override;
-	void OnLuaError(std::exception_ptr e) noexcept override;
+	void OnLuaFinished(lua_State *L) noexcept override;
+	void OnLuaError(lua_State *L, std::exception_ptr e) noexcept override;
 };
 
 #endif

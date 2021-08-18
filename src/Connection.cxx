@@ -299,15 +299,8 @@ QmqpRelayConnection::OnNetstringError(std::exception_ptr) noexcept
 }
 
 void
-QmqpRelayConnection::OnLuaFinished() noexcept
+QmqpRelayConnection::OnLuaFinished(lua_State *L) noexcept
 try {
-	const auto main_L = thread.GetState();
-	const ScopeCheckStack check_main_stack(main_L);
-	thread.Push(main_L);
-	const auto L = lua_tothread(main_L, -1);
-	assert(L != nullptr);
-	lua_pop(main_L, 1);
-
 	const ScopeCheckStack check_thread_stack(L);
 
 	auto *action = CheckLuaAction(L, -1);
@@ -317,11 +310,11 @@ try {
 	// TODO: remove the lua_gettop() kludge
 	Do(L, *action, lua_gettop(L));
 } catch (...) {
-	OnLuaError(std::current_exception());
+	OnLuaError(L, std::current_exception());
 }
 
 void
-QmqpRelayConnection::OnLuaError(std::exception_ptr e) noexcept
+QmqpRelayConnection::OnLuaError(lua_State *, std::exception_ptr e) noexcept
 {
 	logger(1, e);
 
