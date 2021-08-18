@@ -98,6 +98,10 @@ protected:
 	void OnDisconnect() noexcept override;
 
 private:
+	lua_State *GetMainState() const noexcept {
+		return thread.GetState();
+	}
+
 	/* virtual methods from class ConnectSocketHandler */
 	void OnSocketConnectSuccess(UniqueSocketDescriptor fd) noexcept override;
 	void OnSocketConnectError(std::exception_ptr ep) noexcept override;

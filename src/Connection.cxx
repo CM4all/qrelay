@@ -81,7 +81,7 @@ QmqpRelayConnection::QmqpRelayConnection(size_t max_size,
 
 QmqpRelayConnection::~QmqpRelayConnection() noexcept
 {
-	const auto main_L = thread.GetState();
+	const auto main_L = GetMainState();
 	const ScopeCheckStack check_main_stack(main_L);
 
 	thread.Push(main_L);
@@ -233,7 +233,7 @@ CastMail(lua_State *L, const Lua::Value &value)
 void
 QmqpRelayConnection::OnConnect(FileDescriptor out_fd, FileDescriptor in_fd)
 {
-	const auto L = outgoing_mail.GetState();
+	const auto L = GetMainState();
 	auto &mail = CastMail(L, outgoing_mail);
 
 	std::list<ConstBuffer<void>> request;
