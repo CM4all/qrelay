@@ -123,7 +123,7 @@ QmqpRelayConnection::OnRequest(AllocatedArray<uint8_t> &&payload)
 
 	/* create a new thread for the handler coroutine */
 	const auto L = lua_newthread(main_L);
-	thread.Set(RelativeStackIndex{-1});
+	thread.Set(main_L, RelativeStackIndex{-1});
 	/* pop the new thread from the main stack */
 	lua_pop(main_L, 1);
 
