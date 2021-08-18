@@ -123,7 +123,6 @@ QmqpRelayConnection::OnRequest(AllocatedArray<uint8_t> &&payload)
 
 	/* create a new thread for the handler coroutine */
 	const auto L = lua_newthread(main_L);
-	const ScopeCheckStack check_thread_stack(L);
 	thread.Set(RelativeStackIndex{-1});
 	/* pop the new thread from the main stack */
 	lua_pop(main_L, 1);
@@ -135,7 +134,6 @@ QmqpRelayConnection::OnRequest(AllocatedArray<uint8_t> &&payload)
 	NewLuaMail(L, std::move(mail), peer_cred);
 
 	Resume(L, 1);
-	lua_pop(L, 1);
 }
 
 static void
