@@ -2,7 +2,7 @@ cm4all-qrelay (0.20) unstable; urgency=low
 
   * fix use-after-free bug (coroutine regression)
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Wed, 18 Aug 2021 15:31:43 +0200
 
 cm4all-qrelay (0.19) unstable; urgency=low
 
