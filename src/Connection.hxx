@@ -38,6 +38,7 @@
 #include "event/net/djb/NetstringServer.hxx"
 #include "event/net/djb/NetstringClient.hxx"
 #include "net/djb/NetstringGenerator.hxx"
+#include "lua/Ref.hxx"
 #include "lua/Resume.hxx"
 #include "lua/ValuePtr.hxx"
 #include "util/ConstBuffer.hxx"
@@ -73,7 +74,7 @@ class QmqpRelayConnection final :
 	 * The #LuaMail that is going to be sent once we've connected to
 	 * the outgoing QMQP server.
 	 */
-	Lua::Value outgoing_mail;
+	Lua::Ref outgoing_mail;
 
 	ConnectSocket connect;
 	NetstringClient client;

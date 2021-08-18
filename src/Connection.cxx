@@ -75,7 +75,6 @@ QmqpRelayConnection::QmqpRelayConnection(size_t max_size,
 	 handler(std::move(_handler)),
 	 logger(parent_logger, MakeLoggerDomain(peer_cred, address).c_str()),
 	 thread(handler->GetState()),
-	 outgoing_mail(handler->GetState()),
 	 connect(event_loop, *this),
 	 client(event_loop, 256, *this) {}
 
@@ -138,9 +137,10 @@ QmqpRelayConnection::OnRequest(AllocatedArray<uint8_t> &&payload)
 }
 
 static void
-SetActionMail(lua_State *L, Lua::Value &dest, int action_idx)
+SetActionMail(lua_State *L, Lua::Ref &dest, int action_idx)
 {
-	dest.Set(L, Lua::Lambda([&](){ PushLuaActionMail(L, action_idx); }));
+	PushLuaActionMail(L, action_idx);
+	dest = {L, Pop{}};
 }
 
 inline void
@@ -223,9 +223,9 @@ try {
 }
 
 static MutableMail &
-CastMail(lua_State *L, const Lua::Value &value)
+CastMail(lua_State *L, const Lua::Ref &ref)
 {
-	value.Push(L);
+	ref.Push(L);
 	AtScopeExit(L) { lua_pop(L, 1); };
 	return CastLuaMail(L, -1);
 }
@@ -308,8 +308,7 @@ try {
 	if (action == nullptr)
 		throw std::runtime_error("Wrong return type from Lua handler");
 
-	// TODO: remove the lua_gettop() kludge
-	Do(L, *action, lua_gettop(L));
+	Do(L, *action, -1);
 } catch (...) {
 	OnLuaError(L, std::current_exception());
 }
