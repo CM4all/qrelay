@@ -17,6 +17,7 @@ common_flags = [
 test_common_flags = [
   '-Wcast-align',
   '-Wcast-qual',
+  '-Wdouble-promotion',
   '-Wfloat-equal',
   '-Wmissing-declarations',
   '-Wmissing-noreturn',
@@ -26,8 +27,6 @@ test_common_flags = [
   '-Wundef',
   '-Wunused',
   '-Wwrite-strings',
-
-  '-Wno-long-long',
 
   '-fvisibility=hidden',
 ]
@@ -62,7 +61,23 @@ test_cxxflags = test_common_flags + [
   '-fno-threadsafe-statics',
   '-fmerge-all-constants',
 
+  '-Wcomma-subscript',
+  '-Wextra-semi',
+  '-Wmismatched-tags',
+  '-Woverloaded-virtual',
+  '-Wsign-promo',
+  '-Wvolatile',
+  '-Wvirtual-inheritance',
+
+  '-Wno-missing-field-initializers',
+
+  # a vtable without a dtor is just fine
   '-Wno-non-virtual-dtor',
+
+  # clang specific warning options:
+  '-Wcomma',
+  '-Wheader-hygiene',
+  '-Winconsistent-missing-destructor-override',
 ]
 
 add_global_arguments(common_flags, language: 'cpp')
