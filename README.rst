@@ -4,7 +4,9 @@ qrelay
 qrelay is a QMQP server that receives emails on a socket and forwards
 them to another QMQP server.
 
-For more information, read the manual in the `doc` directory.
+For more information, `read the manual
+<https://qrelay.readthedocs.io/en/latest/>`__ in the ``doc``
+directory.
 
 
 Building qrelay
