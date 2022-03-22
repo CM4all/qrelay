@@ -12,7 +12,7 @@ Building qrelay
 
 You need:
 
-- a C++14 compliant compiler (e.g. gcc or clang)
+- a C++20 compliant compiler (e.g. gcc or clang)
 - `LuaJIT <http://luajit.org/>`__
 - `D-Bus <https://www.freedesktop.org/wiki/Software/dbus/>`__
 - `systemd <https://www.freedesktop.org/wiki/Software/systemd/>`__
