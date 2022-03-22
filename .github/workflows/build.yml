@@ -1,0 +1,38 @@
+---
+on:
+  workflow_dispatch:
+  push:
+    paths-ignore:
+      - 'debian/**'
+      - 'doc/**'
+    branches:
+      - master
+  pull_request:
+    paths-ignore:
+      - 'debian/**'
+      - 'doc/**'
+    branches:
+      - master
+env:
+  CC: 'ccache gcc-10'
+  CXX: 'ccache g++-10'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - id: checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - id: cache-ccache
+        uses: hendrikmuhs/ccache-action@v1
+        with:
+          key: ${{ matrix.os }}-${{ matrix.type }}
+      - name: Install dependencies
+        run: sudo apt install -y g++-10 libsystemd-dev libboost-dev libpq-dev libluajit-5.1-dev
+      - name: Meson Build
+        uses: BSFishy/meson-build@v1.0.3
+        with:
+          action: test
+          setup-options: -Ddocumentation=disabled
+          meson-version: 0.56.0
