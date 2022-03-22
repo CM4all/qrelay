@@ -12,11 +12,22 @@ compiler = meson.get_compiler('cpp')
 
 common_flags = [
   '-D_GNU_SOURCE',
-  '-Wwrite-strings', '-Wcast-qual', '-Wcast-align', '-Wfloat-equal',
-  '-Wshadow', '-Wpointer-arith', '-Wsign-compare',
-  '-Wmissing-declarations', '-Wmissing-noreturn', '-Wmissing-format-attribute',
-  '-Wredundant-decls', '-Wno-long-long', '-Wundef',
+
+  '-Wcast-align',
+  '-Wcast-qual',
+  '-Wfloat-equal',
+  '-Wmissing-declarations',
+  '-Wmissing-noreturn',
+  '-Wmissing-format-attribute',
+  '-Wpointer-arith',
+  '-Wredundant-decls',
+  '-Wshadow',
+  '-Wsign-compare',
+  '-Wundef',
   '-Wunused',
+  '-Wwrite-strings',
+
+  '-Wno-long-long',
 ]
 
 test_common_flags = [
