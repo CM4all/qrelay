@@ -27,6 +27,10 @@ test_common_flags = [
   '-Wundef',
   '-Wunused',
   '-Wwrite-strings',
+
+  # clang specific warning options:
+  '-Wunreachable-code-aggressive',
+  '-Wused-but-marked-unused',
 ]
 
 test_global_common_flags = [
@@ -86,7 +90,7 @@ test_cxxflags = test_common_flags + [
 ]
 
 add_global_arguments(common_flags, language: 'cpp')
-add_global_arguments(compiler.get_supported_arguments(test_cxxflags), language: 'cpp')
+add_global_arguments(compiler.get_supported_arguments(test_global_cxxflags), language: 'cpp')
 add_project_arguments(compiler.get_supported_arguments(test_cxxflags), language: 'cpp')
 
 libsystemd = dependency('libsystemd')
