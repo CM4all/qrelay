@@ -80,25 +80,7 @@ QmqpRelayConnection::QmqpRelayConnection(size_t max_size,
 
 QmqpRelayConnection::~QmqpRelayConnection() noexcept
 {
-	const auto main_L = GetMainState();
-	const ScopeCheckStack check_main_stack(main_L);
-
-	thread.Push(main_L);
-	thread.Set(main_L, nullptr);
-
-	bool need_gc = false;
-	if (const auto L = lua_tothread(main_L, -1); L != nullptr) {
-		const ScopeCheckStack check_thread_stack(L);
-		need_gc = UnsetResumeListener(L) != nullptr;
-	}
-
-	lua_pop(main_L, 1);
-
-	if (need_gc)
-		/* force a full GC so all pending operations are
-		   cancelled */
-		// TODO: is there a more elegant way without forcing a full GC?
-		lua_gc(main_L, LUA_GCCOLLECT, 0);
+	thread.Cancel();
 }
 
 void
@@ -118,16 +100,8 @@ QmqpRelayConnection::OnRequest(AllocatedArray<std::byte> &&payload)
 		return;
 	}
 
-	const auto main_L = handler->GetState();
-	const ScopeCheckStack check_main_stack(main_L);
-
 	/* create a new thread for the handler coroutine */
-	const auto L = lua_newthread(main_L);
-	thread.Set(main_L, RelativeStackIndex{-1});
-	/* pop the new thread from the main stack */
-	lua_pop(main_L, 1);
-
-	SetResumeListener(L, *this);
+	const auto L = thread.CreateThread(*this);
 
 	handler->Push(L);
 

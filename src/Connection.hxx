@@ -41,6 +41,7 @@
 #include "lua/Ref.hxx"
 #include "lua/Resume.hxx"
 #include "lua/ValuePtr.hxx"
+#include "lua/CoRunner.hxx"
 #include "util/IntrusiveList.hxx"
 
 #include <sys/socket.h>
@@ -67,7 +68,7 @@ class QmqpRelayConnection final :
 	/**
 	 * The Lua thread which runs the handler coroutine.
 	 */
-	Lua::Value thread;
+	Lua::CoRunner thread;
 
 	/**
 	 * The #LuaMail that is going to be sent once we've connected to
@@ -99,7 +100,7 @@ protected:
 
 private:
 	lua_State *GetMainState() const noexcept {
-		return thread.GetState();
+		return thread.GetMainState();
 	}
 
 	/* virtual methods from class ConnectSocketHandler */
