@@ -41,7 +41,6 @@
 #include "lua/Ref.hxx"
 #include "lua/Resume.hxx"
 #include "lua/ValuePtr.hxx"
-#include "util/ConstBuffer.hxx"
 #include "util/IntrusiveList.hxx"
 
 #include <sys/socket.h>

@@ -236,21 +236,21 @@ QmqpRelayConnection::OnConnect(FileDescriptor out_fd, FileDescriptor in_fd)
 	const auto L = GetMainState();
 	auto &mail = CastMail(L, outgoing_mail);
 
-	std::list<ConstBuffer<void>> request;
-	request.push_back(StringView{mail.message}.ToVoid());
+	std::list<std::span<const std::byte>> request;
+	request.push_back(std::as_bytes(std::span{mail.message}));
 
 	if (peer_cred.pid >= 0) {
-		int length = sprintf(received_buffer,
-				     "Received: from PID=%u UID=%u with QMQP\r\n",
-				     unsigned(peer_cred.pid), unsigned(peer_cred.uid));
-		request.emplace_front(received_buffer, length);
+		std::size_t length = sprintf(received_buffer,
+					     "Received: from PID=%u UID=%u with QMQP\r\n",
+					     unsigned(peer_cred.pid), unsigned(peer_cred.uid));
+		request.emplace_front(std::as_bytes(std::span{received_buffer, length}));
 	}
 
 	for (const auto &i : mail.headers)
-		request.emplace_front(i.data(), i.length());
+		request.emplace_front(std::as_bytes(std::span{i}));
 
 	generator(request, true);
-	request.emplace_back(sender_header(mail.sender.size()).ToVoid());
+	request.emplace_back(std::as_bytes(std::span{sender_header(mail.sender.size())}));
 	request.emplace_back(StringView{mail.sender}.ToVoid());
 	request.push_back(StringView{mail.tail}.ToVoid());
 
@@ -288,7 +288,7 @@ QmqpRelayConnection::OnSocketConnectError(std::exception_ptr ep) noexcept
 void
 QmqpRelayConnection::OnNetstringResponse(AllocatedArray<std::byte> &&payload) noexcept
 {
-	if (SendResponse(&payload.front(), payload.size()))
+	if (SendResponse(payload))
 		delete this;
 }
 
