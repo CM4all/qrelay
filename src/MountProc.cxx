@@ -39,9 +39,11 @@
 
 #include <stdio.h>
 
+using std::string_view_literals::operator""sv;
+
 template<std::size_t N>
 static void
-SplitFill(std::array<StringView, N> &dest, StringView s, char separator)
+SplitFill(std::array<std::string_view, N> &dest, std::string_view s, char separator)
 {
 	std::size_t i = 0;
 	for (auto value : IterableSplitString(s, separator)) {
@@ -64,23 +66,25 @@ ReadProcessMount(unsigned pid, const char *_mountpoint)
 
 	AtScopeExit(file) { fclose(file); };
 
-	const StringView mountpoint(_mountpoint);
+	const std::string_view mountpoint(_mountpoint);
 
 	char line[4096];
 	while (fgets(line, sizeof(line), file) != nullptr) {
-		std::array<StringView, 10> columns;
+		std::array<std::string_view, 10> columns;
 		SplitFill(columns, line, ' ');
 
-		if (columns[4].Equals(mountpoint)) {
+		if (columns[4] == mountpoint) {
 			/* skip the optional tagged fields */
 			size_t i = 6;
-			while (i < columns.size() && !columns[i].Equals("-"))
+			while (i < columns.size() && columns[i] != "-"sv)
 				++i;
 
 			if (i + 2 < columns.size())
-				return {{columns[3].data, columns[3].size},
-						{columns[i + 1].data, columns[i + 1].size},
-							{columns[i + 2].data, columns[i + 2].size}};
+				return MountInfo{
+					std::string{columns[3]},
+					std::string{columns[i + 1]},
+					std::string{columns[i + 2]},
+				};
 		}
 	}
 
