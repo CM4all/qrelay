@@ -94,7 +94,7 @@ protected:
 	void OnConnect(FileDescriptor out_fd, FileDescriptor in_fd);
 	void OnResponse(const void *data, size_t size);
 
-	void OnRequest(AllocatedArray<uint8_t> &&payload) override;
+	void OnRequest(AllocatedArray<std::byte> &&payload) override;
 	void OnError(std::exception_ptr ep) noexcept override;
 	void OnDisconnect() noexcept override;
 
@@ -108,7 +108,7 @@ private:
 	void OnSocketConnectError(std::exception_ptr ep) noexcept override;
 
 	/* virtual methods from class NetstringClientHandler */
-	void OnNetstringResponse(AllocatedArray<uint8_t> &&payload) noexcept override;
+	void OnNetstringResponse(AllocatedArray<std::byte> &&payload) noexcept override;
 	void OnNetstringError(std::exception_ptr error) noexcept override;
 
 	/* virtual methods from class Lua::ResumeListener */

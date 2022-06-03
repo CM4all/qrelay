@@ -109,7 +109,7 @@ QmqpRelayConnection::Register(lua_State *L)
 }
 
 void
-QmqpRelayConnection::OnRequest(AllocatedArray<uint8_t> &&payload)
+QmqpRelayConnection::OnRequest(AllocatedArray<std::byte> &&payload)
 {
 	MutableMail mail(std::move(payload));
 	if (!mail.Parse()) {
@@ -286,7 +286,7 @@ QmqpRelayConnection::OnSocketConnectError(std::exception_ptr ep) noexcept
 }
 
 void
-QmqpRelayConnection::OnNetstringResponse(AllocatedArray<uint8_t> &&payload) noexcept
+QmqpRelayConnection::OnNetstringResponse(AllocatedArray<std::byte> &&payload) noexcept
 {
 	if (SendResponse(&payload.front(), payload.size()))
 		delete this;

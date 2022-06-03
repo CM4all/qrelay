@@ -50,7 +50,7 @@ struct MutableMail : QmqpMail {
 	 * The buffer where the #QmqpMail's #std::string_view
 	 * instances point into.
 	 */
-	AllocatedArray<uint8_t> buffer;
+	AllocatedArray<std::byte> buffer;
 
 	/**
 	 * If the sender was modified, then this object owns the
@@ -64,7 +64,7 @@ struct MutableMail : QmqpMail {
 	 */
 	std::forward_list<std::string> headers;
 
-	explicit MutableMail(AllocatedArray<uint8_t> &&_buffer)
+	explicit MutableMail(AllocatedArray<std::byte> &&_buffer)
 		:buffer(_buffer) {}
 
 	bool Parse() {
