@@ -38,10 +38,10 @@
 #include <stdio.h>
 
 static bool
-ListContains(StringView haystack, char separator, StringView needle)
+ListContains(std::string_view haystack, char separator, std::string_view needle)
 {
-	for (auto value : IterableSplitString(haystack, separator))
-		if (value.Equals(needle))
+	for (const std::string_view value : IterableSplitString(haystack, separator))
+		if (value == needle)
 			return true;
 
 	return false;
@@ -67,7 +67,7 @@ ReadProcessCgroup(unsigned pid, const char *_controller)
 
 	AtScopeExit(file) { fclose(file); };
 
-	const StringView controller(_controller);
+	const std::string_view controller(_controller);
 
 	char line[4096];
 	while (fgets(line, sizeof(line), file) != nullptr) {
