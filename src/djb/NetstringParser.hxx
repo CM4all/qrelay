@@ -33,12 +33,13 @@
 #ifndef NETSTRING_PARSER_HXX
 #define NETSTRING_PARSER_HXX
 
-#include "util/StringView.hxx"
 #include "util/Range.hxx"
+
+#include <string_view>
 
 class Error;
 
-StringView
+std::string_view
 ParseNetstring(Range<const char *> &input);
 
 #endif

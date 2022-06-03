@@ -46,13 +46,13 @@ QmqpMail::Parse(std::span<const std::byte> __input) noexcept
 	Range<const char *> input(_input.data(), _input.data() + _input.size());
 
 	auto _message = ParseNetstring(input);
-	if (_message == nullptr)
+	if (_message.data() == nullptr)
 		return false;
 
 	message = _message;
 
 	auto _sender = ParseNetstring(input);
-	if (_sender == nullptr)
+	if (_sender.data() == nullptr)
 		return false;
 
 	sender = _sender;
@@ -61,7 +61,7 @@ QmqpMail::Parse(std::span<const std::byte> __input) noexcept
 
 	do {
 		auto value = ParseNetstring(input);
-		if (value.IsNull())
+		if (value.data() == nullptr)
 			return false;
 
 		recipients.push_back(value);
