@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2021 CM4all GmbH
+ * Copyright 2014-2022 CM4all GmbH
  * All rights reserved.
  *
  * author: Max Kellermann <mk@cm4all.com>
@@ -30,13 +30,11 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef MAIL_HXX
-#define MAIL_HXX
+#pragma once
 
+#include <span>
 #include <string_view>
 #include <vector>
-
-template<typename T> struct ConstBuffer;
 
 /**
  * An email received via QMQP.
@@ -65,7 +63,5 @@ struct QmqpMail {
 	 */
 	std::vector<std::string_view> recipients;
 
-	bool Parse(ConstBuffer<void> input);
+	bool Parse(std::span<const std::byte> input) noexcept;
 };
-
-#endif

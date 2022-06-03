@@ -32,7 +32,6 @@
 
 #include "QmqpMail.hxx"
 #include "NetstringParser.hxx"
-#include "util/ConstBuffer.hxx"
 
 static inline constexpr std::string_view
 MakeStringView(const char *begin, const char *end)
@@ -41,10 +40,10 @@ MakeStringView(const char *begin, const char *end)
 }
 
 bool
-QmqpMail::Parse(ConstBuffer<void> __input)
+QmqpMail::Parse(std::span<const std::byte> __input) noexcept
 {
-	const auto _input = ConstBuffer<char>::FromVoid(__input);
-	Range<const char *> input(_input.begin(), _input.end());
+	const std::span<const char> _input{(const char *)__input.data(), __input.size()};
+	Range<const char *> input(_input.data(), _input.data() + _input.size());
 
 	auto _message = ParseNetstring(input);
 	if (_message == nullptr)

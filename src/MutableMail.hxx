@@ -68,7 +68,7 @@ struct MutableMail : QmqpMail {
 		:buffer(_buffer) {}
 
 	bool Parse() {
-		return QmqpMail::Parse({&buffer.front(), buffer.size()});
+		return QmqpMail::Parse({(const std::byte *)buffer.data(), buffer.size()});
 	}
 
 	template<typename T>
