@@ -27,8 +27,9 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef RANGE_HPP
-#define RANGE_HPP
+#pragma once
+
+#include <cstddef>
 
 /**
  * This class describes a range with two iterators: one pointing to
@@ -56,9 +57,7 @@ public:
 		return begin() == end();
 	}
 
-	size_t size() const {
+	std::size_t size() const {
 		return end() - begin();
 	}
 };
-
-#endif
