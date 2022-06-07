@@ -278,7 +278,8 @@ PushArray(lua_State *L, const std::vector<std::string_view> &src)
 
 	int i = 1;
 	for (const auto &value : src)
-		SetTable(L, RelativeStackIndex{-1}, i++, value);
+		SetTable(L, RelativeStackIndex{-1},
+			 static_cast<lua_Integer>(i++), value);
 }
 
 static int
@@ -308,19 +309,19 @@ LuaMailIndex(lua_State *L)
 		if (!mail.HavePeerCred())
 			return 0;
 
-		Lua::Push(L, mail.GetPid());
+		Lua::Push(L, static_cast<lua_Integer>(mail.GetPid()));
 		return 1;
 	} else if (strcmp(name, "uid") == 0) {
 		if (!mail.HavePeerCred())
 			return 0;
 
-		Lua::Push(L, mail.GetUid());
+		Lua::Push(L, static_cast<lua_Integer>(mail.GetUid()));
 		return 1;
 	} else if (strcmp(name, "gid") == 0) {
 		if (!mail.HavePeerCred())
 			return 0;
 
-		Lua::Push(L, mail.GetGid());
+		Lua::Push(L, static_cast<lua_Integer>(mail.GetGid()));
 		return 1;
 	}
 

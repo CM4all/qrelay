@@ -128,7 +128,8 @@ SetupConfigState(lua_State *L, Instance &instance)
 	RegisterLuaAddress(L);
 	RegisterLuaResolver(L);
 
-	Lua::SetGlobal(L, "max_size", 16 * 1024 * 1024);
+	static constexpr lua_Integer DEFAULT_MAX_SIZE = 16 * 1024 * 1024;
+	Lua::SetGlobal(L, "max_size", DEFAULT_MAX_SIZE);
 
 	Lua::SetGlobal(L, "systemd", Lua::LightUserData(&systemd_magic));
 
