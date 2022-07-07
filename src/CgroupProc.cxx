@@ -34,13 +34,14 @@
 #include "system/Error.hxx"
 #include "util/ScopeExit.hxx"
 #include "util/IterableSplitString.hxx"
+#include "util/StringView.hxx"
 
 #include <stdio.h>
 
 static bool
 ListContains(std::string_view haystack, char separator, std::string_view needle)
 {
-	for (const std::string_view value : IterableSplitString(haystack, separator))
+	for (const auto value : IterableSplitString(haystack, separator))
 		if (value == needle)
 			return true;
 
