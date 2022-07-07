@@ -148,3 +148,4 @@ executable('cm4all-qrelay',
 )
 
 subdir('doc')
+subdir('test')
