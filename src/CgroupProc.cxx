@@ -34,7 +34,7 @@
 #include "system/Error.hxx"
 #include "util/ScopeExit.hxx"
 #include "util/IterableSplitString.hxx"
-#include "util/StringView.hxx"
+#include "util/StringSplit.hxx"
 
 #include <stdio.h>
 
@@ -48,13 +48,10 @@ ListContains(std::string_view haystack, char separator, std::string_view needle)
 	return false;
 }
 
-static std::string
-StripTrailingNewline(char *line)
+static std::string_view
+StripTrailingNewline(std::string_view s)
 {
-	size_t length = strlen(line);
-	if (length > 0 && line[length - 1] == '\n')
-		--length;
-	return {line, length};
+	return SplitWhile(s, [](char ch){ return ch != '\n'; }).first;
 }
 
 std::string
@@ -72,17 +69,9 @@ ReadProcessCgroup(unsigned pid, const char *_controller)
 
 	char line[4096];
 	while (fgets(line, sizeof(line), file) != nullptr) {
-		char *colon = strchr(line, ':');
-		if (colon == nullptr)
-			continue;
-
-		char *s = colon + 1;
-		colon = strchr(s, ':');
-		if (colon == nullptr)
-			continue;
-
-		if (ListContains(StringView(s, colon), ',', controller))
-			return StripTrailingNewline(colon + 1);
+		const auto [controllers, group] = Split(Split(std::string_view{line}, ':').second, ':');
+		if (!group.empty() && ListContains(controllers, ',', controller))
+			return std::string{StripTrailingNewline(group)};
 	}
 
 	/* not found: return empty string */
