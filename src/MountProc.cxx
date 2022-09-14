@@ -52,7 +52,7 @@ SplitFill(std::array<std::string_view, N> &dest, std::string_view s, char separa
 			return;
 	}
 
-	std::fill(std::next(dest.begin(), i), dest.end(), nullptr);
+	std::fill(std::next(dest.begin(), i), dest.end(), std::string_view{});
 }
 
 MountInfo
