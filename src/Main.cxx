@@ -54,6 +54,7 @@ extern "C" {
 
 #include <systemd/sd-daemon.h>
 
+#include <stdio.h>
 #include <stdlib.h>
 
 /**
@@ -175,6 +176,11 @@ try {
 	const auto cmdline = ParseCommandLine(argc, argv);
 
 	SetupProcess();
+
+	/* force line buffering so Lua "print" statements are flushed
+	   even if stdout is a pipe to systemd-journald */
+	setvbuf(stdout, nullptr, _IOLBF, 0);
+	setvbuf(stderr, nullptr, _IOLBF, 0);
 
 	return Run(cmdline);
 } catch (...) {

@@ -1,5 +1,6 @@
 cm4all-qrelay (0.21) unstable; urgency=low
 
+  * flush "print" statements immediately
   * eliminate compile-time Boost dependency
 
  --   
