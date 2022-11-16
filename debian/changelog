@@ -1,6 +1,7 @@
 cm4all-qrelay (0.21) unstable; urgency=low
 
   * flush "print" statements immediately
+  * reuse PostgreSQL connections
   * eliminate compile-time Boost dependency
 
  --   
