@@ -12,6 +12,9 @@ compiler = meson.get_compiler('cpp')
 
 common_flags = [
   '-D_GNU_SOURCE',
+
+  # disable boost specific code in libcommon
+  '-DNO_BOOST',
 ]
 
 test_common_flags = [
@@ -104,6 +107,7 @@ libcommon_enable_c = false
 libcommon_enable_DefaultFifoBuffer = false
 libcommon_enable_libcap = false
 libcommon_enable_net_log = false
+libcommon_enable_boost = false
 
 subdir('libcommon/src/util')
 subdir('libcommon/src/uri')
