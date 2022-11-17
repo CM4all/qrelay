@@ -116,6 +116,7 @@ subdir('libcommon/src/io')
 subdir('libcommon/src/system')
 subdir('libcommon/src/event')
 subdir('libcommon/src/net')
+subdir('libcommon/src/lua/net')
 subdir('libcommon/src/event/net')
 subdir('libcommon/src/lua/event')
 subdir('libcommon/src/stock')
@@ -133,7 +134,6 @@ executable('cm4all-qrelay',
   'src/MutableMail.cxx',
   'src/LMail.cxx',
   'src/LAction.cxx',
-  'src/LAddress.cxx',
   'src/LResolver.cxx',
   'src/Connection.cxx',
   'src/Main.cxx',
@@ -143,6 +143,7 @@ executable('cm4all-qrelay',
     uri_dep,
     util_dep,
     lua_dep,
+    lua_net_dep,
     lua_event_dep,
     lua_pg_dep,
     event_net_dep,

@@ -32,7 +32,6 @@
 
 #include "CommandLine.hxx"
 #include "Instance.hxx"
-#include "LAddress.hxx"
 #include "LResolver.hxx"
 #include "system/SetupProcess.hxx"
 #include "net/AllocatedSocketAddress.hxx"
@@ -41,6 +40,7 @@
 #include "lua/Error.hxx"
 #include "lua/PushCClosure.hxx"
 #include "lua/RunFile.hxx"
+#include "lua/net/SocketAddress.hxx"
 #include "lua/event/Init.hxx"
 #include "lua/pg/Init.hxx"
 #include "util/PrintException.hxx"
@@ -126,7 +126,7 @@ SetupConfigState(lua_State *L, Instance &instance)
 	Lua::InitEvent(L, instance.GetEventLoop());
 	Lua::InitPg(L, instance.GetEventLoop());
 
-	RegisterLuaAddress(L);
+	Lua::InitSocketAddress(L);
 	RegisterLuaResolver(L);
 
 	static constexpr lua_Integer DEFAULT_MAX_SIZE = 16 * 1024 * 1024;

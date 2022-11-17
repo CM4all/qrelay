@@ -34,9 +34,9 @@
 #include "MutableMail.hxx"
 #include "LAction.hxx"
 #include "Action.hxx"
-#include "LAddress.hxx"
 #include "lua/Class.hxx"
 #include "lua/Error.hxx"
+#include "lua/net/SocketAddress.hxx"
 #include "uri/EmailAddress.hxx"
 #include "util/StringAPI.hxx"
 #include "CgroupProc.hxx"
@@ -156,7 +156,7 @@ NewConnectAction(lua_State *L)
 	AllocatedSocketAddress address;
 
 	try {
-		address = GetLuaAddress(L, 2);
+		address = Lua::ToSocketAddress(L, 2, 628);
 	} catch (...) {
 		Lua::RaiseCurrent(L);
 	}

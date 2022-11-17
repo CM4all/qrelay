@@ -35,7 +35,6 @@
 #include "LMail.hxx"
 #include "Action.hxx"
 #include "LAction.hxx"
-#include "LAddress.hxx"
 #include "system/Error.hxx"
 #include "net/AllocatedSocketAddress.hxx"
 #include "net/UniqueSocketDescriptor.hxx"

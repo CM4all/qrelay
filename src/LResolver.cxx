@@ -31,9 +31,9 @@
  */
 
 #include "LResolver.hxx"
-#include "LAddress.hxx"
 #include "lua/Util.hxx"
 #include "lua/Error.hxx"
+#include "lua/net/SocketAddress.hxx"
 #include "net/Resolver.hxx"
 #include "net/AddressInfo.hxx"
 #include "net/AllocatedSocketAddress.hxx"
@@ -55,7 +55,7 @@ l_qmqp_resolve(lua_State *L)
 	if (*s == '/' || *s == '@') {
 		AllocatedSocketAddress address;
 		address.SetLocal(s);
-		NewLuaAddress(L, std::move(address));
+		Lua::NewSocketAddress(L, std::move(address));
 		return 1;
 	}
 
@@ -72,7 +72,7 @@ l_qmqp_resolve(lua_State *L)
 		Lua::RaiseCurrent(L);
 	}
 
-	NewLuaAddress(L, std::move(ai.GetBest()));
+	Lua::NewSocketAddress(L, std::move(ai.GetBest()));
 	return 1;
 }
 
