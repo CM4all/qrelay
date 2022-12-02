@@ -110,6 +110,7 @@ libcommon_enable_net_log = false
 libcommon_enable_boost = false
 
 subdir('libcommon/src/util')
+subdir('libcommon/src/lib/fmt')
 subdir('libcommon/src/uri')
 subdir('libcommon/src/lua')
 subdir('libcommon/src/io')
