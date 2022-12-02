@@ -123,6 +123,7 @@ subdir('libcommon/src/event/net')
 subdir('libcommon/src/event/net/djb')
 subdir('libcommon/src/lua/event')
 subdir('libcommon/src/stock')
+subdir('libcommon/src/time')
 subdir('libcommon/src/pg')
 subdir('libcommon/src/lua/pg')
 
