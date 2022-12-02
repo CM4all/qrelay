@@ -31,13 +31,12 @@
  */
 
 #include "MountProc.hxx"
+#include "lib/fmt/ToBuffer.hxx"
 #include "system/Error.hxx"
 #include "util/ScopeExit.hxx"
 #include "util/IterableSplitString.hxx"
 
 #include <array>
-
-#include <stdio.h>
 
 using std::string_view_literals::operator""sv;
 
@@ -58,8 +57,7 @@ SplitFill(std::array<std::string_view, N> &dest, std::string_view s, char separa
 MountInfo
 ReadProcessMount(unsigned pid, const char *_mountpoint)
 {
-	char path[64];
-	sprintf(path, "/proc/%u/mountinfo", pid);
+	const auto path = FmtBuffer<64>("/proc/{}/mountinfo", pid);
 	FILE *file = fopen(path, "r");
 	if (file == nullptr)
 		throw FormatErrno("Failed to open %s", path);

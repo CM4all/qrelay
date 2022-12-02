@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2021 CM4all GmbH
+ * Copyright 2014-2022 CM4all GmbH
  * All rights reserved.
  *
  * author: Max Kellermann <mk@cm4all.com>
@@ -43,6 +43,9 @@
 #include "lua/Error.hxx"
 #include "io/UniqueFileDescriptor.hxx"
 #include "util/ScopeExit.hxx"
+#include "util/SpanCast.hxx"
+
+#include <fmt/format.h>
 
 #include <list>
 
@@ -57,10 +60,7 @@ MakeLoggerDomain(const struct ucred &cred, SocketAddress)
 	if (cred.pid < 0)
 		return "connection";
 
-	char buffer[128];
-	snprintf(buffer, sizeof(buffer), "pid=%d uid=%d",
-		 int(cred.pid), int(cred.uid));
-	return buffer;
+	return fmt::format("pid={} uid={}", cred.pid, cred.uid);
 }
 
 QmqpRelayConnection::QmqpRelayConnection(size_t max_size,
@@ -213,10 +213,10 @@ QmqpRelayConnection::OnConnect(FileDescriptor out_fd, FileDescriptor in_fd)
 	request.push_back(std::as_bytes(std::span{mail.message}));
 
 	if (peer_cred.pid >= 0) {
-		std::size_t length = sprintf(received_buffer,
-					     "Received: from PID=%u UID=%u with QMQP\r\n",
-					     unsigned(peer_cred.pid), unsigned(peer_cred.uid));
-		request.emplace_front(std::as_bytes(std::span{received_buffer, length}));
+		char *end = fmt::format_to(received_buffer,
+					   "Received: from PID={} UID={} with QMQP\r\n",
+					   peer_cred.pid, peer_cred.uid);
+		request.emplace_front(AsBytes(std::string_view{received_buffer, end}));
 	}
 
 	for (const auto &i : mail.headers)

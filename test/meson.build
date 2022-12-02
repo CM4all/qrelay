@@ -5,5 +5,6 @@ executable('ReadProcessCgroup',
   dependencies: [
     system_dep,
     util_dep,
+    fmt_dep,
   ],
 )

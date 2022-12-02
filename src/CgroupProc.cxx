@@ -31,12 +31,11 @@
  */
 
 #include "CgroupProc.hxx"
+#include "lib/fmt/ToBuffer.hxx"
 #include "system/Error.hxx"
 #include "util/ScopeExit.hxx"
 #include "util/IterableSplitString.hxx"
 #include "util/StringSplit.hxx"
-
-#include <stdio.h>
 
 static bool
 ListContains(std::string_view haystack, char separator, std::string_view needle)
@@ -57,8 +56,7 @@ StripTrailingNewline(std::string_view s)
 std::string
 ReadProcessCgroup(unsigned pid, const char *_controller)
 {
-	char path[64];
-	sprintf(path, "/proc/%u/cgroup", pid);
+	const auto path = FmtBuffer<64>("/proc/{}/cgroup", pid);
 	FILE *file = fopen(path, "r");
 	if (file == nullptr)
 		throw FormatErrno("Failed to open %s", path);
