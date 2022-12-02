@@ -33,6 +33,7 @@
 #include "CommandLine.hxx"
 #include "Instance.hxx"
 #include "LResolver.hxx"
+#include "lib/fmt/RuntimeError.hxx"
 #include "system/SetupProcess.hxx"
 #include "net/AllocatedSocketAddress.hxx"
 #include "lua/Value.hxx"
@@ -44,7 +45,6 @@
 #include "lua/event/Init.hxx"
 #include "lua/pg/Init.hxx"
 #include "util/PrintException.hxx"
-#include "util/RuntimeError.hxx"
 #include "util/ScopeExit.hxx"
 
 extern "C" {
@@ -77,7 +77,7 @@ GetGlobalInt(lua_State *L, const char *name)
 	AtScopeExit(L) { lua_pop(L, 1); };
 
 	if (!lua_isnumber(L, -1))
-		throw FormatRuntimeError("`%s` must be a number", name);
+		throw FmtRuntimeError("`{}` must be a number", name);
 
 	return lua_tointeger(L, -1);
 }

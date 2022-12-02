@@ -32,7 +32,7 @@
 
 #include "MountProc.hxx"
 #include "lib/fmt/ToBuffer.hxx"
-#include "system/Error.hxx"
+#include "lib/fmt/SystemError.hxx"
 #include "util/ScopeExit.hxx"
 #include "util/IterableSplitString.hxx"
 
@@ -60,7 +60,7 @@ ReadProcessMount(unsigned pid, const char *_mountpoint)
 	const auto path = FmtBuffer<64>("/proc/{}/mountinfo", pid);
 	FILE *file = fopen(path, "r");
 	if (file == nullptr)
-		throw FormatErrno("Failed to open %s", path);
+		throw FmtErrno("Failed to open {}", path);
 
 	AtScopeExit(file) { fclose(file); };
 

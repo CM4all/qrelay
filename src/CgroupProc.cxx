@@ -32,7 +32,7 @@
 
 #include "CgroupProc.hxx"
 #include "lib/fmt/ToBuffer.hxx"
-#include "system/Error.hxx"
+#include "lib/fmt/SystemError.hxx"
 #include "util/ScopeExit.hxx"
 #include "util/IterableSplitString.hxx"
 #include "util/StringSplit.hxx"
@@ -59,7 +59,7 @@ ReadProcessCgroup(unsigned pid, const char *_controller)
 	const auto path = FmtBuffer<64>("/proc/{}/cgroup", pid);
 	FILE *file = fopen(path, "r");
 	if (file == nullptr)
-		throw FormatErrno("Failed to open %s", path);
+		throw FmtErrno("Failed to open {}", path);
 
 	AtScopeExit(file) { fclose(file); };
 
