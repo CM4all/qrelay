@@ -105,8 +105,6 @@ inc = include_directories(
 
 libcommon_enable_c = false
 libcommon_enable_DefaultFifoBuffer = false
-libcommon_enable_libcap = false
-libcommon_enable_net_log = false
 libcommon_enable_boost = false
 
 subdir('libcommon/src/util')
