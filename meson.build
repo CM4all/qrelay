@@ -112,6 +112,7 @@ subdir('libcommon/src/lib/fmt')
 subdir('libcommon/src/uri')
 subdir('libcommon/src/lua')
 subdir('libcommon/src/io')
+subdir('libcommon/src/io/linux')
 subdir('libcommon/src/system')
 subdir('libcommon/src/event')
 subdir('libcommon/src/net')
@@ -131,7 +132,6 @@ executable('cm4all-qrelay',
   'src/djb/QmqpMail.cxx',
   'src/system/SetupProcess.cxx',
   'src/CgroupProc.cxx',
-  'src/MountProc.cxx',
   'src/Instance.cxx',
   'src/MutableMail.cxx',
   'src/LMail.cxx',
@@ -142,6 +142,7 @@ executable('cm4all-qrelay',
   include_directories: inc,
   dependencies: [
     libsystemd,
+    io_linux_dep,
     uri_dep,
     util_dep,
     lua_dep,
