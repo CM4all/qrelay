@@ -26,7 +26,7 @@ StripTrailingNewline(std::string_view s)
 }
 
 std::string
-ReadProcessCgroup(unsigned pid, const char *_controller)
+ReadProcessCgroup(unsigned pid, const std::string_view controller)
 {
 	const auto path = FmtBuffer<64>("/proc/{}/cgroup", pid);
 	FILE *file = fopen(path, "r");
@@ -34,8 +34,6 @@ ReadProcessCgroup(unsigned pid, const char *_controller)
 		throw FmtErrno("Failed to open {}", path);
 
 	AtScopeExit(file) { fclose(file); };
-
-	const std::string_view controller(_controller);
 
 	char line[4096];
 	while (fgets(line, sizeof(line), file) != nullptr) {

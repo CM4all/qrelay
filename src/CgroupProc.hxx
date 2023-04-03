@@ -2,10 +2,10 @@
 // Copyright CM4all GmbH
 // author: Max Kellermann <mk@cm4all.com>
 
-#ifndef CGROUP_PROC_HXX
-#define CGROUP_PROC_HXX
+#pragma once
 
 #include <string>
+#include <string_view>
 
 /**
  * Determine the cgroup path the specified process is member of.
@@ -17,6 +17,4 @@
  * /proc/PID/cgroup
  */
 std::string
-ReadProcessCgroup(unsigned pid, const char *controller);
-
-#endif
+ReadProcessCgroup(unsigned pid, std::string_view controller);
