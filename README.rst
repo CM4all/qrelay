@@ -18,7 +18,7 @@ You need:
 - `LuaJIT <http://luajit.org/>`__
 - `D-Bus <https://www.freedesktop.org/wiki/Software/dbus/>`__
 - `systemd <https://www.freedesktop.org/wiki/Software/systemd/>`__
-- `Meson 0.47 <http://mesonbuild.com/>`__ and `Ninja <https://ninja-build.org/>`__
+- `Meson 0.56 <http://mesonbuild.com/>`__ and `Ninja <https://ninja-build.org/>`__
 
 Get the source code::
 

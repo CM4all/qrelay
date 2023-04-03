@@ -1,5 +1,5 @@
 project('CM4all qrelay', 'cpp', version: '0.22',
-  meson_version: '>= 0.47',
+  meson_version: '>= 0.56',
   default_options: [
     'cpp_std=c++2a',
     'warning_level=3',
