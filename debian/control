@@ -1,5 +1,5 @@
 Source: cm4all-qrelay
-Section: non-free/mail
+Section: mail
 Priority: extra
 Maintainer: Max Kellermann <mk@cm4all.com>
 Build-Depends: debhelper (>= 13.3~),
@@ -23,7 +23,7 @@ Description: QMQP relay daemon
  relays it to another QMQP daemon.
 
 Package: cm4all-qrelay-doc
-Section: non-free/doc
+Section: doc
 Architecture: all
 Depends: ${misc:Depends}, ${sphinxdoc:Depends}
 Description: QMQP relay daemon, documentation
