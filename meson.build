@@ -131,7 +131,6 @@ executable('cm4all-qrelay',
   'src/djb/NetstringParser.cxx',
   'src/djb/QmqpMail.cxx',
   'src/system/SetupProcess.cxx',
-  'src/CgroupProc.cxx',
   'src/Instance.cxx',
   'src/MutableMail.cxx',
   'src/LMail.cxx',
@@ -158,4 +157,3 @@ executable('cm4all-qrelay',
 )
 
 subdir('doc')
-subdir('test')

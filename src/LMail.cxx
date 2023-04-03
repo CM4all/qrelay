@@ -12,7 +12,7 @@
 #include "uri/EmailAddress.hxx"
 #include "util/StringAPI.hxx"
 #include "io/linux/MountInfo.hxx"
-#include "CgroupProc.hxx"
+#include "io/linux/ProcCgroup.hxx"
 
 extern "C" {
 #include <lauxlib.h>
