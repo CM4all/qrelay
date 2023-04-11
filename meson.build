@@ -29,6 +29,7 @@ test_common_flags = [
   '-Wshadow',
   '-Wundef',
   '-Wunused',
+  '-Wvla',
   '-Wwrite-strings',
 
   # clang specific warning options:
