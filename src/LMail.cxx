@@ -295,6 +295,16 @@ LuaMailIndex(lua_State *L)
 
 		Lua::Push(L, static_cast<lua_Integer>(mail.GetGid()));
 		return 1;
+	} else if (StringIsEqual(name, "cgroup")) {
+		if (!mail.HavePeerCred())
+			return 0;
+
+		const auto path = ReadProcessCgroup(mail.GetPid(), "");
+		if (path.empty())
+			return 0;
+
+		Lua::Push(L, path);
+		return 1;
 	}
 
 	return luaL_error(L, "Unknown attribute");

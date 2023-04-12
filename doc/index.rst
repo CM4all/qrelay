@@ -75,11 +75,12 @@ The following attributes can be queried:
 
 * :samp:`gid`: The client's group id.
 
+* :samp:`cgroup`: The control group path of the client process as
+  noted in :file:`/proc/self/cgroup`,
+  e.g. :file:`/user.slice/user-1000.slice/session-42.scope`
+
 The following methods can access more data:
-
-* :samp:`get_cgroup('CONTROLLERNAME')`: Obtain the cgroup membership
-  path for the given controller.
-
+\
 * :samp:`get_mount_info('MOUNTPOINT')`: Obtain information about a
   mount point in the client's filesystem namespace.  The return value
   is :samp:`nil` if the given path is not a mount point, or a table
@@ -93,7 +94,7 @@ Manipulating the Mail Object
 The method `insert_header(NAME, VALUE)` inserts a new MIME header at
 the front of the email.  Example::
 
-  m:insert_header('X-Cgroup', m:get_cgroup('cpuacct'))
+  m:insert_header('X-Cgroup', m.cgroup)
 
 Both name and value must conform to RFC 2822 2.2.
 
