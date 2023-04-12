@@ -1,6 +1,6 @@
 cm4all-qrelay (0.22) unstable; urgency=low
 
-  * 
+  * lua: eliminate manual GC on cancellation
 
  --   
 
