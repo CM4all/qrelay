@@ -80,7 +80,7 @@ The following attributes can be queried:
   e.g. :file:`/user.slice/user-1000.slice/session-42.scope`
 
 The following methods can access more data:
-\
+
 * :samp:`get_mount_info('MOUNTPOINT')`: Obtain information about a
   mount point in the client's filesystem namespace.  The return value
   is :samp:`nil` if the given path is not a mount point, or a table
