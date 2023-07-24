@@ -1,6 +1,6 @@
 cm4all-qrelay (0.23) unstable; urgency=low
 
-  * 
+  * debian: restart after upgrade
 
  --   
 
