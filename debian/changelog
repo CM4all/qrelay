@@ -1,5 +1,6 @@
 cm4all-qrelay (0.23) unstable; urgency=low
 
+  * lua: support PostgreSQL arrays
   * debian: restart after upgrade
 
  --   
