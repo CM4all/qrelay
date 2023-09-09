@@ -170,6 +170,11 @@ SQL string::
   local result = assert(
     db:execute('SELECT name FROM bar WHERE id=$1', {42}))
 
+The functions ``pg:encode_array()`` and ``pg:decode_array()`` support
+PostgreSQL arrays; the former encodes a Lua array to a PostgreSQL
+array string, and the latter decodes a PostgreSQL array string to a
+Lua array.
+
 To listen for `PostgreSQL notifications
 <https://www.postgresql.org/docs/current/sql-notify.html>`__, invoke
 the ``listen`` method with a callback function::
