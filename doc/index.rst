@@ -170,6 +170,14 @@ SQL string::
   local result = assert(
     db:execute('SELECT name FROM bar WHERE id=$1', {42}))
 
+To listen for `PostgreSQL notifications
+<https://www.postgresql.org/docs/current/sql-notify.html>`__, invoke
+the ``listen`` method with a callback function::
+
+  db:listen('bar', function()
+    print("Received a PostgreSQL NOTIFY")
+  end)
+
 
 Examples
 ^^^^^^^^
