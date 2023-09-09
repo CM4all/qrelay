@@ -33,7 +33,14 @@ jobs:
         uses: hendrikmuhs/ccache-action@v1
 
       - name: Install dependencies
-        run: sudo apt install -y g++-10 libfmt-dev libsystemd-dev libpq-dev libluajit-5.1-dev
+        run: |
+          sudo apt install -y --no-install-recommends \
+            g++-10 \
+            libfmt-dev \
+            libsystemd-dev \
+            libpq-dev \
+            libluajit-5.1-dev
+
       - name: Meson Build
         uses: BSFishy/meson-build@v1.0.3
         with:
