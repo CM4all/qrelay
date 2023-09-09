@@ -33,7 +33,6 @@ jobs:
         run: |
           sudo apt install -y --no-install-recommends \
             meson \
-            libfmt-dev \
             libsystemd-dev \
             libpq-dev \
             libluajit-5.1-dev
@@ -42,6 +41,7 @@ jobs:
         run: |
           meson setup \
             -Ddocumentation=disabled \
+             --force-fallback-for=fmt \
             -Dwrap_mode=nofallback \
             output
 
