@@ -11,6 +11,7 @@
 #include "lua/net/SocketAddress.hxx"
 #include "uri/EmailAddress.hxx"
 #include "util/StringAPI.hxx"
+#include "util/StringCompare.hxx"
 #include "io/linux/MountInfo.hxx"
 #include "io/linux/ProcCgroup.hxx"
 
@@ -188,11 +189,13 @@ try {
 	auto &mail = (IncomingMail &)CastLuaMail(L, 1);
 
 	const char *controller = luaL_optstring(L, 2, "");
+	if (controller != nullptr && !StringIsEmpty(controller))
+		luaL_argerror(L, 2, "cgroup1 not supported anymore");
 
 	if (!mail.HavePeerCred())
 		return 0;
 
-	const auto path = ReadProcessCgroup(mail.GetPid(), controller);
+	const auto path = ReadProcessCgroup(mail.GetPid());
 	if (path.empty())
 		return 0;
 
@@ -299,7 +302,7 @@ LuaMailIndex(lua_State *L)
 		if (!mail.HavePeerCred())
 			return 0;
 
-		const auto path = ReadProcessCgroup(mail.GetPid(), "");
+		const auto path = ReadProcessCgroup(mail.GetPid());
 		if (path.empty())
 			return 0;
 

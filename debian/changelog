@@ -3,6 +3,7 @@ cm4all-qrelay (0.23) unstable; urgency=low
   * lua: support PostgreSQL arrays
   * pg: use a single shared PostgreSQL connection
   * pg: support LISTEN
+  * remove cgroup1 support
   * fix file descriptor leak bug
   * debian: restart after upgrade
 
