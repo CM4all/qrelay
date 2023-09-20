@@ -7,7 +7,7 @@ cm4all-qrelay (0.23) unstable; urgency=low
   * fix file descriptor leak bug
   * debian: restart after upgrade
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Wed, 20 Sep 2023 12:29:43 +0200
 
 cm4all-qrelay (0.22) unstable; urgency=low
 
