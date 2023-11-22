@@ -16,6 +16,7 @@
 #include "io/UniqueFileDescriptor.hxx"
 #include "util/ScopeExit.hxx"
 #include "util/SpanCast.hxx"
+#include "util/Compiler.h"
 
 #include <fmt/format.h>
 
