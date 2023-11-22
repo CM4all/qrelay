@@ -120,6 +120,7 @@ subdir('libcommon/src/lua/event')
 subdir('libcommon/src/stock')
 subdir('libcommon/src/time')
 subdir('libcommon/src/pg')
+subdir('libcommon/src/lua/io')
 subdir('libcommon/src/lua/pg')
 
 executable('cm4all-qrelay',
@@ -141,6 +142,7 @@ executable('cm4all-qrelay',
     uri_dep,
     util_dep,
     lua_dep,
+    lua_io_dep,
     lua_net_dep,
     lua_event_dep,
     lua_pg_dep,

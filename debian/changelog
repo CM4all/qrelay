@@ -1,6 +1,6 @@
 cm4all-qrelay (0.24) unstable; urgency=low
 
-  * 
+  * support cgroup xattr
 
  --   
 

@@ -13,6 +13,7 @@
 #include "lua/Error.hxx"
 #include "lua/PushCClosure.hxx"
 #include "lua/RunFile.hxx"
+#include "lua/io/XattrTable.hxx"
 #include "lua/net/SocketAddress.hxx"
 #include "lua/event/Init.hxx"
 #include "lua/pg/Init.hxx"
@@ -116,6 +117,8 @@ SetupRuntimeState(lua_State *L)
 {
 	Lua::SetGlobal(L, "max_size", nullptr);
 	Lua::SetGlobal(L, "qmqp_listen", nullptr);
+
+	Lua::InitXattrTable(L);
 
 	QmqpRelayConnection::Register(L);
 

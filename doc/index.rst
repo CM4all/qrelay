@@ -79,6 +79,9 @@ The following attributes can be queried:
   noted in :file:`/proc/self/cgroup`,
   e.g. :file:`/user.slice/user-1000.slice/session-42.scope`
 
+* ``cgroup_xattr``: A table containing extended attributes of the
+  control group.
+
 The following methods can access more data:
 
 * :samp:`get_mount_info('MOUNTPOINT')`: Obtain information about a
