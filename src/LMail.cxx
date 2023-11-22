@@ -50,6 +50,8 @@ public:
 
 		return cred.gid;
 	}
+
+	int Index(lua_State *L, const char *name);
 };
 
 static constexpr char lua_mail_class[] = "qrelay.mail";
@@ -257,6 +259,55 @@ PushArray(lua_State *L, const std::vector<std::string_view> &src)
 			 static_cast<lua_Integer>(i++), value);
 }
 
+inline int
+IncomingMail::Index(lua_State *L, const char *name)
+{
+
+	for (const auto *i = mail_methods; i->name != nullptr; ++i) {
+		if (strcmp(i->name, name) == 0) {
+			Lua::Push(L, i->func);
+			return 1;
+		}
+	}
+
+	if (strcmp(name, "sender") == 0) {
+		Lua::Push(L, sender);
+		return 1;
+	} else if (strcmp(name, "recipients") == 0) {
+		PushArray(L, recipients);
+		return 1;
+	} else if (strcmp(name, "pid") == 0) {
+		if (!HavePeerCred())
+			return 0;
+
+		Lua::Push(L, static_cast<lua_Integer>(GetPid()));
+		return 1;
+	} else if (strcmp(name, "uid") == 0) {
+		if (!HavePeerCred())
+			return 0;
+
+		Lua::Push(L, static_cast<lua_Integer>(GetUid()));
+		return 1;
+	} else if (strcmp(name, "gid") == 0) {
+		if (!HavePeerCred())
+			return 0;
+
+		Lua::Push(L, static_cast<lua_Integer>(GetGid()));
+		return 1;
+	} else if (StringIsEqual(name, "cgroup")) {
+		if (!HavePeerCred())
+			return 0;
+
+		const auto path = ReadProcessCgroup(GetPid());
+		if (path.empty())
+			return 0;
+
+		Lua::Push(L, path);
+		return 1;
+	} else
+		return luaL_error(L, "Unknown attribute");
+}
+
 static int
 LuaMailIndex(lua_State *L)
 {
@@ -267,50 +318,7 @@ LuaMailIndex(lua_State *L)
 
 	const char *name = luaL_checkstring(L, 2);
 
-	for (const auto *i = mail_methods; i->name != nullptr; ++i) {
-		if (strcmp(i->name, name) == 0) {
-			Lua::Push(L, i->func);
-			return 1;
-		}
-	}
-
-	if (strcmp(name, "sender") == 0) {
-		Lua::Push(L, mail.sender);
-		return 1;
-	} else if (strcmp(name, "recipients") == 0) {
-		PushArray(L, mail.recipients);
-		return 1;
-	} else if (strcmp(name, "pid") == 0) {
-		if (!mail.HavePeerCred())
-			return 0;
-
-		Lua::Push(L, static_cast<lua_Integer>(mail.GetPid()));
-		return 1;
-	} else if (strcmp(name, "uid") == 0) {
-		if (!mail.HavePeerCred())
-			return 0;
-
-		Lua::Push(L, static_cast<lua_Integer>(mail.GetUid()));
-		return 1;
-	} else if (strcmp(name, "gid") == 0) {
-		if (!mail.HavePeerCred())
-			return 0;
-
-		Lua::Push(L, static_cast<lua_Integer>(mail.GetGid()));
-		return 1;
-	} else if (StringIsEqual(name, "cgroup")) {
-		if (!mail.HavePeerCred())
-			return 0;
-
-		const auto path = ReadProcessCgroup(mail.GetPid());
-		if (path.empty())
-			return 0;
-
-		Lua::Push(L, path);
-		return 1;
-	}
-
-	return luaL_error(L, "Unknown attribute");
+	return mail.Index(L, name);
 }
 
 static int
