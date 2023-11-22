@@ -13,6 +13,7 @@
 #include "lua/PushLambda.hxx"
 #include "lua/Util.hxx"
 #include "lua/Error.hxx"
+#include "io/Pipe.hxx"
 #include "io/UniqueFileDescriptor.hxx"
 #include "util/ScopeExit.hxx"
 #include "util/SpanCast.hxx"
@@ -124,13 +125,8 @@ try {
 	assert(action.type == Action::Type::EXEC);
 	assert(!action.exec.empty());
 
-	UniqueFileDescriptor stdin_r, stdin_w, stdout_r, stdout_w;
-
-	if (!UniqueFileDescriptor::CreatePipeNonBlock(stdin_r, stdin_w))
-		throw MakeErrno("pipe() failed");
-
-	if (!UniqueFileDescriptor::CreatePipeNonBlock(stdout_r, stdout_w))
-		throw MakeErrno("pipe() failed");
+	auto [stdin_r, stdin_w] = CreatePipeNonBlock();
+	auto [stdout_r, stdout_w] = CreatePipeNonBlock();
 
 	pid_t pid = fork();
 	if (pid < 0)
