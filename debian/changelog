@@ -2,7 +2,7 @@ cm4all-qrelay (0.24) unstable; urgency=low
 
   * support cgroup xattr
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Wed, 22 Nov 2023 15:31:42 +0100
 
 cm4all-qrelay (0.23) unstable; urgency=low
 
