@@ -1,6 +1,7 @@
 cm4all-qrelay (0.25) unstable; urgency=low
 
   * fix use-after-free crash bug
+  * allow relative "dofile" commands in config.lua
 
  --   
 
