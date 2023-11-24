@@ -3,7 +3,7 @@ cm4all-qrelay (0.25) unstable; urgency=low
   * fix use-after-free crash bug
   * allow relative "dofile" commands in config.lua
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Fri, 24 Nov 2023 15:39:23 +0100
 
 cm4all-qrelay (0.24) unstable; urgency=low
 
