@@ -389,9 +389,10 @@ RegisterLuaMail(lua_State *L)
 }
 
 MutableMail *
-NewLuaMail(lua_State *L, MutableMail &&src, const struct ucred &peer_cred)
+NewLuaMail(lua_State *L, lua_State *main_L,
+	   MutableMail &&src, const struct ucred &peer_cred)
 {
-	return LuaMail::New(L, L, std::move(src), peer_cred);
+	return LuaMail::New(L, main_L, std::move(src), peer_cred);
 }
 
 MutableMail &

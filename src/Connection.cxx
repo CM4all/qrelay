@@ -78,7 +78,7 @@ QmqpRelayConnection::OnRequest(AllocatedArray<std::byte> &&payload)
 
 	handler->Push(L);
 
-	NewLuaMail(L, std::move(mail), peer_cred);
+	NewLuaMail(L, GetMainState(), std::move(mail), peer_cred);
 
 	Resume(L, 1);
 }
