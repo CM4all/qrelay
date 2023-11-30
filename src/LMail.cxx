@@ -8,7 +8,7 @@
 #include "Action.hxx"
 #include "lua/Class.hxx"
 #include "lua/Error.hxx"
-#include "lua/Value.hxx"
+#include "lua/FenvCache.hxx"
 #include "lua/io/XattrTable.hxx"
 #include "lua/net/SocketAddress.hxx"
 #include "uri/EmailAddress.hxx"
@@ -29,18 +29,16 @@ extern "C" {
 #include <string.h>
 
 class IncomingMail : public MutableMail {
-	/**
-	 * An #XattrTable instance.
-	 */
-	Lua::Value cgroup_xattr;
-
 	const struct ucred cred;
 
 public:
 	IncomingMail(lua_State *L, MutableMail &&src, const struct ucred &_peer_cred)
 		:MutableMail(std::move(src)),
-		 cgroup_xattr(L),
-		 cred(_peer_cred) {}
+		 cred(_peer_cred)
+	{
+		lua_newtable(L);
+		lua_setfenv(L, -2);
+	}
 
 	bool HavePeerCred() const noexcept {
 		return cred.pid >= 0;
@@ -283,6 +281,10 @@ IncomingMail::Index(lua_State *L, const char *name)
 		}
 	}
 
+	// look it up in the fenv (our cache)
+	if (Lua::GetFenvCache(L, 1, name))
+		return 1;
+
 	if (strcmp(name, "sender") == 0) {
 		Lua::Push(L, sender);
 		return 1;
@@ -318,12 +320,6 @@ IncomingMail::Index(lua_State *L, const char *name)
 		Lua::Push(L, path);
 		return 1;
 	} else if (StringIsEqual(name, "cgroup_xattr")) {
-		cgroup_xattr.Push(L);
-		if (!lua_isnil(L, -1))
-			return 1;
-
-		lua_pop(L, 1);
-
 		if (!HavePeerCred())
 			return 0;
 
@@ -335,11 +331,14 @@ IncomingMail::Index(lua_State *L, const char *name)
 			const auto sys_fs_cgroup = OpenPath("/sys/fs/cgroup");
 			auto fd = OpenReadOnlyBeneath({sys_fs_cgroup, path.c_str() + 1});
 			Lua::NewXattrTable(L, std::move(fd));
-			cgroup_xattr.Set(L, Lua::RelativeStackIndex{-1});
-			return 1;
 		} catch (...) {
 			Lua::RaiseCurrent(L);
 		}
+
+		// copy a reference to the fenv (our cache)
+		Lua::SetFenvCache(L, 1, name, Lua::RelativeStackIndex{-1});
+
+		return 1;
 	} else
 		return luaL_error(L, "Unknown attribute");
 }
