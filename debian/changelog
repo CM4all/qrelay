@@ -1,6 +1,7 @@
 cm4all-qrelay (0.26) unstable; urgency=low
 
   * lua: refactor the cgroup API
+  * lua: add attribute for inspecting a cgroup's parent
   * lua: close Lua file descriptors when connection is closed
   * lua: fix broken cgroup xattr access
 
