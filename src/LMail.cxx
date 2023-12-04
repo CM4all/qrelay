@@ -62,7 +62,8 @@ public:
 		return cred.gid;
 	}
 
-	int Index(lua_State *L, const char *name);
+	int Index(lua_State *L);
+	int NewIndex(lua_State *L);
 };
 
 static constexpr char lua_mail_class[] = "qrelay.mail";
@@ -244,8 +245,12 @@ PushArray(lua_State *L, const std::vector<std::string_view> &src)
 }
 
 inline int
-IncomingMail::Index(lua_State *L, const char *name)
+IncomingMail::Index(lua_State *L)
 {
+	if (lua_gettop(L) != 2)
+		return luaL_error(L, "Invalid parameters");
+
+	const char *const name = luaL_checkstring(L, 2);
 
 	for (const auto *i = mail_methods; i->name != nullptr; ++i) {
 		if (strcmp(i->name, name) == 0) {
@@ -316,26 +321,11 @@ IncomingMail::Index(lua_State *L, const char *name)
 		return luaL_error(L, "Unknown attribute");
 }
 
-static int
-LuaMailIndex(lua_State *L)
-{
-	if (lua_gettop(L) != 2)
-		return luaL_error(L, "Invalid parameters");
-
-	auto &mail = (IncomingMail &)CastLuaMail(L, 1);
-
-	const char *name = luaL_checkstring(L, 2);
-
-	return mail.Index(L, name);
-}
-
-static int
-LuaMailNewIndex(lua_State *L)
+inline int
+IncomingMail::NewIndex(lua_State *L)
 {
 	if (lua_gettop(L) != 3)
 		return luaL_error(L, "Invalid parameters");
-
-	auto &mail = (IncomingMail &)CastLuaMail(L, 1);
 
 	const char *name = luaL_checkstring(L, 2);
 	if (StringIsEqual(name, "sender")) {
@@ -343,7 +333,7 @@ LuaMailNewIndex(lua_State *L)
 		if (!VerifyEmailAddress(new_value))
 			luaL_argerror(L, 3, "Malformed email address");
 
-		mail.SetSender(new_value);
+		SetSender(new_value);
 		return 0;
 	} else
 		return luaL_error(L, "Cannot change this attribute");
@@ -355,8 +345,8 @@ RegisterLuaMail(lua_State *L)
 	using namespace Lua;
 
 	LuaMail::Register(L);
-	SetTable(L, RelativeStackIndex{-1}, "__index", LuaMailIndex);
-	SetTable(L, RelativeStackIndex{-1}, "__newindex", LuaMailNewIndex);
+	SetField(L, RelativeStackIndex{-1}, "__index", LuaMail::WrapMethod<&IncomingMail::Index>());
+	SetField(L, RelativeStackIndex{-1}, "__newindex", LuaMail::WrapMethod<&IncomingMail::NewIndex>());
 	lua_pop(L, 1);
 }
 
