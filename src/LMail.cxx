@@ -10,7 +10,7 @@
 #include "lua/Class.hxx"
 #include "lua/Error.hxx"
 #include "lua/FenvCache.hxx"
-#include "lua/io/XattrTable.hxx"
+#include "lua/io/CgroupInfo.hxx"
 #include "lua/net/SocketAddress.hxx"
 #include "uri/EmailAddress.hxx"
 #include "util/StringAPI.hxx"
@@ -314,26 +314,7 @@ IncomingMail::Index(lua_State *L)
 		if (path.empty())
 			return 0;
 
-		Lua::Push(L, path);
-		return 1;
-	} else if (StringIsEqual(name, "cgroup_xattr")) {
-		if (!HavePeerCred())
-			return 0;
-
-		const auto path = ReadProcessCgroup(GetPid());
-		if (path.empty())
-			return 0;
-
-		try {
-			const auto sys_fs_cgroup = OpenPath("/sys/fs/cgroup");
-			auto fd = OpenReadOnlyBeneath({sys_fs_cgroup, path.c_str() + 1});
-			Lua::NewXattrTable(L, std::move(fd));
-		} catch (...) {
-			Lua::RaiseCurrent(L);
-		}
-
-		// auto-close the file descriptor when the connection is closed
-		auto_close->Add(L, Lua::RelativeStackIndex{-1});
+		Lua::NewCgroupInfo(L, *auto_close, path);
 
 		// copy a reference to the fenv (our cache)
 		Lua::SetFenvCache(L, 1, name, Lua::RelativeStackIndex{-1});

@@ -75,12 +75,14 @@ The following attributes can be queried:
 
 * :samp:`gid`: The client's group id.
 
-* :samp:`cgroup`: The control group path of the client process as
-  noted in :file:`/proc/self/cgroup`,
-  e.g. :file:`/user.slice/user-1000.slice/session-42.scope`
+* :samp:`cgroup`: The control group of the client process with the
+  following attributes:
 
-* ``cgroup_xattr``: A table containing extended attributes of the
-  control group.
+  * ``path``: the cgroup path as noted in :file:`/proc/self/cgroup`,
+    e.g. :file:`/user.slice/user-1000.slice/session-42.scope`
+
+  * ``xattr``: A table containing extended attributes of the
+    control group.
 
 The following methods can access more data:
 

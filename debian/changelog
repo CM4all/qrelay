@@ -1,6 +1,6 @@
 cm4all-qrelay (0.26) unstable; urgency=low
 
-  * lua: remove deprecated method "mail:get_cgroup()"
+  * lua: refactor the cgroup API
   * lua: close Lua file descriptors when connection is closed
   * lua: fix broken cgroup xattr access
 
