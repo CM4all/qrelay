@@ -8,6 +8,7 @@
 struct ucred;
 struct lua_State;
 struct MutableMail;
+namespace Lua { class AutoCloseList; }
 
 void
 RegisterLuaMail(lua_State *L);
@@ -19,6 +20,7 @@ RegisterLuaMail(lua_State *L);
  */
 MutableMail *
 NewLuaMail(lua_State *L, lua_State *main_L,
+	   Lua::AutoCloseList &auto_close,
 	   MutableMail &&src, const struct ucred &peer_cred);
 
 MutableMail &

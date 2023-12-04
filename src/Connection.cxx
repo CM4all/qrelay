@@ -47,6 +47,7 @@ QmqpRelayConnection::QmqpRelayConnection(size_t max_size,
 	 peer_cred(GetSocket().GetPeerCredentials()),
 	 handler(std::move(_handler)),
 	 logger(parent_logger, MakeLoggerDomain(peer_cred, address).c_str()),
+	 auto_close(handler->GetState()),
 	 thread(handler->GetState()),
 	 connect(event_loop, *this),
 	 client(event_loop, 256, *this) {}
@@ -78,7 +79,8 @@ QmqpRelayConnection::OnRequest(AllocatedArray<std::byte> &&payload)
 
 	handler->Push(L);
 
-	NewLuaMail(L, GetMainState(), std::move(mail), peer_cred);
+	NewLuaMail(L, GetMainState(), auto_close,
+		   std::move(mail), peer_cred);
 
 	Resume(L, 1);
 }

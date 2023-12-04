@@ -6,6 +6,7 @@
 #include "MutableMail.hxx"
 #include "LAction.hxx"
 #include "Action.hxx"
+#include "lua/AutoCloseList.hxx"
 #include "lua/Class.hxx"
 #include "lua/Error.hxx"
 #include "lua/FenvCache.hxx"
@@ -29,11 +30,15 @@ extern "C" {
 #include <string.h>
 
 class IncomingMail : public MutableMail {
+	Lua::AutoCloseList *auto_close;
+
 	const struct ucred cred;
 
 public:
-	IncomingMail(lua_State *L, MutableMail &&src, const struct ucred &_peer_cred)
+	IncomingMail(lua_State *L, Lua::AutoCloseList &_auto_close,
+		     MutableMail &&src, const struct ucred &_peer_cred)
 		:MutableMail(std::move(src)),
+		 auto_close(&_auto_close),
 		 cred(_peer_cred)
 	{
 		lua_newtable(L);
@@ -313,6 +318,9 @@ IncomingMail::Index(lua_State *L)
 			Lua::RaiseCurrent(L);
 		}
 
+		// auto-close the file descriptor when the connection is closed
+		auto_close->Add(L, Lua::RelativeStackIndex{-1});
+
 		// copy a reference to the fenv (our cache)
 		Lua::SetFenvCache(L, 1, name, Lua::RelativeStackIndex{-1});
 
@@ -352,9 +360,10 @@ RegisterLuaMail(lua_State *L)
 
 MutableMail *
 NewLuaMail(lua_State *L, lua_State *main_L,
+	   Lua::AutoCloseList &auto_close,
 	   MutableMail &&src, const struct ucred &peer_cred)
 {
-	return LuaMail::New(L, main_L, std::move(src), peer_cred);
+	return LuaMail::New(L, main_L, auto_close, std::move(src), peer_cred);
 }
 
 MutableMail &

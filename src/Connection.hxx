@@ -10,6 +10,7 @@
 #include "event/net/djb/NetstringServer.hxx"
 #include "event/net/djb/NetstringClient.hxx"
 #include "net/djb/NetstringGenerator.hxx"
+#include "lua/AutoCloseList.hxx"
 #include "lua/Ref.hxx"
 #include "lua/Resume.hxx"
 #include "lua/ValuePtr.hxx"
@@ -31,6 +32,8 @@ class QmqpRelayConnection final :
 
 	const Lua::ValuePtr handler;
 	ChildLogger logger;
+
+	Lua::AutoCloseList auto_close;
 
 	NetstringGenerator generator;
 	NetstringHeader sender_header;
