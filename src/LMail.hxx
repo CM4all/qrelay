@@ -15,11 +15,9 @@ RegisterLuaMail(lua_State *L);
 
 /**
  * @param L the lua_State on whose stack the new object will be pushed
- * @param main_L the lua_State which is used to destruct Lua values
- * owned by the new object
  */
 MutableMail *
-NewLuaMail(lua_State *L, lua_State *main_L,
+NewLuaMail(lua_State *L,
 	   Lua::AutoCloseList &auto_close,
 	   MutableMail &&src, const struct ucred &peer_cred);
 
