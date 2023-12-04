@@ -41,8 +41,14 @@ public:
 		 auto_close(&_auto_close),
 		 cred(_peer_cred)
 	{
+		auto_close->Add(L, Lua::RelativeStackIndex{-1});
+
 		lua_newtable(L);
 		lua_setfenv(L, -2);
+	}
+
+	bool IsStale() const noexcept {
+		return auto_close == nullptr;
 	}
 
 	bool HavePeerCred() const noexcept {
@@ -65,6 +71,11 @@ public:
 		assert(HavePeerCred());
 
 		return cred.gid;
+	}
+
+	int Close(lua_State *) {
+		auto_close = nullptr;
+		return 0;
 	}
 
 	int Index(lua_State *L);
@@ -257,6 +268,9 @@ IncomingMail::Index(lua_State *L)
 
 	const char *const name = luaL_checkstring(L, 2);
 
+	if (IsStale())
+		return luaL_error(L, "Stale object");
+
 	for (const auto *i = mail_methods; i->name != nullptr; ++i) {
 		if (strcmp(i->name, name) == 0) {
 			Lua::Push(L, i->func);
@@ -335,6 +349,9 @@ IncomingMail::NewIndex(lua_State *L)
 	if (lua_gettop(L) != 3)
 		return luaL_error(L, "Invalid parameters");
 
+	if (IsStale())
+		return luaL_error(L, "Stale object");
+
 	const char *name = luaL_checkstring(L, 2);
 	if (StringIsEqual(name, "sender")) {
 		const char *new_value = luaL_checkstring(L, 3);
@@ -353,6 +370,7 @@ RegisterLuaMail(lua_State *L)
 	using namespace Lua;
 
 	LuaMail::Register(L);
+	SetField(L, RelativeStackIndex{-1}, "__close", LuaMail::WrapMethod<&IncomingMail::Close>());
 	SetField(L, RelativeStackIndex{-1}, "__index", LuaMail::WrapMethod<&IncomingMail::Index>());
 	SetField(L, RelativeStackIndex{-1}, "__newindex", LuaMail::WrapMethod<&IncomingMail::NewIndex>());
 	lua_pop(L, 1);
