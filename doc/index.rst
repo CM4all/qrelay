@@ -84,6 +84,10 @@ The following attributes can be queried:
   * ``xattr``: A table containing extended attributes of the
     control group.
 
+  * ``parent``: Information about the parent of this cgroup; it is
+    another object of this type (or ``nil`` if there is no parent
+    cgroup).
+
 The following methods can access more data:
 
 * :samp:`get_mount_info('MOUNTPOINT')`: Obtain information about a
