@@ -50,6 +50,14 @@ it must not do any network I/O, launch child processes, and should
 avoid anything but querying the email's parameters.
 
 
+``SIGHUP``
+^^^^^^^^^^
+
+On ``systemctl reload cm4all-qrelay`` (i.e. ``SIGHUP``), qrelay
+calls the Lua function ``reload`` if one was defined.  It is up to the
+Lua script to define the exact meaning of this feature.
+
+
 Global Variables
 ^^^^^^^^^^^^^^^^
 

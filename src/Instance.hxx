@@ -5,12 +5,14 @@
 #pragma once
 
 #include "Listener.hxx"
+#include "lua/ReloadRunner.hxx"
+#include "lua/State.hxx"
+#include "lua/ValuePtr.hxx"
 #include "io/Logger.hxx"
 #include "event/Loop.hxx"
 #include "event/ShutdownListener.hxx"
+#include "event/SignalEvent.hxx"
 #include "event/systemd/Watchdog.hxx"
-#include "lua/State.hxx"
-#include "lua/ValuePtr.hxx"
 
 #include <forward_list>
 
@@ -18,11 +20,14 @@ namespace Lua { class Value; }
 
 class Instance {
 	EventLoop event_loop;
-	ShutdownListener shutdown_listener;
+	ShutdownListener shutdown_listener{event_loop, BIND_THIS_METHOD(OnShutdown)};
+	SignalEvent sighup_event;
 
 	Systemd::Watchdog systemd_watchdog{event_loop};
 
 	Lua::State lua_state;
+
+	Lua::ReloadRunner reload{lua_state.get()};
 
 	std::forward_list<QmqpRelayListener> listeners;
 
@@ -56,5 +61,6 @@ public:
 	void Check();
 
 private:
-	void ShutdownCallback() noexcept;
+	void OnShutdown() noexcept;
+	void OnReload(int) noexcept;
 };
