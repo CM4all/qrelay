@@ -4,6 +4,7 @@ cm4all-qrelay (0.26) unstable; urgency=low
   * lua: add attribute for inspecting a cgroup's parent
   * lua: close Lua file descriptors when connection is closed
   * lua: fix broken cgroup xattr access
+  * systemd: enable more security settings
 
  --   
 
