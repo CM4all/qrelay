@@ -19,7 +19,6 @@
 #include "io/FileAt.hxx"
 #include "io/Open.hxx"
 #include "io/UniqueFileDescriptor.hxx"
-#include "io/linux/MountInfo.hxx"
 #include "io/linux/ProcCgroup.hxx"
 
 extern "C" {
@@ -209,41 +208,12 @@ NewExecAction(lua_State *L)
 	return 1;
 }
 
-static int
-GetMountInfo(lua_State *L)
-try {
-	using namespace Lua;
-
-	if (lua_gettop(L) != 2)
-		return luaL_error(L, "Invalid parameters");
-
-	auto &mail = (IncomingMail &)CastLuaMail(L, 1);
-
-	const char *mountpoint = luaL_checkstring(L, 2);
-
-	if (!mail.HavePeerCred())
-		return 0;
-
-	const auto m = ReadProcessMount(mail.GetPid(), mountpoint);
-	if (!m.IsDefined())
-		return 0;
-
-	lua_newtable(L);
-	SetField(L, RelativeStackIndex{-1}, "root", m.root);
-	SetField(L, RelativeStackIndex{-1}, "filesystem", m.filesystem);
-	SetField(L, RelativeStackIndex{-1}, "source", m.source);
-	return 1;
-} catch (...) {
-	Lua::RaiseCurrent(L);
-}
-
 static constexpr struct luaL_Reg mail_methods [] = {
 	{"insert_header", InsertHeader},
 	{"connect", NewConnectAction},
 	{"discard", NewDiscardAction},
 	{"reject", NewRejectAction},
 	{"exec", NewExecAction},
-	{"get_mount_info", GetMountInfo},
 	{nullptr, nullptr}
 };
 

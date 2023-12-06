@@ -96,15 +96,6 @@ The following attributes can be queried:
     another object of this type (or ``nil`` if there is no parent
     cgroup).
 
-The following methods can access more data:
-
-* :samp:`get_mount_info('MOUNTPOINT')`: Obtain information about a
-  mount point in the client's filesystem namespace.  The return value
-  is :samp:`nil` if the given path is not a mount point, or a table
-  containing the items :envvar:`root` (root of the mount within the
-  filesystem), :envvar:`filesystem` (the name of the filesystem) and
-  :envvar:`source` (the device which is mounted here)
-
 Manipulating the Mail Object
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
