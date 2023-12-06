@@ -54,24 +54,6 @@ public:
 		return cred.pid >= 0;
 	}
 
-	int GetPid() const noexcept {
-		assert(HavePeerCred());
-
-		return cred.pid;
-	}
-
-	int GetUid() const noexcept {
-		assert(HavePeerCred());
-
-		return cred.uid;
-	}
-
-	int GetGid() const noexcept{
-		assert(HavePeerCred());
-
-		return cred.gid;
-	}
-
 	int Close(lua_State *) {
 		auto_close = nullptr;
 		return 0;
@@ -263,25 +245,25 @@ IncomingMail::Index(lua_State *L)
 		if (!HavePeerCred())
 			return 0;
 
-		Lua::Push(L, static_cast<lua_Integer>(GetPid()));
+		Lua::Push(L, static_cast<lua_Integer>(cred.pid));
 		return 1;
 	} else if (strcmp(name, "uid") == 0) {
 		if (!HavePeerCred())
 			return 0;
 
-		Lua::Push(L, static_cast<lua_Integer>(GetUid()));
+		Lua::Push(L, static_cast<lua_Integer>(cred.uid));
 		return 1;
 	} else if (strcmp(name, "gid") == 0) {
 		if (!HavePeerCred())
 			return 0;
 
-		Lua::Push(L, static_cast<lua_Integer>(GetGid()));
+		Lua::Push(L, static_cast<lua_Integer>(cred.gid));
 		return 1;
 	} else if (StringIsEqual(name, "cgroup")) {
 		if (!HavePeerCred())
 			return 0;
 
-		const auto path = ReadProcessCgroup(GetPid());
+		const auto path = ReadProcessCgroup(cred.pid);
 		if (path.empty())
 			return 0;
 
