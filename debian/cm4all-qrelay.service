@@ -8,6 +8,8 @@ Type=notify
 User=cm4all-qrelay
 ExecStart=/usr/sbin/cm4all-qrelay
 
+WatchdogSec=2m
+
 CPUSchedulingPolicy=batch
 
 # This allows the kernel to merge CPU wakeups, the default of 50ns is

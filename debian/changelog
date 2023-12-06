@@ -5,6 +5,7 @@ cm4all-qrelay (0.26) unstable; urgency=low
   * lua: close Lua file descriptors when connection is closed
   * lua: fix broken cgroup xattr access
   * systemd: enable more security settings
+  * systemd: enable the watchdog
 
  --   
 

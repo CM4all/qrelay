@@ -87,5 +87,7 @@ Instance::Check()
 void
 Instance::ShutdownCallback() noexcept
 {
+	systemd_watchdog.Disable();
+
 	event_loop.Break();
 }

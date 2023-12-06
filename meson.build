@@ -116,6 +116,7 @@ subdir('libcommon/src/net/djb')
 subdir('libcommon/src/lua/net')
 subdir('libcommon/src/event/net')
 subdir('libcommon/src/event/net/djb')
+subdir('libcommon/src/event/systemd')
 subdir('libcommon/src/lua/event')
 subdir('libcommon/src/stock')
 subdir('libcommon/src/time')
@@ -148,6 +149,7 @@ executable('cm4all-qrelay',
     lua_pg_dep,
     event_net_dep,
     event_net_djb_dep,
+    event_systemd_dep,
     fmt_dep,
   ],
   install: true,

@@ -2,13 +2,13 @@
 // Copyright CM4all GmbH
 // author: Max Kellermann <mk@cm4all.com>
 
-#ifndef INSTANCE_HXX
-#define INSTANCE_HXX
+#pragma once
 
 #include "Listener.hxx"
 #include "io/Logger.hxx"
 #include "event/Loop.hxx"
 #include "event/ShutdownListener.hxx"
+#include "event/systemd/Watchdog.hxx"
 #include "lua/State.hxx"
 #include "lua/ValuePtr.hxx"
 
@@ -19,6 +19,8 @@ namespace Lua { class Value; }
 class Instance {
 	EventLoop event_loop;
 	ShutdownListener shutdown_listener;
+
+	Systemd::Watchdog systemd_watchdog{event_loop};
 
 	Lua::State lua_state;
 
@@ -56,5 +58,3 @@ public:
 private:
 	void ShutdownCallback() noexcept;
 };
-
-#endif
