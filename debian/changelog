@@ -9,7 +9,7 @@ cm4all-qrelay (0.26) unstable; urgency=low
   * systemd: enable more security settings
   * systemd: enable the watchdog
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Wed, 06 Dec 2023 13:16:44 +0100
 
 cm4all-qrelay (0.25) unstable; urgency=low
 
