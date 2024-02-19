@@ -190,12 +190,30 @@ NewExecAction(lua_State *L)
 	return 1;
 }
 
+static int
+NewExecRawAction(lua_State *L)
+{
+	const unsigned top = lua_gettop(L);
+	if (top < 2)
+		return luaL_error(L, "Not enough parameters");
+
+	auto &action = *NewLuaAction(L, 1);
+	action.type = Action::Type::EXEC_RAW;
+
+	for (unsigned i = 2; i <= top; ++i) {
+		action.exec.emplace_back(luaL_checkstring(L, i));
+	}
+
+	return 1;
+}
+
 static constexpr struct luaL_Reg mail_methods [] = {
 	{"insert_header", InsertHeader},
 	{"connect", NewConnectAction},
 	{"discard", NewDiscardAction},
 	{"reject", NewRejectAction},
 	{"exec", NewExecAction},
+	{"exec_raw", NewExecRawAction},
 	{nullptr, nullptr}
 };
 

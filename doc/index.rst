@@ -124,6 +124,16 @@ The following actions are possible:
   the email via QMQP on standard input.  Read the QMQP response from
   standard output.
 
+* :samp:`exec_raw("PROGRAM", "ARG", ...)`: Execute the program and
+  submit the raw email message (headers and body, but no envelope) on
+  standard input.  Translates the exit status to either "accepted (K)"
+  (``EXIT_SUCCESS``), "temporary failure (Z)" or "permanent failure
+  (D)" and read an error message from standard output/error.  This can
+  be used to launch programs which implement the
+  ``/usr/sbin/sendmail`` interface instead of QMQP.  Since the
+  envelope is not submitted, the caller should translate the envelope
+  to command-line arguments.
+
 * :samp:`discard()`: Discard the email, pretending delivery was successful.
 
 * :samp:`reject()`: Reject the email with a permanent error.

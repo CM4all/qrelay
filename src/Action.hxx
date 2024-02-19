@@ -35,6 +35,12 @@ struct Action {
 		 * Execute a program that talks QMQP on stdin/stdout.
 		 */
 		EXEC,
+
+		/**
+		 * Execute a program that reads the email message from
+		 * stdin.  The envelope is ignored.
+		 */
+		EXEC_RAW,
 	};
 
 	Type type = Type::UNDEFINED;

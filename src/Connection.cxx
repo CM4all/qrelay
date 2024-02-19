@@ -5,6 +5,7 @@
 #include "Connection.hxx"
 #include "RemoteRelay.hxx"
 #include "ExecRelay.hxx"
+#include "RawExecRelay.hxx"
 #include "MutableMail.hxx"
 #include "LMail.hxx"
 #include "Action.hxx"
@@ -111,6 +112,17 @@ QmqpRelayConnection::DoExec(const Action &action, const MutableMail &mail)
 }
 
 inline void
+QmqpRelayConnection::DoRawExec(const Action &action, const MutableMail &mail)
+{
+	auto *relay = new RawExecRelay(GetEventLoop(),
+				       mail, AssembleHeaders(mail),
+				       *this);
+	relay_operation = ToDeletePointer(relay);
+
+	relay->Start(action);
+}
+
+inline void
 QmqpRelayConnection::Do(lua_State *L, const Action &action, int action_idx)
 {
 	switch (action.type) {
@@ -134,6 +146,10 @@ QmqpRelayConnection::Do(lua_State *L, const Action &action, int action_idx)
 
 	case Action::Type::EXEC:
 		DoExec(action, SetActionMail(L, outgoing_mail, action_idx));
+		break;
+
+	case Action::Type::EXEC_RAW:
+		DoRawExec(action, SetActionMail(L, outgoing_mail, action_idx));
 		break;
 	}
 }

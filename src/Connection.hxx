@@ -69,6 +69,7 @@ public:
 protected:
 	void DoConnect(const Action &action, const MutableMail &mail);
 	void DoExec(const Action &action, const MutableMail &mail);
+	void DoRawExec(const Action &action, const MutableMail &mail);
 	void Do(lua_State *L, const Action &action, int action_idx);
 	void OnResponse(const void *data, size_t size);
 
