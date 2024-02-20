@@ -10,6 +10,8 @@ debug = get_option('b_ndebug') != 'true'
 
 compiler = meson.get_compiler('cpp')
 
+conf = configuration_data()
+
 common_flags = [
   '-D_GNU_SOURCE',
 ]
@@ -120,9 +122,17 @@ subdir('libcommon/src/event/systemd')
 subdir('libcommon/src/lua/event')
 subdir('libcommon/src/stock')
 subdir('libcommon/src/time')
-subdir('libcommon/src/pg')
 subdir('libcommon/src/lua/io')
-subdir('libcommon/src/lua/pg')
+
+libcommon_require_pg = get_option('pg')
+subdir('libcommon/src/pg')
+if pg_dep.found()
+  subdir('libcommon/src/lua/pg')
+  pg_dep = lua_pg_dep
+endif
+
+conf.set('HAVE_PG', pg_dep.found())
+configure_file(output: 'config.h', configuration: conf)
 
 executable('cm4all-qrelay',
   'src/CommandLine.cxx',
@@ -146,7 +156,7 @@ executable('cm4all-qrelay',
     lua_io_dep,
     lua_net_dep,
     lua_event_dep,
-    lua_pg_dep,
+    pg_dep,
     event_net_dep,
     event_net_djb_dep,
     event_systemd_dep,

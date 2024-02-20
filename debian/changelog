@@ -1,6 +1,6 @@
 cm4all-qrelay (0.27) unstable; urgency=low
 
-  * 
+  * make the PostgreSQL client optional
 
  --   
 

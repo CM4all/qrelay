@@ -18,9 +18,12 @@
 #include "lua/io/CgroupInfo.hxx"
 #include "lua/net/SocketAddress.hxx"
 #include "lua/event/Init.hxx"
-#include "lua/pg/Init.hxx"
 #include "util/PrintException.hxx"
 #include "util/ScopeExit.hxx"
+
+#ifdef HAVE_PG
+#include "lua/pg/Init.hxx"
+#endif
 
 extern "C" {
 #include <lauxlib.h>
@@ -100,7 +103,10 @@ SetupConfigState(lua_State *L, Instance &instance)
 	luaL_openlibs(L);
 
 	Lua::InitEvent(L, instance.GetEventLoop());
+
+#ifdef HAVE_PG
 	Lua::InitPg(L, instance.GetEventLoop());
+#endif
 
 	Lua::InitSocketAddress(L);
 	RegisterLuaResolver(L);
