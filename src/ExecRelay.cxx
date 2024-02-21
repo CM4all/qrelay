@@ -9,9 +9,24 @@
 #include "io/Pipe.hxx"
 #include "io/UniqueFileDescriptor.hxx"
 
+#include <signal.h>
 #include <unistd.h>
 
 using std::string_view_literals::operator""sv;
+
+static void
+UnblockSignals() noexcept
+{
+	/* don't ignore SIGPIPE */
+	for (auto i : {SIGPIPE})
+		signal(i, SIG_DFL);
+
+	/* unblock signals that were blocked in the daemon for
+	   signalfd */
+	sigset_t mask;
+	sigfillset(&mask);
+	sigprocmask(SIG_UNBLOCK, &mask, nullptr);
+}
 
 bool
 ExecRelay::Start(const Action &action) noexcept
@@ -27,6 +42,8 @@ try {
 		throw MakeErrno("fork() failed");
 
 	if (pid == 0) {
+		UnblockSignals();
+
 		stdin_r.CheckDuplicate(FileDescriptor{STDIN_FILENO});
 		stdout_w.CheckDuplicate(FileDescriptor{STDOUT_FILENO});
 
