@@ -21,8 +21,6 @@
 
 #include <fmt/format.h>
 
-#include <list>
-
 #include <stdio.h>
 #include <unistd.h>
 
@@ -168,6 +166,25 @@ try {
 		delete this;
 }
 
+std::list<std::span<const std::byte>>
+QmqpRelayConnection::AssembleOutgoingMail(const MutableMail &mail) noexcept
+{
+	std::list<std::span<const std::byte>> list;
+	list.push_back(AsBytes(mail.message));
+
+	if (peer_cred.pid >= 0) {
+		char *end = fmt::format_to(received_buffer,
+					   "Received: from PID={} UID={} with QMQP\r\n",
+					   peer_cred.pid, peer_cred.uid);
+		list.emplace_front(AsBytes(std::string_view{received_buffer, end}));
+	}
+
+	for (const auto &i : mail.headers)
+		list.emplace_front(std::as_bytes(std::span{i}));
+
+	return list;
+}
+
 static MutableMail &
 CastMail(lua_State *L, const Lua::Ref &ref)
 {
@@ -182,18 +199,7 @@ QmqpRelayConnection::OnConnect(FileDescriptor out_fd, FileDescriptor in_fd)
 	const auto L = GetMainState();
 	auto &mail = CastMail(L, outgoing_mail);
 
-	std::list<std::span<const std::byte>> request;
-	request.push_back(AsBytes(mail.message));
-
-	if (peer_cred.pid >= 0) {
-		char *end = fmt::format_to(received_buffer,
-					   "Received: from PID={} UID={} with QMQP\r\n",
-					   peer_cred.pid, peer_cred.uid);
-		request.emplace_front(AsBytes(std::string_view{received_buffer, end}));
-	}
-
-	for (const auto &i : mail.headers)
-		request.emplace_front(std::as_bytes(std::span{i}));
+	auto request = AssembleOutgoingMail(mail);
 
 	generator(request, true);
 	request.emplace_back(std::as_bytes(std::span{sender_header(mail.sender.size())}));

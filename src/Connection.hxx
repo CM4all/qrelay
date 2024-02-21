@@ -17,8 +17,11 @@
 #include "lua/CoRunner.hxx"
 #include "util/IntrusiveList.hxx"
 
+#include <list>
+
 #include <sys/socket.h>
 
+struct MutableMail;
 struct Action;
 class FileDescriptor;
 
@@ -77,6 +80,13 @@ private:
 	lua_State *GetMainState() const noexcept {
 		return thread.GetMainState();
 	}
+
+	/**
+	 * Assemble all buffers that will be sent to the outgoing
+	 * server.  This is the original mail plus headers generated
+	 * by this process.
+	 */
+	std::list<std::span<const std::byte>> AssembleOutgoingMail(const MutableMail &mail) noexcept;
 
 	/* virtual methods from class ConnectSocketHandler */
 	void OnSocketConnectSuccess(UniqueSocketDescriptor fd) noexcept override;
