@@ -20,6 +20,7 @@
 #include "lua/event/Init.hxx"
 #include "util/PrintException.hxx"
 #include "util/ScopeExit.hxx"
+#include "config.h"
 
 #ifdef HAVE_PG
 #include "lua/pg/Init.hxx"
