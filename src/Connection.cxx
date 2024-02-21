@@ -3,26 +3,22 @@
 // author: Max Kellermann <mk@cm4all.com>
 
 #include "Connection.hxx"
+#include "RemoteRelay.hxx"
+#include "ExecRelay.hxx"
 #include "MutableMail.hxx"
 #include "LMail.hxx"
 #include "Action.hxx"
 #include "LAction.hxx"
-#include "system/Error.hxx"
 #include "net/AllocatedSocketAddress.hxx"
 #include "net/UniqueSocketDescriptor.hxx"
 #include "lua/PushLambda.hxx"
 #include "lua/Util.hxx"
 #include "lua/Error.hxx"
-#include "io/Pipe.hxx"
-#include "io/UniqueFileDescriptor.hxx"
 #include "util/ScopeExit.hxx"
 #include "util/SpanCast.hxx"
 #include "util/Compiler.h"
 
 #include <fmt/format.h>
-
-#include <stdio.h>
-#include <unistd.h>
 
 using std::string_view_literals::operator""sv;
 
@@ -48,9 +44,7 @@ QmqpRelayConnection::QmqpRelayConnection(size_t max_size,
 	 handler(std::move(_handler)),
 	 logger(parent_logger, MakeLoggerDomain(peer_cred, address).c_str()),
 	 auto_close(handler->GetState()),
-	 thread(handler->GetState()),
-	 connect(event_loop, *this),
-	 client(event_loop, 256, *this) {}
+	 thread(handler->GetState()) {}
 
 QmqpRelayConnection::~QmqpRelayConnection() noexcept
 {
@@ -85,11 +79,35 @@ QmqpRelayConnection::OnRequest(AllocatedArray<std::byte> &&payload)
 	Resume(L, 1);
 }
 
-static void
+static MutableMail &
 SetActionMail(lua_State *L, Lua::Ref &dest, int action_idx)
 {
 	PushLuaActionMail(L, action_idx);
+	auto &mail = CastLuaMail(L, -1);
 	dest = {L, Pop{}};
+	return mail;
+}
+
+inline void
+QmqpRelayConnection::DoConnect(const Action &action, const MutableMail &mail)
+{
+	auto *relay = new RemoteRelay(GetEventLoop(),
+				      mail, AssembleHeaders(mail),
+				      *this);
+	relay_operation = ToDeletePointer(relay);
+
+	relay->Start(action.connect);
+}
+
+inline void
+QmqpRelayConnection::DoExec(const Action &action, const MutableMail &mail)
+{
+	auto *relay = new ExecRelay(GetEventLoop(),
+				    mail, AssembleHeaders(mail),
+				    *this);
+	relay_operation = ToDeletePointer(relay);
+
+	relay->Start(action);
 }
 
 inline void
@@ -111,59 +129,13 @@ QmqpRelayConnection::Do(lua_State *L, const Action &action, int action_idx)
 		break;
 
 	case Action::Type::CONNECT:
-		SetActionMail(L, outgoing_mail, action_idx);
-		connect.Connect(action.connect, std::chrono::seconds(20));
+		DoConnect(action, SetActionMail(L, outgoing_mail, action_idx));
 		break;
 
 	case Action::Type::EXEC:
-		Exec(L, action, action_idx);
+		DoExec(action, SetActionMail(L, outgoing_mail, action_idx));
 		break;
 	}
-}
-
-inline void
-QmqpRelayConnection::Exec(lua_State *L, const Action &action, int action_idx)
-try {
-	assert(action.type == Action::Type::EXEC);
-	assert(!action.exec.empty());
-
-	auto [stdin_r, stdin_w] = CreatePipeNonBlock();
-	auto [stdout_r, stdout_w] = CreatePipeNonBlock();
-
-	pid_t pid = fork();
-	if (pid < 0)
-		throw MakeErrno("fork() failed");
-
-	if (pid == 0) {
-		stdin_r.CheckDuplicate(FileDescriptor{STDIN_FILENO});
-		stdout_w.CheckDuplicate(FileDescriptor{STDOUT_FILENO});
-
-		/* disable O_NONBLOCK */
-		FileDescriptor{STDIN_FILENO}.SetBlocking();
-		FileDescriptor{STDOUT_FILENO}.SetBlocking();
-
-		char *argv[Action::MAX_EXEC + 1];
-
-		unsigned n = 0;
-		for (const auto &i : action.exec)
-			argv[n++] = const_cast<char *>(i.c_str());
-
-		argv[n] = nullptr;
-
-		execv(argv[0], argv);
-		_exit(1);
-	}
-
-	stdin_r.Close();
-	stdout_w.Close();
-
-	SetActionMail(L, outgoing_mail, action_idx);
-	OnConnect(stdin_w.Release(), stdout_r.Release());
-} catch (...) {
-	logger(1, std::current_exception());
-
-	if (SendResponse("Zinternal server error"sv))
-		delete this;
 }
 
 std::list<std::span<const std::byte>>
@@ -184,31 +156,6 @@ QmqpRelayConnection::AssembleHeaders(const MutableMail &mail) noexcept
 	return list;
 }
 
-static MutableMail &
-CastMail(lua_State *L, const Lua::Ref &ref)
-{
-	ref.Push(L);
-	AtScopeExit(L) { lua_pop(L, 1); };
-	return CastLuaMail(L, -1);
-}
-
-void
-QmqpRelayConnection::OnConnect(FileDescriptor out_fd, FileDescriptor in_fd)
-{
-	const auto L = GetMainState();
-	auto &mail = CastMail(L, outgoing_mail);
-
-	auto request = AssembleHeaders(mail);
-	request.push_back(AsBytes(mail.message));
-
-	generator(request, true);
-	request.emplace_back(std::as_bytes(std::span{sender_header(mail.sender.size())}));
-	request.push_back(AsBytes(mail.sender));
-	request.push_back(AsBytes(mail.tail));
-
-	client.Request(out_fd, in_fd, std::move(request));
-}
-
 void
 QmqpRelayConnection::OnError(std::exception_ptr ep) noexcept
 {
@@ -223,31 +170,18 @@ QmqpRelayConnection::OnDisconnect() noexcept
 }
 
 void
-QmqpRelayConnection::OnSocketConnectSuccess(UniqueSocketDescriptor _fd) noexcept
+QmqpRelayConnection::OnRelayResponse(std::string_view response) noexcept
 {
-	const auto connection_fd = _fd.Release().ToFileDescriptor();
-	OnConnect(connection_fd, connection_fd);
-}
-
-void
-QmqpRelayConnection::OnSocketConnectError(std::exception_ptr ep) noexcept
-{
-	logger(1, ep);
-	if (SendResponse("Zconnect failed"sv))
+	if (SendResponse(response))
 		delete this;
 }
 
 void
-QmqpRelayConnection::OnNetstringResponse(AllocatedArray<std::byte> &&payload) noexcept
+QmqpRelayConnection::OnRelayError(std::string_view response,
+				  std::exception_ptr error) noexcept
 {
-	if (SendResponse(payload))
-		delete this;
-}
-
-void
-QmqpRelayConnection::OnNetstringError(std::exception_ptr) noexcept
-{
-	if (SendResponse("Zrelay failed"sv))
+	logger(1, error);
+	if (SendResponse(response))
 		delete this;
 }
 

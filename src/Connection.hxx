@@ -2,34 +2,31 @@
 // Copyright CM4all GmbH
 // author: Max Kellermann <mk@cm4all.com>
 
-#ifndef QMQP_RELAY_CONNECTION_HXX
-#define QMQP_RELAY_CONNECTION_HXX
+#pragma once
 
+#include "Handler.hxx"
 #include "io/Logger.hxx"
-#include "event/net/ConnectSocket.hxx"
 #include "event/net/djb/NetstringServer.hxx"
-#include "event/net/djb/NetstringClient.hxx"
-#include "net/djb/NetstringGenerator.hxx"
 #include "lua/AutoCloseList.hxx"
 #include "lua/Ref.hxx"
 #include "lua/Resume.hxx"
 #include "lua/ValuePtr.hxx"
 #include "lua/CoRunner.hxx"
+#include "util/DisposablePointer.hxx"
 #include "util/IntrusiveList.hxx"
 
 #include <list>
 
-#include <sys/socket.h>
+#include <sys/socket.h> // for struct ucred
 
 struct MutableMail;
 struct Action;
-class FileDescriptor;
 
 class QmqpRelayConnection final :
 	public AutoUnlinkIntrusiveListHook,
-	public NetstringServer, ConnectSocketHandler,
+	public NetstringServer,
 	Lua::ResumeListener,
-	NetstringClientHandler {
+	RelayHandler {
 
 	const struct ucred peer_cred;
 
@@ -37,9 +34,6 @@ class QmqpRelayConnection final :
 	ChildLogger logger;
 
 	Lua::AutoCloseList auto_close;
-
-	NetstringGenerator generator;
-	NetstringHeader sender_header;
 
 	char received_buffer[256];
 
@@ -54,8 +48,14 @@ class QmqpRelayConnection final :
 	 */
 	Lua::Ref outgoing_mail;
 
-	ConnectSocket connect;
-	NetstringClient client;
+	/**
+	 * An instance of the class that actually relays the email,
+	 * e.g. #RemoteRelay, #ExecRelay.  The only action we ever
+	 * need on it is destruct it when our client closes the
+	 * connection (i.e. cancellation), therefore we don't need to
+	 * know its type and we declare it as #DisposablePointer.
+	 */
+	DisposablePointer relay_operation;
 
 public:
 	QmqpRelayConnection(size_t max_size, Lua::ValuePtr _handler,
@@ -67,9 +67,9 @@ public:
 	static void Register(lua_State *L);
 
 protected:
+	void DoConnect(const Action &action, const MutableMail &mail);
+	void DoExec(const Action &action, const MutableMail &mail);
 	void Do(lua_State *L, const Action &action, int action_idx);
-	void Exec(lua_State *L, const Action &action, int action_idx);
-	void OnConnect(FileDescriptor out_fd, FileDescriptor in_fd);
 	void OnResponse(const void *data, size_t size);
 
 	void OnRequest(AllocatedArray<std::byte> &&payload) override;
@@ -86,17 +86,12 @@ private:
 	 */
 	std::list<std::span<const std::byte>> AssembleHeaders(const MutableMail &mail) noexcept;
 
-	/* virtual methods from class ConnectSocketHandler */
-	void OnSocketConnectSuccess(UniqueSocketDescriptor fd) noexcept override;
-	void OnSocketConnectError(std::exception_ptr ep) noexcept override;
-
-	/* virtual methods from class NetstringClientHandler */
-	void OnNetstringResponse(AllocatedArray<std::byte> &&payload) noexcept override;
-	void OnNetstringError(std::exception_ptr error) noexcept override;
+	/* virtual methods from class RelayHandler */
+	void OnRelayResponse(std::string_view response) noexcept override;
+	void OnRelayError(std::string_view response,
+			  std::exception_ptr error) noexcept override;
 
 	/* virtual methods from class Lua::ResumeListener */
 	void OnLuaFinished(lua_State *L) noexcept override;
 	void OnLuaError(lua_State *L, std::exception_ptr e) noexcept override;
 };
-
-#endif
