@@ -31,11 +31,15 @@ extern "C" {
 #include <lualib.h>
 }
 
+#ifdef HAVE_LIBSYSTEMD
 #include <systemd/sd-daemon.h>
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h> // for chdir()
+
+#ifdef HAVE_LIBSYSTEMD
 
 /**
  * A "magic" pointer used to identify our artificial "systemd" Lua
@@ -49,6 +53,8 @@ IsSystemdMagic(lua_State *L, int idx)
 	return lua_islightuserdata(L, idx) &&
 		lua_touserdata(L, idx) == &systemd_magic;
 }
+
+#endif // HAVE_LIBSYSTEMD
 
 static auto
 GetGlobalInt(lua_State *L, const char *name)
@@ -81,15 +87,17 @@ try {
 
 	auto handler = std::make_shared<Lua::Value>(L, Lua::StackIndex(2));
 
-	if (IsSystemdMagic(L, 1)) {
-		instance.AddSystemdListener(max_size, std::move(handler));
-	} else if (lua_isstring(L, 1)) {
+	if (lua_isstring(L, 1)) {
 		const char *address_string = lua_tostring(L, 1);
 
 		AllocatedSocketAddress address;
 		address.SetLocal(address_string);
 
 		instance.AddListener(address, max_size, std::move(handler));
+#ifdef HAVE_LIBSYSTEMD
+	} else if (IsSystemdMagic(L, 1)) {
+		instance.AddSystemdListener(max_size, std::move(handler));
+#endif
 	} else
 		luaL_argerror(L, 1, "path expected");
 
@@ -115,7 +123,9 @@ SetupConfigState(lua_State *L, Instance &instance)
 	static constexpr lua_Integer DEFAULT_MAX_SIZE = 16 * 1024 * 1024;
 	Lua::SetGlobal(L, "max_size", DEFAULT_MAX_SIZE);
 
+#ifdef HAVE_LIBSYSTEMD
 	Lua::SetGlobal(L, "systemd", Lua::LightUserData(&systemd_magic));
+#endif
 
 	Lua::SetGlobal(L, "qmqp_listen",
 		       Lua::MakeCClosure(l_qmqp_listen,
@@ -170,8 +180,10 @@ Run(const CommandLine &cmdline)
 
 	SetupRuntimeState(instance.GetLuaState());
 
+#ifdef HAVE_LIBSYSTEMD
 	/* tell systemd we're ready */
 	sd_notify(0, "READY=1");
+#endif
 
 	instance.GetEventLoop().Run();
 

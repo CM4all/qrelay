@@ -13,6 +13,7 @@
 #include "event/ShutdownListener.hxx"
 #include "event/SignalEvent.hxx"
 #include "event/systemd/Watchdog.hxx"
+#include "config.h"
 
 #include <forward_list>
 
@@ -23,7 +24,9 @@ class Instance {
 	ShutdownListener shutdown_listener{event_loop, BIND_THIS_METHOD(OnShutdown)};
 	SignalEvent sighup_event;
 
+#ifdef HAVE_LIBSYSTEMD
 	Systemd::Watchdog systemd_watchdog{event_loop};
+#endif
 
 	Lua::State lua_state;
 
@@ -52,11 +55,13 @@ public:
 			 size_t max_size,
 			 Lua::ValuePtr &&handler);
 
+#ifdef HAVE_LIBSYSTEMD
 	/**
 	 * Listen for incoming connections on sockets passed by systemd
 	 * (systemd socket activation).
 	 */
 	void AddSystemdListener(size_t max_size, Lua::ValuePtr &&handler);
+#endif // HAVE_LIBSYSTEMD
 
 	void Check();
 

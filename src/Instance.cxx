@@ -9,7 +9,9 @@ extern "C" {
 #include <lauxlib.h>
 }
 
+#ifdef HAVE_LIBSYSTEMD
 #include <systemd/sd-daemon.h>
+#endif
 
 #include <stdexcept>
 
@@ -58,6 +60,8 @@ Instance::AddListener(SocketAddress address,
 	AddListener(MakeListener(address), max_size, std::move(handler));
 }
 
+#ifdef HAVE_LIBSYSTEMD
+
 void
 Instance::AddSystemdListener(size_t max_size, Lua::ValuePtr &&handler)
 {
@@ -78,6 +82,8 @@ Instance::AddSystemdListener(size_t max_size, Lua::ValuePtr &&handler)
 			    Lua::ValuePtr(handler));
 }
 
+#endif // HAVE_LIBSYSTEMD
+
 void
 Instance::Check()
 {
@@ -91,7 +97,9 @@ Instance::OnShutdown() noexcept
 	shutdown_listener.Disable();
 	sighup_event.Disable();
 
+#ifdef HAVE_LIBSYSTEMD
 	systemd_watchdog.Disable();
+#endif
 
 	event_loop.Break();
 }

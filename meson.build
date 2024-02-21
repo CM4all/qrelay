@@ -96,7 +96,7 @@ add_global_arguments(common_flags, language: 'cpp')
 add_global_arguments(compiler.get_supported_arguments(test_global_cxxflags), language: 'cpp')
 add_project_arguments(compiler.get_supported_arguments(test_cxxflags), language: 'cpp')
 
-libsystemd = dependency('libsystemd')
+libsystemd = dependency('libsystemd', required: get_option('systemd'))
 
 inc = include_directories(
   'src',
@@ -118,11 +118,15 @@ subdir('libcommon/src/net/djb')
 subdir('libcommon/src/lua/net')
 subdir('libcommon/src/event/net')
 subdir('libcommon/src/event/net/djb')
-subdir('libcommon/src/event/systemd')
 subdir('libcommon/src/lua/event')
 subdir('libcommon/src/stock')
 subdir('libcommon/src/time')
 subdir('libcommon/src/lua/io')
+
+if libsystemd.found()
+  subdir('libcommon/src/event/systemd')
+  libsystemd = event_systemd_dep
+endif
 
 libcommon_require_pg = get_option('pg')
 subdir('libcommon/src/pg')
@@ -131,6 +135,7 @@ if pg_dep.found()
   pg_dep = lua_pg_dep
 endif
 
+conf.set('HAVE_LIBSYSTEMD', libsystemd.found())
 conf.set('HAVE_PG', pg_dep.found())
 configure_file(output: 'config.h', configuration: conf)
 
@@ -159,7 +164,6 @@ executable('cm4all-qrelay',
     pg_dep,
     event_net_dep,
     event_net_djb_dep,
-    event_systemd_dep,
     fmt_dep,
   ],
   install: true,
