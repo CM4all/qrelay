@@ -3,6 +3,9 @@ Description=CM4all QMQP relay daemon
 Wants=network-online.target
 After=network-online.target
 
+# require at least Linux kernel 5.4 for pidfd support
+AssertKernelVersion=>=5.4
+
 [Service]
 Type=notify
 User=cm4all-qrelay

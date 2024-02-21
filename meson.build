@@ -140,6 +140,7 @@ conf.set('HAVE_PG', pg_dep.found())
 configure_file(output: 'config.h', configuration: conf)
 
 executable('cm4all-qrelay',
+  'libcommon/src/spawn/PidfdEvent.cxx',
   'libcommon/src/spawn/ZombieReaper.cxx',
   'src/CommandLine.cxx',
   'src/djb/NetstringParser.cxx',
@@ -159,6 +160,7 @@ executable('cm4all-qrelay',
   dependencies: [
     libsystemd,
     io_linux_dep,
+    time_dep,
     uri_dep,
     util_dep,
     lua_dep,

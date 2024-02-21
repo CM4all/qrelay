@@ -3,6 +3,7 @@ cm4all-qrelay (0.27) unstable; urgency=low
   * lua: fix the broken "exec" action
   * exec: unblock all signals
   * exec: reap zombie processes
+  * exec: wait for process to exit and kill on cancellation
   * make the systemd and the PostgreSQL client optional
 
  --   

@@ -12,7 +12,7 @@ class RelayHandler;
 class SocketAddress;
 
 class BasicRelay
-	: NetstringClientHandler
+	: protected NetstringClientHandler
 {
 	NetstringGenerator generator;
 	NetstringHeader sender_header;
@@ -30,7 +30,11 @@ public:
 		   std::list<std::span<const std::byte>> &&additional_headers,
 		   RelayHandler &_handler) noexcept;
 
-private:
+	auto &GetEventLoop() const noexcept {
+		return client.GetEventLoop();
+	}
+
+protected:
 	/* virtual methods from class NetstringClientHandler */
 	void OnNetstringResponse(AllocatedArray<std::byte> &&payload) noexcept override;
 	void OnNetstringError(std::exception_ptr error) noexcept override;
