@@ -167,10 +167,9 @@ try {
 }
 
 std::list<std::span<const std::byte>>
-QmqpRelayConnection::AssembleOutgoingMail(const MutableMail &mail) noexcept
+QmqpRelayConnection::AssembleHeaders(const MutableMail &mail) noexcept
 {
 	std::list<std::span<const std::byte>> list;
-	list.push_back(AsBytes(mail.message));
 
 	if (peer_cred.pid >= 0) {
 		char *end = fmt::format_to(received_buffer,
@@ -199,7 +198,8 @@ QmqpRelayConnection::OnConnect(FileDescriptor out_fd, FileDescriptor in_fd)
 	const auto L = GetMainState();
 	auto &mail = CastMail(L, outgoing_mail);
 
-	auto request = AssembleOutgoingMail(mail);
+	auto request = AssembleHeaders(mail);
+	request.push_back(AsBytes(mail.message));
 
 	generator(request, true);
 	request.emplace_back(std::as_bytes(std::span{sender_header(mail.sender.size())}));
