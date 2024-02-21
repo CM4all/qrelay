@@ -176,14 +176,14 @@ NewRejectAction(lua_State *L)
 static int
 NewExecAction(lua_State *L)
 {
-	if (lua_gettop(L) < 2)
+	const unsigned top = lua_gettop(L);
+	if (top < 2)
 		return luaL_error(L, "Not enough parameters");
 
 	auto &action = *NewLuaAction(L, 1);
 	action.type = Action::Type::EXEC;
 
-	const unsigned n = lua_gettop(L);
-	for (unsigned i = 2; i <= n; ++i) {
+	for (unsigned i = 2; i <= top; ++i) {
 		action.exec.emplace_back(luaL_checkstring(L, i));
 	}
 

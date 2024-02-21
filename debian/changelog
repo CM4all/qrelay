@@ -1,5 +1,6 @@
 cm4all-qrelay (0.27) unstable; urgency=low
 
+  * lua: fix the broken "exec" action
   * make the systemd and the PostgreSQL client optional
 
  --   
