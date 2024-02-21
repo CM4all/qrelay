@@ -96,6 +96,7 @@ Instance::OnShutdown() noexcept
 {
 	shutdown_listener.Disable();
 	sighup_event.Disable();
+	zombie_reaper.Disable();
 
 #ifdef HAVE_LIBSYSTEMD
 	systemd_watchdog.Disable();

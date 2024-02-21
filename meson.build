@@ -140,6 +140,7 @@ conf.set('HAVE_PG', pg_dep.found())
 configure_file(output: 'config.h', configuration: conf)
 
 executable('cm4all-qrelay',
+  'libcommon/src/spawn/ZombieReaper.cxx',
   'src/CommandLine.cxx',
   'src/djb/NetstringParser.cxx',
   'src/djb/QmqpMail.cxx',

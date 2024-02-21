@@ -8,6 +8,7 @@
 #include "lua/ReloadRunner.hxx"
 #include "lua/State.hxx"
 #include "lua/ValuePtr.hxx"
+#include "spawn/ZombieReaper.hxx"
 #include "io/Logger.hxx"
 #include "event/Loop.hxx"
 #include "event/ShutdownListener.hxx"
@@ -23,6 +24,8 @@ class Instance {
 	EventLoop event_loop;
 	ShutdownListener shutdown_listener{event_loop, BIND_THIS_METHOD(OnShutdown)};
 	SignalEvent sighup_event;
+
+	ZombieReaper zombie_reaper{event_loop};
 
 #ifdef HAVE_LIBSYSTEMD
 	Systemd::Watchdog systemd_watchdog{event_loop};
