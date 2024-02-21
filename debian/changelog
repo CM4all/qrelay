@@ -6,7 +6,7 @@ cm4all-qrelay (0.27) unstable; urgency=low
   * exec: wait for process to exit and kill on cancellation
   * make the systemd and the PostgreSQL client optional
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Wed, 21 Feb 2024 23:15:20 +0100
 
 cm4all-qrelay (0.26) unstable; urgency=low
 
