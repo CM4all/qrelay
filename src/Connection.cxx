@@ -26,6 +26,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+using std::string_view_literals::operator""sv;
+
 using namespace Lua;
 
 static std::string
@@ -69,7 +71,7 @@ QmqpRelayConnection::OnRequest(AllocatedArray<std::byte> &&payload)
 {
 	MutableMail mail(std::move(payload));
 	if (!mail.Parse()) {
-		if (SendResponse("Dmalformed input"))
+		if (SendResponse("Dmalformed input"sv))
 			delete this;
 		return;
 	}
@@ -101,12 +103,12 @@ QmqpRelayConnection::Do(lua_State *L, const Action &action, int action_idx)
 		gcc_unreachable();
 
 	case Action::Type::DISCARD:
-		if (SendResponse("Kdiscarded"))
+		if (SendResponse("Kdiscarded"sv))
 			delete this;
 		break;
 
 	case Action::Type::REJECT:
-		if (SendResponse("Drejected"))
+		if (SendResponse("Drejected"sv))
 			delete this;
 		break;
 
@@ -162,7 +164,7 @@ try {
 } catch (...) {
 	logger(1, std::current_exception());
 
-	if (SendResponse("Zinternal server error"))
+	if (SendResponse("Zinternal server error"sv))
 		delete this;
 }
 
@@ -225,7 +227,7 @@ void
 QmqpRelayConnection::OnSocketConnectError(std::exception_ptr ep) noexcept
 {
 	logger(1, ep);
-	if (SendResponse("Zconnect failed"))
+	if (SendResponse("Zconnect failed"sv))
 		delete this;
 }
 
@@ -239,7 +241,7 @@ QmqpRelayConnection::OnNetstringResponse(AllocatedArray<std::byte> &&payload) no
 void
 QmqpRelayConnection::OnNetstringError(std::exception_ptr) noexcept
 {
-	if (SendResponse("Zrelay failed"))
+	if (SendResponse("Zrelay failed"sv))
 		delete this;
 }
 
@@ -262,6 +264,6 @@ QmqpRelayConnection::OnLuaError(lua_State *, std::exception_ptr e) noexcept
 {
 	logger(1, e);
 
-	if (SendResponse("Zscript failed"))
+	if (SendResponse("Zscript failed"sv))
 		delete this;
 }
