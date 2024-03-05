@@ -116,12 +116,11 @@ RawExecRelay::TryWrite() noexcept
 try {
 	switch (request_buffer.Write(request_pipe.GetFileDescriptor())) {
 	case WriteBuffer::Result::MORE:
-		request_pipe.ScheduleRead();
+		request_pipe.ScheduleWrite();
 		break;
 
 	case WriteBuffer::Result::FINISHED:
 		request_pipe.Close();
-		response_pipe.ScheduleWrite();
 		break;
 	}
 
