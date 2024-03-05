@@ -124,6 +124,10 @@ The following actions are possible:
   the email via QMQP on standard input.  Read the QMQP response from
   standard output.
 
+  The last parameter may be a table specifying options:
+
+  - ``env``: a table with environment variables for the child process.
+
 * :samp:`exec_raw("PROGRAM", "ARG", ...)`: Execute the program and
   submit the raw email message (headers and body, but no envelope) on
   standard input.  Translates the exit status to either "accepted (K)"
@@ -133,6 +137,9 @@ The following actions are possible:
   ``/usr/sbin/sendmail`` interface instead of QMQP.  Since the
   envelope is not submitted, the caller should translate the envelope
   to command-line arguments.
+
+  The last parameter may be a table specifying options (the same as
+  for ``exec()``).
 
 * :samp:`discard()`: Discard the email, pretending delivery was successful.
 

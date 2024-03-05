@@ -10,6 +10,8 @@
 #include "lua/Class.hxx"
 #include "lua/Error.hxx"
 #include "lua/FenvCache.hxx"
+#include "lua/ForEach.hxx"
+#include "lua/StringView.hxx"
 #include "lua/io/CgroupInfo.hxx"
 #include "lua/net/SocketAddress.hxx"
 #include "uri/EmailAddress.hxx"
@@ -25,8 +27,12 @@ extern "C" {
 #include <lauxlib.h>
 }
 
+#include <fmt/core.h>
+
 #include <sys/socket.h>
 #include <string.h>
+
+using std::string_view_literals::operator""sv;
 
 class IncomingMail : public MutableMail {
 	Lua::AutoCloseList *auto_close;
@@ -174,12 +180,59 @@ NewRejectAction(lua_State *L)
 }
 
 /**
+ * Collect parameters from the "options" table passed as the last
+ * parameter to exec() / exec_raw().
+ */
+static void
+CollectExecEnv(Action &action, lua_State *L, Lua::AnyStackIndex auto idx)
+{
+	Lua::ForEach(L, idx, [L, &action](auto name_idx, auto value_idx){
+		if (action.exec.full())
+			luaL_error(L, "Too many environment variables");
+
+		if (!lua_isstring(L, Lua::GetStackIndex(name_idx)))
+			luaL_error(L, "Environment name is not a string");
+		if (!lua_isstring(L, Lua::GetStackIndex(value_idx)))
+			luaL_error(L, "Environment value is not a string");
+
+		const auto name = Lua::ToStringView(L, Lua::GetStackIndex(name_idx));
+		const auto value = Lua::ToStringView(L, Lua::GetStackIndex(value_idx));
+		action.env.emplace_back(fmt::format("{}={}", name, value));
+	});
+}
+
+/**
+ * Collect parameters from the "options" table passed as the last
+ * parameter to exec() / exec_raw().
+ */
+static void
+CollectExecOptions(Action &action, lua_State *L, Lua::AnyStackIndex auto idx)
+{
+	Lua::ForEach(L, idx, [L, &action](auto key_idx, auto value_idx){
+		if (!lua_isstring(L, Lua::GetStackIndex(key_idx)))
+			luaL_error(L, "Option key is not a string");
+
+		const auto key = Lua::ToStringView(L, Lua::GetStackIndex(key_idx));
+		if (key == "env"sv)
+			CollectExecEnv(action, L, value_idx);
+		else
+			luaL_error(L, "Unknown option");
+	});
+}
+
+/**
  * Collect exec() / exec_raw() parameters and store them in an
  * #Action.
  */
 static void
 CollectExec(Action &action, lua_State *L, unsigned top)
 {
+	/* if the last parameter is a table, it may contain options */
+	if (lua_istable(L, top)) {
+		CollectExecOptions(action, L, Lua::StackIndex(top));
+		--top;
+	}
+
 	for (unsigned i = 2; i <= top; ++i) {
 		if (action.exec.full())
 			luaL_argerror(L, i, "Too many arguments");

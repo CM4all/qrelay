@@ -11,6 +11,7 @@
 
 struct Action {
 	static constexpr unsigned MAX_EXEC = 32;
+	static constexpr unsigned MAX_ENV = 32;
 
 	enum class Type {
 		UNDEFINED,
@@ -47,6 +48,11 @@ struct Action {
 	AllocatedSocketAddress connect;
 
 	StaticVector<std::string, MAX_EXEC> exec;
+
+	/**
+	 * Environment variables for #EXEC and #EXEC_RAW.
+	 */
+	StaticVector<std::string, MAX_ENV> env;
 
 	bool IsDefined() const {
 		return type != Type::UNDEFINED;

@@ -82,7 +82,12 @@ try {
 
 	argv[n] = nullptr;
 
-	static constexpr const char *env[]{nullptr};
+	char *env[Action::MAX_ENV + 1];
+	n = 0;
+	for (const auto &i : action.env)
+		env[n++] = const_cast<char *>(i.c_str());
+
+	env[n] = nullptr;
 
 	pid_t pid;
 	if (posix_spawn(&pid, argv[0], &file_actions, &attr,
