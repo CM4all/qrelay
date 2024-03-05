@@ -46,8 +46,8 @@ try {
 	assert(action.type == Action::Type::EXEC);
 	assert(!action.exec.empty());
 
-	auto [stdin_r, stdin_w] = CreatePipeNonBlock();
-	auto [stdout_r, stdout_w] = CreatePipeNonBlock();
+	auto [stdin_r, stdin_w] = CreatePipe();
+	auto [stdout_r, stdout_w] = CreatePipe();
 
 	pid_t pid = fork();
 	if (pid < 0)
@@ -58,10 +58,6 @@ try {
 
 		stdin_r.CheckDuplicate(FileDescriptor{STDIN_FILENO});
 		stdout_w.CheckDuplicate(FileDescriptor{STDOUT_FILENO});
-
-		/* disable O_NONBLOCK */
-		FileDescriptor{STDIN_FILENO}.SetBlocking();
-		FileDescriptor{STDOUT_FILENO}.SetBlocking();
 
 		char *argv[Action::MAX_EXEC + 1];
 
@@ -81,6 +77,9 @@ try {
 	ExitListener &exit_listener = *this;
 	pidfd.emplace(GetEventLoop(), UniqueFileDescriptor{my_pidfd_open(pid, 0)},
 		      "exec", exit_listener);
+
+	stdin_w.SetNonBlocking();
+	stdout_r.SetNonBlocking();
 
 	client.Request(stdin_w.Release(), stdout_r.Release(),
 		       std::move(request));

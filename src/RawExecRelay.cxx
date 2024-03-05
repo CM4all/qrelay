@@ -63,8 +63,8 @@ try {
 	assert(action.type == Action::Type::EXEC_RAW);
 	assert(!action.exec.empty());
 
-	auto [stdin_r, stdin_w] = CreatePipeNonBlock();
-	auto [stdout_r, stdout_w] = CreatePipeNonBlock();
+	auto [stdin_r, stdin_w] = CreatePipe();
+	auto [stdout_r, stdout_w] = CreatePipe();
 
 	pid_t pid = fork();
 	if (pid < 0)
@@ -72,10 +72,6 @@ try {
 
 	if (pid == 0) {
 		UnblockSignals();
-
-		/* disable O_NONBLOCK */
-		stdin_r.SetBlocking();
-		stdout_w.SetBlocking();
 
 		stdin_r.CheckDuplicate(FileDescriptor{STDIN_FILENO});
 		stdout_w.CheckDuplicate(FileDescriptor{STDOUT_FILENO});
@@ -100,9 +96,11 @@ try {
 	pidfd.emplace(GetEventLoop(), UniqueFileDescriptor{my_pidfd_open(pid, 0)},
 		      "exec_raw", exit_listener);
 
+	stdout_r.SetNonBlocking();
 	response_pipe.Open(stdout_r.Release());
 	response_pipe.ScheduleRead();
 
+	stdin_w.SetNonBlocking();
 	request_pipe.Open(stdin_w.Release());
 	return TryWrite();
 } catch (...) {
