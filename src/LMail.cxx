@@ -181,6 +181,9 @@ static void
 CollectExec(Action &action, lua_State *L, unsigned top)
 {
 	for (unsigned i = 2; i <= top; ++i) {
+		if (action.exec.full())
+			luaL_argerror(L, i, "Too many arguments");
+
 		action.exec.emplace_back(luaL_checkstring(L, i));
 	}
 }
