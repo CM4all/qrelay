@@ -186,6 +186,11 @@ There are some `libsodium <https://www.libsodium.org/>`__ bindings.
   ciphertext = sodium.crypto_box_seal('hello world', pk)
   message = sodium.crypto_box_seal_open(ciphertext, pk, sk)
 
+`Point*scalar multiplication
+<https://doc.libsodium.org/advanced/scalar_multiplication>__::
+
+  pk = sodium.crypto_scalarmult_base(sk)
+
 
 PostgreSQL Client
 ^^^^^^^^^^^^^^^^^
