@@ -170,9 +170,10 @@ try {
 }
 
 void
-RawExecRelay::OnResponsePipeReady(unsigned) noexcept
+RawExecRelay::OnResponsePipeReady(unsigned events) noexcept
 {
-	if (!TryRead()) {
+	if (events == PipeEvent::HANGUP || !TryRead() ||
+	    (events & PipeEvent::HANGUP) != 0) {
 		response_pipe.Close();
 
 		if (!pidfd) {
