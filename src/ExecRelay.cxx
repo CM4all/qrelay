@@ -11,8 +11,10 @@
 #include "system/PidFD.h"
 #include "io/Pipe.hxx"
 #include "io/UniqueFileDescriptor.hxx"
+#include "util/ScopeExit.hxx"
 
 #include <signal.h>
+#include <spawn.h>
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -26,20 +28,6 @@ ExecRelay::~ExecRelay() noexcept
 		pidfd->Kill(SIGTERM);
 }
 
-static void
-UnblockSignals() noexcept
-{
-	/* don't ignore SIGPIPE */
-	for (auto i : {SIGPIPE})
-		signal(i, SIG_DFL);
-
-	/* unblock signals that were blocked in the daemon for
-	   signalfd */
-	sigset_t mask;
-	sigfillset(&mask);
-	sigprocmask(SIG_UNBLOCK, &mask, nullptr);
-}
-
 bool
 ExecRelay::Start(const Action &action) noexcept
 try {
@@ -49,27 +37,40 @@ try {
 	auto [stdin_r, stdin_w] = CreatePipe();
 	auto [stdout_r, stdout_w] = CreatePipe();
 
-	pid_t pid = fork();
-	if (pid < 0)
-		throw MakeErrno("fork() failed");
+	posix_spawnattr_t attr;
+	posix_spawnattr_init(&attr);
+	AtScopeExit(&attr) { posix_spawnattr_destroy(&attr); };
 
-	if (pid == 0) {
-		UnblockSignals();
+	sigset_t signals;
+	sigemptyset(&signals);
+	posix_spawnattr_setsigmask(&attr, &signals);
+	sigaddset(&signals, SIGHUP);
+	posix_spawnattr_setsigdefault(&attr, &signals);
 
-		stdin_r.CheckDuplicate(FileDescriptor{STDIN_FILENO});
-		stdout_w.CheckDuplicate(FileDescriptor{STDOUT_FILENO});
+	posix_spawnattr_setflags(&attr, POSIX_SPAWN_SETSIGDEF|POSIX_SPAWN_SETSIGMASK);
 
-		char *argv[Action::MAX_EXEC + 1];
+	posix_spawn_file_actions_t file_actions;
+	posix_spawn_file_actions_init(&file_actions);
+	AtScopeExit(&file_actions) { posix_spawn_file_actions_destroy(&file_actions); };
 
-		unsigned n = 0;
-		for (const auto &i : action.exec)
-			argv[n++] = const_cast<char *>(i.c_str());
+        posix_spawn_file_actions_adddup2(&file_actions, stdin_r.Get(), STDIN_FILENO);
+        posix_spawn_file_actions_adddup2(&file_actions, stdout_w.Get(), STDOUT_FILENO);
 
-		argv[n] = nullptr;
+	char *argv[Action::MAX_EXEC + 1];
 
-		execv(argv[0], argv);
-		_exit(1);
-	}
+	unsigned n = 0;
+	for (const auto &i : action.exec)
+		argv[n++] = const_cast<char *>(i.c_str());
+
+	argv[n] = nullptr;
+
+	static constexpr const char *env[]{nullptr};
+
+	pid_t pid;
+	if (posix_spawn(&pid, argv[0], &file_actions, &attr,
+			const_cast<char *const *>(argv),
+			const_cast<char *const *>(env)) != 0)
+		throw MakeErrno("Failed to execute process");
 
 	stdin_r.Close();
 	stdout_w.Close();
