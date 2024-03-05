@@ -156,7 +156,15 @@ try {
 	if (dest.empty()) {
 		/* buffer is full; discard the rest */
 		std::array<std::byte, 1024> discard_buffer;
-		ReadPipeOrThrow(fd, discard_buffer);
+		if (ReadPipeOrThrow(fd, discard_buffer) == 0) {
+			response_pipe.Close();
+
+			if (!pidfd) {
+				Finish();
+				return false;
+			}
+		}
+
 		return true;
 	}
 

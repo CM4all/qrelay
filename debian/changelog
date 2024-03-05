@@ -1,6 +1,7 @@
 cm4all-qrelay (0.28) unstable; urgency=low
 
   * lua: add bindings for libsodium Sealed boxes
+  * exec_raw: fix endless loop
 
  --   
 
