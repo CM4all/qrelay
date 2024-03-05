@@ -104,9 +104,11 @@ inc = include_directories(
 )
 
 libcommon_enable_DefaultFifoBuffer = false
+libcommon_require_sodium = get_option('sodium')
 
 subdir('libcommon/src/util')
 subdir('libcommon/src/lib/fmt')
+subdir('libcommon/src/lib/sodium')
 subdir('libcommon/src/uri')
 subdir('libcommon/src/lua')
 subdir('libcommon/src/io')
@@ -123,6 +125,12 @@ subdir('libcommon/src/stock')
 subdir('libcommon/src/time')
 subdir('libcommon/src/lua/io')
 
+if sodium_dep.found()
+  subdir('libcommon/src/lua/sodium')
+else
+  lua_sodium_dep = sodium_dep
+endif
+
 if libsystemd.found()
   subdir('libcommon/src/event/systemd')
   libsystemd = event_systemd_dep
@@ -135,6 +143,7 @@ if pg_dep.found()
   pg_dep = lua_pg_dep
 endif
 
+conf.set('HAVE_LIBSODIUM', sodium_dep.found())
 conf.set('HAVE_LIBSYSTEMD', libsystemd.found())
 conf.set('HAVE_PG', pg_dep.found())
 configure_file(output: 'config.h', configuration: conf)
@@ -168,6 +177,7 @@ executable('cm4all-qrelay',
     lua_io_dep,
     lua_net_dep,
     lua_event_dep,
+    lua_sodium_dep,
     pg_dep,
     event_net_dep,
     event_net_djb_dep,

@@ -24,6 +24,7 @@ Optional dependencies:
 
 - `libpq <https://www.postgresql.org/>`__ for PostgreSQL support in
   Lua code
+- `libsodium <https://www.libsodium.org/>`__
 - `systemd <https://www.freedesktop.org/wiki/Software/systemd/>`__
 
 Get the source code::
