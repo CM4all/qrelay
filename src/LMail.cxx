@@ -173,6 +173,18 @@ NewRejectAction(lua_State *L)
 	return 1;
 }
 
+/**
+ * Collect exec() / exec_raw() parameters and store them in an
+ * #Action.
+ */
+static void
+CollectExec(Action &action, lua_State *L, unsigned top)
+{
+	for (unsigned i = 2; i <= top; ++i) {
+		action.exec.emplace_back(luaL_checkstring(L, i));
+	}
+}
+
 static int
 NewExecAction(lua_State *L)
 {
@@ -183,9 +195,7 @@ NewExecAction(lua_State *L)
 	auto &action = *NewLuaAction(L, 1);
 	action.type = Action::Type::EXEC;
 
-	for (unsigned i = 2; i <= top; ++i) {
-		action.exec.emplace_back(luaL_checkstring(L, i));
-	}
+	CollectExec(action, L, top);
 
 	return 1;
 }
@@ -200,9 +210,7 @@ NewExecRawAction(lua_State *L)
 	auto &action = *NewLuaAction(L, 1);
 	action.type = Action::Type::EXEC_RAW;
 
-	for (unsigned i = 2; i <= top; ++i) {
-		action.exec.emplace_back(luaL_checkstring(L, i));
-	}
+	CollectExec(action, L, top);
 
 	return 1;
 }
