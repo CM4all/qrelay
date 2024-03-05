@@ -153,34 +153,16 @@ try {
 	const FileDescriptor fd = response_pipe.GetFileDescriptor();
 
 	auto dest = std::span{response_buffer}.subspan(response_fill);
+
 	if (dest.empty()) {
 		/* buffer is full; discard the rest */
 		std::array<std::byte, 1024> discard_buffer;
-		if (ReadPipeOrThrow(fd, discard_buffer) == 0) {
-			response_pipe.Close();
-
-			if (!pidfd) {
-				Finish();
-				return false;
-			}
-		}
-
-		return true;
+		return ReadPipeOrThrow(fd, discard_buffer) > 0;
 	}
 
 	const auto nbytes = ReadPipeOrThrow(fd, dest);
 	response_fill += nbytes;
-
-	if (nbytes == 0) {
-		response_pipe.Close();
-
-		if (!pidfd) {
-			Finish();
-			return false;
-		}
-	}
-
-	return true;
+	return nbytes > 0;
 } catch (...) {
 	handler.OnRelayError("Zread error"sv,
 			     std::current_exception());
@@ -190,7 +172,14 @@ try {
 void
 RawExecRelay::OnResponsePipeReady(unsigned) noexcept
 {
-	TryRead();
+	if (!TryRead()) {
+		response_pipe.Close();
+
+		if (!pidfd) {
+			Finish();
+			return;
+		}
+	}
 }
 
 void

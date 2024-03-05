@@ -52,6 +52,10 @@ public:
 
 private:
 	bool TryWrite() noexcept;
+
+	/**
+	 * @return false if end-of-pipe has been seen
+	 */
 	bool TryRead() noexcept;
 
 	void OnRequestPipeReady(unsigned events) noexcept;
