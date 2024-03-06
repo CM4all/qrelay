@@ -179,6 +179,11 @@ libsodium
 
 There are some `libsodium <https://www.libsodium.org/>`__ bindings.
 
+`Helpers <https://doc.libsodium.org/helpers>`__::
+
+  bin = sodium.hex2bin("deadbeef") -- returns "\xde\xad\xbe\ef"
+  hex = sodium.bin2hex("A\0\xff") -- returns "4100ff"
+
 `Sealed boxes
 <https://libsodium.gitbook.io/doc/public-key_cryptography/sealed_boxes>`__::
 
