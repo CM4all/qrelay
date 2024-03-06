@@ -4,7 +4,7 @@ cm4all-qrelay (0.28) unstable; urgency=low
   * exec_raw: fix endless loop
   * exec: allow setting environment variables
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Wed, 06 Mar 2024 17:22:58 +0100
 
 cm4all-qrelay (0.27) unstable; urgency=low
 
