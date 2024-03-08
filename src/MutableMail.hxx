@@ -36,6 +36,11 @@ struct MutableMail : QmqpMail {
 	 */
 	std::forward_list<std::string> headers;
 
+	/**
+	 * May be set by Lua code.
+	 */
+	std::string account;
+
 	explicit MutableMail(AllocatedArray<std::byte> &&_buffer)
 		:buffer(_buffer) {}
 

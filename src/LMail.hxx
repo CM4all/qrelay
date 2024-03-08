@@ -2,8 +2,9 @@
 // Copyright CM4all GmbH
 // author: Max Kellermann <mk@cm4all.com>
 
-#ifndef QRELAY_LMAIL_HXX
-#define QRELAY_LMAIL_HXX
+#pragma once
+
+#include <string_view>
 
 struct ucred;
 struct lua_State;
@@ -23,5 +24,3 @@ NewLuaMail(lua_State *L,
 
 MutableMail &
 CastLuaMail(lua_State *L, int idx);
-
-#endif

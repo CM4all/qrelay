@@ -270,6 +270,7 @@ QmqpRelayConnection::Log(std::string_view message) noexcept
 
 	const Net::Log::Datagram d{
 		.timestamp = Net::Log::FromSystem(GetEventLoop().SystemNow()),
+		.site = mail_ptr->account.empty() ? nullptr : mail_ptr->account.c_str(),
 		.message = message,
 		.type = Net::Log::Type::SUBMISSION,
 	};

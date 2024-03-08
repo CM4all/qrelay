@@ -352,6 +352,12 @@ IncomingMail::Index(lua_State *L)
 
 		Lua::Push(L, static_cast<lua_Integer>(cred.gid));
 		return 1;
+	} else if (StringIsEqual(name, "account")) {
+		if (!account.empty())
+			Lua::Push(L, account);
+		else
+			lua_pushnil(L);
+		return 1;
 	} else if (StringIsEqual(name, "cgroup")) {
 		if (!HavePeerCred())
 			return 0;
@@ -388,6 +394,18 @@ IncomingMail::NewIndex(lua_State *L)
 			luaL_argerror(L, value_idx, "Malformed email address");
 
 		SetSender(new_value);
+		return 0;
+	} else if (StringIsEqual(name, "account")) {
+		if (lua_isnil(L, value_idx)) {
+			account.clear();
+		} else {
+			const char *new_value = luaL_checkstring(L, value_idx);
+			luaL_argcheck(L, *new_value != 0, value_idx,
+				      "Empty string not allowed");
+
+			account = new_value;
+		}
+
 		return 0;
 	} else
 		return luaL_error(L, "Cannot change this attribute");

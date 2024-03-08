@@ -88,6 +88,9 @@ The following attributes can be queried:
 
 * :samp:`gid`: The client's group id.
 
+* :samp:`account`: Set this to an identifier of the user account.
+  This will be used for logging.
+
 * :samp:`cgroup`: The control group of the client process with the
   following attributes:
 

@@ -1,5 +1,6 @@
 cm4all-qrelay (0.29) unstable; urgency=low
 
+  * lua: add field "account"
   * exec: add "timeout" option
   * network logging (to Pond server)
 

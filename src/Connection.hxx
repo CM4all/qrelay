@@ -53,6 +53,8 @@ class QmqpRelayConnection final :
 
 	MutableMail *mail_ptr;
 
+	std::string account;
+
 	/**
 	 * An instance of the class that actually relays the email,
 	 * e.g. #RemoteRelay, #ExecRelay.  The only action we ever
