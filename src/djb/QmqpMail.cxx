@@ -4,6 +4,7 @@
 
 #include "QmqpMail.hxx"
 #include "NetstringParser.hxx"
+#include "uri/EmailAddress.hxx"
 
 static inline constexpr std::string_view
 MakeStringView(const char *begin, const char *end)
@@ -24,7 +25,7 @@ QmqpMail::Parse(std::span<const std::byte> __input) noexcept
 	message = _message;
 
 	auto _sender = ParseNetstring(input);
-	if (_sender.data() == nullptr)
+	if (_sender.data() == nullptr || !VerifyEmailAddress(_sender))
 		return false;
 
 	sender = _sender;
@@ -33,7 +34,7 @@ QmqpMail::Parse(std::span<const std::byte> __input) noexcept
 
 	do {
 		auto value = ParseNetstring(input);
-		if (value.data() == nullptr)
+		if (value.data() == nullptr || !VerifyEmailAddress(value))
 			return false;
 
 		recipients.push_back(value);
