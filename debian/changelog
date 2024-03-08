@@ -1,6 +1,7 @@
 cm4all-qrelay (0.29) unstable; urgency=low
 
   * exec: add "timeout" option
+  * network logging (to Pond server)
 
  --   
 

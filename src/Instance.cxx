@@ -3,7 +3,12 @@
 // author: Max Kellermann <mk@cm4all.com>
 
 #include "Instance.hxx"
+#include "lua/net/SocketAddress.hxx"
+#include "net/ConnectSocket.hxx"
 #include "net/SocketConfig.hxx"
+#include "net/AllocatedSocketAddress.hxx"
+#include "net/log/Protocol.hxx"
+#include "util/ScopeExit.hxx"
 
 extern "C" {
 #include <lauxlib.h>
@@ -89,6 +94,20 @@ Instance::Check()
 {
 	if (listeners.empty())
 		throw std::runtime_error("No QMQP listeners configured");
+}
+
+void
+Instance::SetupPondSocket()
+{
+	const auto L = lua_state.get();
+
+	lua_getglobal(L, "pond_server");
+	AtScopeExit(L) { lua_pop(L, 1); };
+	if (lua_isnil(L, -1))
+		return;
+
+	const auto address = Lua::ToSocketAddress(L, -1, Net::Log::DEFAULT_PORT);
+	pond_socket = CreateConnectDatagramSocket(address);
 }
 
 void

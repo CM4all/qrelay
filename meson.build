@@ -110,6 +110,8 @@ subdir('libcommon/src/util')
 subdir('libcommon/src/lib/fmt')
 subdir('libcommon/src/lib/sodium')
 subdir('libcommon/src/uri')
+subdir('libcommon/src/time')
+subdir('libcommon/src/http') # needed by src/net/log
 subdir('libcommon/src/lua')
 subdir('libcommon/src/io')
 subdir('libcommon/src/io/linux')
@@ -117,12 +119,12 @@ subdir('libcommon/src/system')
 subdir('libcommon/src/event')
 subdir('libcommon/src/net')
 subdir('libcommon/src/net/djb')
+subdir('libcommon/src/net/log')
 subdir('libcommon/src/lua/net')
 subdir('libcommon/src/event/net')
 subdir('libcommon/src/event/net/djb')
 subdir('libcommon/src/lua/event')
 subdir('libcommon/src/stock')
-subdir('libcommon/src/time')
 subdir('libcommon/src/lua/io')
 
 if sodium_dep.found()
@@ -181,6 +183,7 @@ executable('cm4all-qrelay',
     pg_dep,
     event_net_dep,
     event_net_djb_dep,
+    net_log_dep,
     fmt_dep,
   ],
   install: true,

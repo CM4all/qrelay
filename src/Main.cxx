@@ -185,6 +185,7 @@ Run(const CommandLine &cmdline)
 	LoadConfigFile(instance.GetLuaState(), cmdline.config_path.c_str());
 
 	instance.Check();
+	instance.SetupPondSocket();
 
 	SetupRuntimeState(instance.GetLuaState());
 

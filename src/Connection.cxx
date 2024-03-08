@@ -13,6 +13,8 @@
 #include "LAction.hxx"
 #include "net/AllocatedSocketAddress.hxx"
 #include "net/UniqueSocketDescriptor.hxx"
+#include "net/log/Datagram.hxx"
+#include "net/log/Send.hxx"
 #include "lua/PushLambda.hxx"
 #include "lua/Util.hxx"
 #include "lua/Error.hxx"
@@ -53,6 +55,21 @@ QmqpRelayConnection::QmqpRelayConnection(Instance &_instance,
 QmqpRelayConnection::~QmqpRelayConnection() noexcept
 {
 	thread.Cancel();
+
+	switch (state) {
+	case State::INIT:
+		/* nothing received yet, don't bother logging this */
+		break;
+
+	case State::LUA:
+	case State::RELAYING:
+		Log("canceled"sv);
+		break;
+
+	case State::END:
+		/* already logged */
+		break;
+	}
 }
 
 void
@@ -65,6 +82,9 @@ QmqpRelayConnection::Register(lua_State *L)
 void
 QmqpRelayConnection::OnRequest(AllocatedArray<std::byte> &&payload)
 {
+	assert(state == State::INIT);
+	state = State::LUA;
+
 	MutableMail mail(std::move(payload));
 	if (!mail.Parse()) {
 		Finish("Dmalformed input"sv);
@@ -185,6 +205,7 @@ void
 QmqpRelayConnection::OnError(std::exception_ptr ep) noexcept
 {
 	logger(1, ep);
+	Log("client error"sv);
 	delete this;
 }
 
@@ -218,12 +239,15 @@ QmqpRelayConnection::OnRelayError(std::string_view response,
 void
 QmqpRelayConnection::OnLuaFinished(lua_State *L) noexcept
 try {
+	assert(state == State::LUA);
+
 	const ScopeCheckStack check_thread_stack(L);
 
 	auto *action = CheckLuaAction(L, -1);
 	if (action == nullptr)
 		throw std::runtime_error("Wrong return type from Lua handler");
 
+	state = State::RELAYING;
 	Do(L, *action, -1);
 } catch (...) {
 	OnLuaError(L, std::current_exception());
@@ -232,13 +256,40 @@ try {
 void
 QmqpRelayConnection::OnLuaError(lua_State *, std::exception_ptr e) noexcept
 {
+	assert(state == State::LUA);
+
 	logger(1, e);
 	Finish("Zscript failed"sv);
 }
 
 void
+QmqpRelayConnection::Log(std::string_view message) noexcept
+{
+	assert(state != State::END);
+	state = State::END;
+
+	const auto &pond_socket = instance.GetPondSocket();
+	if (!pond_socket.IsDefined())
+		/* logging is disabled */
+		return;
+
+	const Net::Log::Datagram d{
+		.timestamp = Net::Log::FromSystem(GetEventLoop().SystemNow()),
+		.message = message,
+		.type = Net::Log::Type::SUBMISSION,
+	};
+
+	Net::Log::Send(pond_socket, d);
+}
+
+void
 QmqpRelayConnection::Finish(std::string_view response) noexcept
 {
+	assert(state != State::INIT && state != State::END);
+
+	if (response.size() > 1)
+		Log(response.substr(1));
+
 	if (SendResponse(response))
 		delete this;
 }

@@ -66,6 +66,11 @@ Global Variables
   avoid consuming too many resources.  The default value is
   ``16777216`` (``16 MiB``).
 
+* ``pond_server`` is the address of the `Pond
+  <https://github.com/CM4all/pond/>`__ server (or a multicast address)
+  that will receive a log datagram for each email that was processed.
+  Use the function `pond_resolve()` to resolve host names.
+
 
 Inspecting Incoming Mail
 ^^^^^^^^^^^^^^^^^^^^^^^^

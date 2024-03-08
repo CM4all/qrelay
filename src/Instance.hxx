@@ -9,6 +9,7 @@
 #include "lua/State.hxx"
 #include "lua/ValuePtr.hxx"
 #include "spawn/ZombieReaper.hxx"
+#include "net/UniqueSocketDescriptor.hxx"
 #include "io/Logger.hxx"
 #include "event/Loop.hxx"
 #include "event/ShutdownListener.hxx"
@@ -35,6 +36,8 @@ class Instance {
 
 	Lua::ReloadRunner reload{lua_state.get()};
 
+	UniqueSocketDescriptor pond_socket;
+
 	std::forward_list<QmqpRelayListener> listeners;
 
 public:
@@ -48,6 +51,10 @@ public:
 
 	lua_State *GetLuaState() {
 		return lua_state.get();
+	}
+
+	SocketDescriptor GetPondSocket() const noexcept {
+		return pond_socket;
 	}
 
 	void AddListener(UniqueSocketDescriptor &&fd,
@@ -67,6 +74,7 @@ public:
 #endif // HAVE_LIBSYSTEMD
 
 	void Check();
+	void SetupPondSocket();
 
 private:
 	void OnShutdown() noexcept;
