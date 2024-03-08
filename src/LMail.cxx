@@ -379,11 +379,13 @@ IncomingMail::NewIndex(lua_State *L)
 	if (IsStale())
 		return luaL_error(L, "Stale object");
 
-	const char *name = luaL_checkstring(L, 2);
+	const char *const name = luaL_checkstring(L, 2);
+	constexpr int value_idx = 3;
+
 	if (StringIsEqual(name, "sender")) {
-		const char *new_value = luaL_checkstring(L, 3);
+		const char *new_value = luaL_checkstring(L, value_idx);
 		if (!VerifyEmailAddress(new_value))
-			luaL_argerror(L, 3, "Malformed email address");
+			luaL_argerror(L, value_idx, "Malformed email address");
 
 		SetSender(new_value);
 		return 0;
