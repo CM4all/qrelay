@@ -312,8 +312,7 @@ QmqpRelayConnection::Finish(std::string_view response) noexcept
 {
 	assert(state != State::INIT && state != State::END);
 
-	if (response.size() > 1)
-		Log(response.substr(1));
+	Log(response.substr(1));
 
 	if (SendResponse(response))
 		delete this;
