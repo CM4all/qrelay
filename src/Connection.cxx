@@ -293,6 +293,23 @@ QmqpRelayConnection::Log(std::string_view message) noexcept
 		/* logging is disabled */
 		return;
 
+	std::string message_buffer =
+		fmt::format("from=<{}> to="sv, mail_ptr->sender);
+	bool comma = false;
+	for (const auto &i : mail_ptr->recipients) {
+		if (comma)
+			message_buffer.push_back(',');
+		comma = true;
+		message_buffer += fmt::format("<{}>"sv, i);
+	}
+
+	if (!message.empty()) {
+		message_buffer.push_back(' ');
+		message_buffer.append(message);
+	}
+
+	message = message_buffer;
+
 	const std::size_t added_header_size = TotalSize(mail_ptr->headers);
 	const uint_least64_t traffic_received = mail_ptr->buffer.size();
 	const uint_least64_t traffic_sent = state >= State::RELAYING
