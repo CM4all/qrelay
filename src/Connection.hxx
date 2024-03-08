@@ -15,6 +15,7 @@
 #include "util/DisposablePointer.hxx"
 #include "util/IntrusiveList.hxx"
 
+#include <cstdint>
 #include <list>
 
 #include <sys/socket.h> // for struct ucred
@@ -70,6 +71,7 @@ class QmqpRelayConnection final :
 	enum class State : uint_least8_t {
 		INIT,
 		LUA,
+		NOT_RELAYING,
 		RELAYING,
 		END
 	} state = State::INIT;

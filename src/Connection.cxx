@@ -64,6 +64,11 @@ QmqpRelayConnection::~QmqpRelayConnection() noexcept
 		Log("canceled"sv);
 		break;
 
+	case State::NOT_RELAYING:
+		/* this should not be reachable because the connection
+		   does not get destructed without calling Log() */
+		break;
+
 	case State::END:
 		/* already logged */
 		break;
@@ -155,22 +160,27 @@ QmqpRelayConnection::Do(const Action &action, const MutableMail &mail)
 		gcc_unreachable();
 
 	case Action::Type::DISCARD:
+		state = State::NOT_RELAYING;
 		Finish("Kdiscarded"sv);
 		break;
 
 	case Action::Type::REJECT:
+		state = State::NOT_RELAYING;
 		Finish("Drejected"sv);
 		break;
 
 	case Action::Type::CONNECT:
+		state = State::RELAYING;
 		DoConnect(action, mail);
 		break;
 
 	case Action::Type::EXEC:
+		state = State::RELAYING;
 		DoExec(action, mail);
 		break;
 
 	case Action::Type::EXEC_RAW:
+		state = State::RELAYING;
 		DoRawExec(action, mail);
 		break;
 	}
@@ -242,7 +252,6 @@ try {
 	if (action == nullptr)
 		throw std::runtime_error("Wrong return type from Lua handler");
 
-	state = State::RELAYING;
 	Do(*action, *mail_ptr);
 } catch (...) {
 	OnLuaError(L, std::current_exception());
@@ -257,25 +266,41 @@ QmqpRelayConnection::OnLuaError(lua_State *, std::exception_ptr e) noexcept
 	Finish("Zscript failed"sv);
 }
 
+[[gnu::pure]]
+static std::size_t
+TotalSize(const std::forward_list<std::string> &list) noexcept
+{
+	std::size_t result = 0;
+	for (const auto &i : list)
+		result += i.size();
+	return result;
+}
+
 void
 QmqpRelayConnection::Log(std::string_view message) noexcept
 {
 	assert(state != State::END);
-	state = State::END;
 
 	const auto &pond_socket = instance.GetPondSocket();
 	if (!pond_socket.IsDefined())
 		/* logging is disabled */
 		return;
 
-	const Net::Log::Datagram d{
+	const uint_least64_t traffic_received = mail_ptr->buffer.size();
+	const uint_least64_t traffic_sent = state >= State::RELAYING
+		? traffic_received + TotalSize(mail_ptr->headers)
+		: 0;
+
+	const auto d = Net::Log::Datagram{
 		.timestamp = Net::Log::FromSystem(GetEventLoop().SystemNow()),
 		.site = mail_ptr->account.empty() ? nullptr : mail_ptr->account.c_str(),
 		.message = message,
 		.type = Net::Log::Type::SUBMISSION,
-	};
+	}.SetTraffic(traffic_received, traffic_sent);
 
 	Net::Log::Send(pond_socket, d);
+
+	state = State::END;
 }
 
 void
