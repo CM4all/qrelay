@@ -36,7 +36,7 @@ class Instance {
 
 	Lua::ReloadRunner reload{lua_state.get()};
 
-	UniqueSocketDescriptor pond_socket;
+	UniqueSocketDescriptor log_socket;
 
 	std::forward_list<QmqpRelayListener> listeners;
 
@@ -53,8 +53,8 @@ public:
 		return lua_state.get();
 	}
 
-	SocketDescriptor GetPondSocket() const noexcept {
-		return pond_socket;
+	SocketDescriptor GetLogSocket() const noexcept {
+		return log_socket;
 	}
 
 	void AddListener(UniqueSocketDescriptor &&fd,
@@ -74,7 +74,7 @@ public:
 #endif // HAVE_LIBSYSTEMD
 
 	void Check();
-	void SetupPondSocket();
+	void SetupLogSocket();
 
 private:
 	void OnShutdown() noexcept;

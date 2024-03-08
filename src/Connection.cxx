@@ -282,8 +282,8 @@ QmqpRelayConnection::Log(std::string_view message) noexcept
 {
 	assert(state != State::END);
 
-	const auto &pond_socket = instance.GetPondSocket();
-	if (!pond_socket.IsDefined())
+	const auto &log_socket = instance.GetLogSocket();
+	if (!log_socket.IsDefined())
 		/* logging is disabled */
 		return;
 
@@ -302,7 +302,7 @@ QmqpRelayConnection::Log(std::string_view message) noexcept
 		.SetLength(mail_ptr->message.size() + added_header_size)
 		.SetDuration(std::chrono::duration_cast<Net::Log::Duration>(GetEventLoop().SteadyNow() - start_time));
 
-	Net::Log::Send(pond_socket, d);
+	Net::Log::Send(log_socket, d);
 
 	state = State::END;
 }

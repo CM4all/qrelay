@@ -19,14 +19,14 @@ RegisterLuaResolver(lua_State *L)
 	Lua::PushResolveFunction(L, hints, 628);
 	lua_setglobal(L, "qmqp_resolve");
 
-	static constexpr auto pond_hints = MakeAddrInfo(AI_ADDRCONFIG, AF_UNSPEC, SOCK_DGRAM);
-	Lua::PushResolveFunction(L, pond_hints, Net::Log::DEFAULT_PORT);
-	lua_setglobal(L, "pond_resolve");
+	static constexpr auto log_hints = MakeAddrInfo(AI_ADDRCONFIG, AF_UNSPEC, SOCK_DGRAM);
+	Lua::PushResolveFunction(L, log_hints, Net::Log::DEFAULT_PORT);
+	lua_setglobal(L, "log_resolve");
 }
 
 void
 UnregisterLuaResolver(lua_State *L)
 {
 	Lua::SetGlobal(L, "qmqp_resolve", nullptr);
-	Lua::SetGlobal(L, "pond_resolve", nullptr);
+	Lua::SetGlobal(L, "log_resolve", nullptr);
 }

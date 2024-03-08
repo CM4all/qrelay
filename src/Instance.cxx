@@ -97,17 +97,17 @@ Instance::Check()
 }
 
 void
-Instance::SetupPondSocket()
+Instance::SetupLogSocket()
 {
 	const auto L = lua_state.get();
 
-	lua_getglobal(L, "pond_server");
+	lua_getglobal(L, "log_server");
 	AtScopeExit(L) { lua_pop(L, 1); };
 	if (lua_isnil(L, -1))
 		return;
 
 	const auto address = Lua::ToSocketAddress(L, -1, Net::Log::DEFAULT_PORT);
-	pond_socket = CreateConnectDatagramSocket(address);
+	log_socket = CreateConnectDatagramSocket(address);
 }
 
 void
