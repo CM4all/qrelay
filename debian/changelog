@@ -6,7 +6,7 @@ cm4all-qrelay (0.29) unstable; urgency=low
   * exec: add "timeout" option
   * network logging (to Pond server)
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Fri, 08 Mar 2024 17:47:36 +0100
 
 cm4all-qrelay (0.28) unstable; urgency=low
 
