@@ -32,6 +32,8 @@ class QmqpRelayConnection final :
 
 	Instance &instance;
 
+	const Event::TimePoint start_time;
+
 	const struct ucred peer_cred;
 
 	const Lua::ValuePtr handler;
@@ -84,6 +86,10 @@ public:
 	~QmqpRelayConnection() noexcept;
 
 	static void Register(lua_State *L);
+
+	auto &GetEventLoop() const noexcept {
+		return relay_timeout.GetEventLoop();
+	}
 
 protected:
 	void DoConnect(const Action &action, const MutableMail &mail);

@@ -45,6 +45,7 @@ QmqpRelayConnection::QmqpRelayConnection(Instance &_instance,
 					 SocketAddress address)
 	:NetstringServer(_instance.GetEventLoop(), std::move(_fd), max_size),
 	 instance(_instance),
+	 start_time(_instance.GetEventLoop().SteadyNow()),
 	 peer_cred(GetSocket().GetPeerCredentials()),
 	 handler(std::move(_handler)),
 	 logger(parent_logger, MakeLoggerDomain(peer_cred, address).c_str()),
@@ -296,7 +297,8 @@ QmqpRelayConnection::Log(std::string_view message) noexcept
 		.site = mail_ptr->account.empty() ? nullptr : mail_ptr->account.c_str(),
 		.message = message,
 		.type = Net::Log::Type::SUBMISSION,
-	}.SetTraffic(traffic_received, traffic_sent);
+	}.SetTraffic(traffic_received, traffic_sent)
+		.SetDuration(std::chrono::duration_cast<Net::Log::Duration>(GetEventLoop().SteadyNow() - start_time));
 
 	Net::Log::Send(pond_socket, d);
 
