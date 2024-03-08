@@ -49,7 +49,9 @@ class QmqpRelayConnection final :
 	 * The #LuaMail that is going to be sent once we've connected to
 	 * the outgoing QMQP server.
 	 */
-	Lua::Ref outgoing_mail;
+	Lua::Ref lua_mail;
+
+	MutableMail *mail_ptr;
 
 	/**
 	 * An instance of the class that actually relays the email,
@@ -83,7 +85,7 @@ protected:
 	void DoConnect(const Action &action, const MutableMail &mail);
 	void DoExec(const Action &action, const MutableMail &mail);
 	void DoRawExec(const Action &action, const MutableMail &mail);
-	void Do(lua_State *L, const Action &action, int action_idx);
+	void Do(const Action &action, const MutableMail &mail);
 	void OnResponse(const void *data, size_t size);
 
 	void OnRequest(AllocatedArray<std::byte> &&payload) override;

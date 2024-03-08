@@ -153,7 +153,7 @@ NewConnectAction(lua_State *L)
 		Lua::RaiseCurrent(L);
 	}
 
-	auto &action = *NewLuaAction(L, 1);
+	auto &action = *NewLuaAction(L);
 	action.type = Action::Type::CONNECT;
 	action.connect = std::move(address);
 	return 1;
@@ -165,7 +165,7 @@ NewDiscardAction(lua_State *L)
 	if (lua_gettop(L) != 1)
 		return luaL_error(L, "Invalid parameters");
 
-	auto &action = *NewLuaAction(L, 1);
+	auto &action = *NewLuaAction(L);
 	action.type = Action::Type::DISCARD;
 	return 1;
 }
@@ -176,7 +176,7 @@ NewRejectAction(lua_State *L)
 	if (lua_gettop(L) != 1)
 		return luaL_error(L, "Invalid parameters");
 
-	auto &action = *NewLuaAction(L, 1);
+	auto &action = *NewLuaAction(L);
 	action.type = Action::Type::REJECT;
 	return 1;
 }
@@ -259,7 +259,7 @@ NewExecAction(lua_State *L)
 	if (top < 2)
 		return luaL_error(L, "Not enough parameters");
 
-	auto &action = *NewLuaAction(L, 1);
+	auto &action = *NewLuaAction(L);
 	action.type = Action::Type::EXEC;
 
 	CollectExec(action, L, top);
@@ -274,7 +274,7 @@ NewExecRawAction(lua_State *L)
 	if (top < 2)
 		return luaL_error(L, "Not enough parameters");
 
-	auto &action = *NewLuaAction(L, 1);
+	auto &action = *NewLuaAction(L);
 	action.type = Action::Type::EXEC_RAW;
 
 	CollectExec(action, L, top);

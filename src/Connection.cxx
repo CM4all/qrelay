@@ -83,7 +83,6 @@ void
 QmqpRelayConnection::OnRequest(AllocatedArray<std::byte> &&payload)
 {
 	assert(state == State::INIT);
-	state = State::LUA;
 
 	MutableMail mail(std::move(payload));
 	if (!mail.Parse()) {
@@ -96,19 +95,13 @@ QmqpRelayConnection::OnRequest(AllocatedArray<std::byte> &&payload)
 
 	handler->Push(L);
 
-	NewLuaMail(L, auto_close,
-		   std::move(mail), peer_cred);
+	mail_ptr = NewLuaMail(L, auto_close,
+			      std::move(mail), peer_cred);
+	lua_mail = {L, Lua::RelativeStackIndex{-1}};
+
+	state = State::LUA;
 
 	Resume(L, 1);
-}
-
-static MutableMail &
-SetActionMail(lua_State *L, Lua::Ref &dest, int action_idx)
-{
-	PushLuaActionMail(L, action_idx);
-	auto &mail = CastLuaMail(L, -1);
-	dest = {L, Pop{}};
-	return mail;
 }
 
 inline void
@@ -154,7 +147,7 @@ QmqpRelayConnection::DoRawExec(const Action &action, const MutableMail &mail)
 }
 
 inline void
-QmqpRelayConnection::Do(lua_State *L, const Action &action, int action_idx)
+QmqpRelayConnection::Do(const Action &action, const MutableMail &mail)
 {
 	switch (action.type) {
 	case Action::Type::UNDEFINED:
@@ -170,15 +163,15 @@ QmqpRelayConnection::Do(lua_State *L, const Action &action, int action_idx)
 		break;
 
 	case Action::Type::CONNECT:
-		DoConnect(action, SetActionMail(L, outgoing_mail, action_idx));
+		DoConnect(action, mail);
 		break;
 
 	case Action::Type::EXEC:
-		DoExec(action, SetActionMail(L, outgoing_mail, action_idx));
+		DoExec(action, mail);
 		break;
 
 	case Action::Type::EXEC_RAW:
-		DoRawExec(action, SetActionMail(L, outgoing_mail, action_idx));
+		DoRawExec(action, mail);
 		break;
 	}
 }
@@ -250,7 +243,7 @@ try {
 		throw std::runtime_error("Wrong return type from Lua handler");
 
 	state = State::RELAYING;
-	Do(L, *action, -1);
+	Do(*action, *mail_ptr);
 } catch (...) {
 	OnLuaError(L, std::current_exception());
 }
