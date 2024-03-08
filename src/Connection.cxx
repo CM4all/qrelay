@@ -287,9 +287,10 @@ QmqpRelayConnection::Log(std::string_view message) noexcept
 		/* logging is disabled */
 		return;
 
+	const std::size_t added_header_size = TotalSize(mail_ptr->headers);
 	const uint_least64_t traffic_received = mail_ptr->buffer.size();
 	const uint_least64_t traffic_sent = state >= State::RELAYING
-		? traffic_received + TotalSize(mail_ptr->headers)
+		? traffic_received + added_header_size
 		: 0;
 
 	const auto d = Net::Log::Datagram{
@@ -298,6 +299,7 @@ QmqpRelayConnection::Log(std::string_view message) noexcept
 		.message = message,
 		.type = Net::Log::Type::SUBMISSION,
 	}.SetTraffic(traffic_received, traffic_sent)
+		.SetLength(mail_ptr->message.size() + added_header_size)
 		.SetDuration(std::chrono::duration_cast<Net::Log::Duration>(GetEventLoop().SteadyNow() - start_time));
 
 	Net::Log::Send(pond_socket, d);
