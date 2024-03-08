@@ -67,8 +67,7 @@ QmqpRelayConnection::OnRequest(AllocatedArray<std::byte> &&payload)
 {
 	MutableMail mail(std::move(payload));
 	if (!mail.Parse()) {
-		if (SendResponse("Dmalformed input"sv))
-			delete this;
+		Finish("Dmalformed input"sv);
 		return;
 	}
 
@@ -143,13 +142,11 @@ QmqpRelayConnection::Do(lua_State *L, const Action &action, int action_idx)
 		gcc_unreachable();
 
 	case Action::Type::DISCARD:
-		if (SendResponse("Kdiscarded"sv))
-			delete this;
+		Finish("Kdiscarded"sv);
 		break;
 
 	case Action::Type::REJECT:
-		if (SendResponse("Drejected"sv))
-			delete this;
+		Finish("Drejected"sv);
 		break;
 
 	case Action::Type::CONNECT:
@@ -201,16 +198,13 @@ void
 QmqpRelayConnection::OnRelayTimeout() noexcept
 {
 	logger(1, "timeout");
-
-	if (SendResponse("Ztimeout"sv))
-		delete this;
+	Finish("Ztimeout"sv);
 }
 
 void
 QmqpRelayConnection::OnRelayResponse(std::string_view response) noexcept
 {
-	if (SendResponse(response))
-		delete this;
+	Finish(response);
 }
 
 void
@@ -218,8 +212,7 @@ QmqpRelayConnection::OnRelayError(std::string_view response,
 				  std::exception_ptr error) noexcept
 {
 	logger(1, error);
-	if (SendResponse(response))
-		delete this;
+	Finish(response);
 }
 
 void
@@ -240,7 +233,12 @@ void
 QmqpRelayConnection::OnLuaError(lua_State *, std::exception_ptr e) noexcept
 {
 	logger(1, e);
+	Finish("Zscript failed"sv);
+}
 
-	if (SendResponse("Zscript failed"sv))
+void
+QmqpRelayConnection::Finish(std::string_view response) noexcept
+{
+	if (SendResponse(response))
 		delete this;
 }

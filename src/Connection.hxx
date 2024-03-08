@@ -94,6 +94,11 @@ private:
 
 	void OnRelayTimeout() noexcept;
 
+	/**
+	 * Send the response and destroy the connection.
+	 */
+	void Finish(std::string_view response) noexcept;
+
 	/* virtual methods from class RelayHandler */
 	void OnRelayResponse(std::string_view response) noexcept override;
 	void OnRelayError(std::string_view response,
