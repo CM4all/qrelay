@@ -54,8 +54,6 @@ QmqpRelayConnection::QmqpRelayConnection(Instance &_instance,
 
 QmqpRelayConnection::~QmqpRelayConnection() noexcept
 {
-	thread.Cancel();
-
 	switch (state) {
 	case State::INIT:
 		/* nothing received yet, don't bother logging this */
@@ -70,6 +68,8 @@ QmqpRelayConnection::~QmqpRelayConnection() noexcept
 		/* already logged */
 		break;
 	}
+
+	thread.Cancel();
 }
 
 void
