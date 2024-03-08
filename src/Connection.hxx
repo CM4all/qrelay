@@ -21,12 +21,15 @@
 
 struct MutableMail;
 struct Action;
+class Instance;
 
 class QmqpRelayConnection final :
 	public AutoUnlinkIntrusiveListHook,
 	public NetstringServer,
 	Lua::ResumeListener,
 	RelayHandler {
+
+	Instance &instance;
 
 	const struct ucred peer_cred;
 
@@ -60,9 +63,9 @@ class QmqpRelayConnection final :
 	CoarseTimerEvent relay_timeout;
 
 public:
-	QmqpRelayConnection(size_t max_size, Lua::ValuePtr _handler,
+	QmqpRelayConnection(Instance &_instance,
+			    size_t max_size, Lua::ValuePtr _handler,
 			    const RootLogger &parent_logger,
-			    EventLoop &event_loop,
 			    UniqueSocketDescriptor &&_fd, SocketAddress address);
 	~QmqpRelayConnection() noexcept;
 

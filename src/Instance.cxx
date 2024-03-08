@@ -31,8 +31,8 @@ Instance::AddListener(UniqueSocketDescriptor &&fd,
 		      size_t max_size,
 		      Lua::ValuePtr &&handler) noexcept
 {
-	listeners.emplace_front(event_loop, max_size, std::move(handler),
-				logger, event_loop);
+	listeners.emplace_front(event_loop, *this, max_size, std::move(handler),
+				logger);
 	listeners.front().Listen(std::move(fd));
 }
 

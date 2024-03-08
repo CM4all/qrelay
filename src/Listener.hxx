@@ -11,5 +11,5 @@
 
 using QmqpRelayListener =
 	TemplateServerSocket<QmqpRelayConnection,
-			     size_t, Lua::ValuePtr,
-			     RootLogger, EventLoop &>;
+			     Instance &, std::size_t, Lua::ValuePtr,
+			     RootLogger>;

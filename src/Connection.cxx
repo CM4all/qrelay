@@ -3,6 +3,7 @@
 // author: Max Kellermann <mk@cm4all.com>
 
 #include "Connection.hxx"
+#include "Instance.hxx"
 #include "RemoteRelay.hxx"
 #include "ExecRelay.hxx"
 #include "RawExecRelay.hxx"
@@ -34,19 +35,20 @@ MakeLoggerDomain(const struct ucred &cred, SocketAddress)
 	return fmt::format("pid={} uid={}", cred.pid, cred.uid);
 }
 
-QmqpRelayConnection::QmqpRelayConnection(size_t max_size,
+QmqpRelayConnection::QmqpRelayConnection(Instance &_instance,
+					 size_t max_size,
 					 Lua::ValuePtr _handler,
 					 const RootLogger &parent_logger,
-					 EventLoop &event_loop,
 					 UniqueSocketDescriptor &&_fd,
 					 SocketAddress address)
-	:NetstringServer(event_loop, std::move(_fd), max_size),
+	:NetstringServer(_instance.GetEventLoop(), std::move(_fd), max_size),
+	 instance(_instance),
 	 peer_cred(GetSocket().GetPeerCredentials()),
 	 handler(std::move(_handler)),
 	 logger(parent_logger, MakeLoggerDomain(peer_cred, address).c_str()),
 	 auto_close(handler->GetState()),
 	 thread(handler->GetState()),
-	 relay_timeout(event_loop, BIND_THIS_METHOD(OnRelayTimeout)) {}
+	 relay_timeout(_instance.GetEventLoop(), BIND_THIS_METHOD(OnRelayTimeout)) {}
 
 QmqpRelayConnection::~QmqpRelayConnection() noexcept
 {
