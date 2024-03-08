@@ -14,7 +14,7 @@ extern "C" {
 void
 RegisterLuaResolver(lua_State *L)
 {
-	static constexpr auto hints = MakeAddrInfo(0, AF_UNSPEC, SOCK_STREAM);
+	static constexpr auto hints = MakeAddrInfo(AI_ADDRCONFIG, AF_UNSPEC, SOCK_STREAM);
 	Lua::PushResolveFunction(L, hints, 628);
 	lua_setglobal(L, "qmqp_resolve");
 }
