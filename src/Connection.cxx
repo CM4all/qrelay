@@ -205,7 +205,9 @@ void
 QmqpRelayConnection::OnError(std::exception_ptr ep) noexcept
 {
 	logger(1, ep);
-	Log("client error"sv);
+
+	if (state > State::INIT)
+		Log("client error"sv);
 	delete this;
 }
 
