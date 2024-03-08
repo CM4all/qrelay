@@ -4,51 +4,19 @@
 
 #include "LResolver.hxx"
 #include "lua/Util.hxx"
-#include "lua/Error.hxx"
-#include "lua/net/SocketAddress.hxx"
-#include "net/Resolver.hxx"
+#include "lua/net/Resolver.hxx"
 #include "net/AddressInfo.hxx"
-#include "net/AllocatedSocketAddress.hxx"
 
 extern "C" {
-#include <lauxlib.h>
-}
-
-#include <string.h>
-
-static int
-l_qmqp_resolve(lua_State *L)
-{
-	if (lua_gettop(L) != 1)
-		return luaL_error(L, "Invalid parameter count");
-
-	const char *s = luaL_checkstring(L, 1);
-
-	if (*s == '/' || *s == '@') {
-		AllocatedSocketAddress address;
-		address.SetLocal(s);
-		Lua::NewSocketAddress(L, std::move(address));
-		return 1;
-	}
-
-	static constexpr auto hints = MakeAddrInfo(0, AF_UNSPEC, SOCK_STREAM);
-
-	AddressInfoList ai;
-
-	try {
-		ai = Resolve(s, 628, &hints);
-	} catch (...) {
-		Lua::RaiseCurrent(L);
-	}
-
-	Lua::NewSocketAddress(L, std::move(ai.GetBest()));
-	return 1;
+#include <lua.h>
 }
 
 void
 RegisterLuaResolver(lua_State *L)
 {
-	Lua::SetGlobal(L, "qmqp_resolve", l_qmqp_resolve);
+	static constexpr auto hints = MakeAddrInfo(0, AF_UNSPEC, SOCK_STREAM);
+	Lua::PushResolveFunction(L, hints, 628);
+	lua_setglobal(L, "qmqp_resolve");
 }
 
 void
