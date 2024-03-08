@@ -45,7 +45,8 @@ QmqpRelayConnection::QmqpRelayConnection(size_t max_size,
 	 handler(std::move(_handler)),
 	 logger(parent_logger, MakeLoggerDomain(peer_cred, address).c_str()),
 	 auto_close(handler->GetState()),
-	 thread(handler->GetState()) {}
+	 thread(handler->GetState()),
+	 relay_timeout(event_loop, BIND_THIS_METHOD(OnRelayTimeout)) {}
 
 QmqpRelayConnection::~QmqpRelayConnection() noexcept
 {
@@ -92,6 +93,9 @@ SetActionMail(lua_State *L, Lua::Ref &dest, int action_idx)
 inline void
 QmqpRelayConnection::DoConnect(const Action &action, const MutableMail &mail)
 {
+	if (action.timeout.count() > 0)
+		relay_timeout.Schedule(action.timeout);
+
 	auto *relay = new RemoteRelay(GetEventLoop(),
 				      mail, AssembleHeaders(mail),
 				      *this);
@@ -103,6 +107,9 @@ QmqpRelayConnection::DoConnect(const Action &action, const MutableMail &mail)
 inline void
 QmqpRelayConnection::DoExec(const Action &action, const MutableMail &mail)
 {
+	if (action.timeout.count() > 0)
+		relay_timeout.Schedule(action.timeout);
+
 	auto *relay = new ExecRelay(GetEventLoop(),
 				    mail, AssembleHeaders(mail),
 				    *this);
@@ -114,6 +121,9 @@ QmqpRelayConnection::DoExec(const Action &action, const MutableMail &mail)
 inline void
 QmqpRelayConnection::DoRawExec(const Action &action, const MutableMail &mail)
 {
+	if (action.timeout.count() > 0)
+		relay_timeout.Schedule(action.timeout);
+
 	auto *relay = new RawExecRelay(GetEventLoop(),
 				       mail, AssembleHeaders(mail),
 				       *this);
@@ -183,6 +193,15 @@ void
 QmqpRelayConnection::OnDisconnect() noexcept
 {
 	delete this;
+}
+
+void
+QmqpRelayConnection::OnRelayTimeout() noexcept
+{
+	logger(1, "timeout");
+
+	if (SendResponse("Ztimeout"sv))
+		delete this;
 }
 
 void

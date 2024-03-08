@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "event/Chrono.hxx"
 #include "net/AllocatedSocketAddress.hxx"
 #include "util/StaticVector.hxx"
 
@@ -53,6 +54,8 @@ struct Action {
 	 * Environment variables for #EXEC and #EXEC_RAW.
 	 */
 	StaticVector<std::string, MAX_ENV> env;
+
+	Event::Duration timeout{-1};
 
 	bool IsDefined() const {
 		return type != Type::UNDEFINED;

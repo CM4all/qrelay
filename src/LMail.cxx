@@ -29,6 +29,8 @@ extern "C" {
 
 #include <fmt/core.h>
 
+#include <cmath> // for std::isnormal()
+
 #include <sys/socket.h>
 #include <string.h>
 
@@ -215,7 +217,16 @@ CollectExecOptions(Action &action, lua_State *L, Lua::AnyStackIndex auto idx)
 		const auto key = Lua::ToStringView(L, Lua::GetStackIndex(key_idx));
 		if (key == "env"sv)
 			CollectExecEnv(action, L, value_idx);
-		else
+		else if (key == "timeout"sv) {
+			if (!lua_isnumber(L, Lua::GetStackIndex(value_idx)))
+				luaL_error(L, "Timeout is not a number");
+
+			const auto seconds = lua_tonumber(L, Lua::GetStackIndex(value_idx));
+			if (!std::isnormal(seconds) || seconds <= 0 || seconds > 3600)
+				luaL_error(L, "Bad timeout value");
+
+			action.timeout = std::chrono::duration_cast<Event::Duration>(std::chrono::duration<lua_Number>{seconds});
+		} else
 			luaL_error(L, "Unknown option");
 	});
 }

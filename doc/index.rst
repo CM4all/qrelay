@@ -127,6 +127,7 @@ The following actions are possible:
   The last parameter may be a table specifying options:
 
   - ``env``: a table with environment variables for the child process.
+  - ``timeout``: cancel the submission after this number of seconds.
 
 * :samp:`exec_raw("PROGRAM", "ARG", ...)`: Execute the program and
   submit the raw email message (headers and body, but no envelope) on
