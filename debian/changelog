@@ -2,6 +2,7 @@ cm4all-qrelay (0.29) unstable; urgency=low
 
   * validate all envelope addresses syntactically
   * lua: add field "account"
+  * lua: fix crash if environment variables are not strings
   * exec: add "timeout" option
   * network logging (to Pond server)
 

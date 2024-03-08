@@ -192,9 +192,9 @@ CollectExecEnv(Action &action, lua_State *L, Lua::AnyStackIndex auto idx)
 		if (action.exec.full())
 			luaL_error(L, "Too many environment variables");
 
-		if (!lua_isstring(L, Lua::GetStackIndex(name_idx)))
+		if (lua_type(L, Lua::GetStackIndex(name_idx)) != LUA_TSTRING)
 			luaL_error(L, "Environment name is not a string");
-		if (!lua_isstring(L, Lua::GetStackIndex(value_idx)))
+		if (lua_type(L, Lua::GetStackIndex(value_idx)) != LUA_TSTRING)
 			luaL_error(L, "Environment value is not a string");
 
 		const auto name = Lua::ToStringView(L, Lua::GetStackIndex(name_idx));
@@ -211,7 +211,7 @@ static void
 CollectExecOptions(Action &action, lua_State *L, Lua::AnyStackIndex auto idx)
 {
 	Lua::ForEach(L, idx, [L, &action](auto key_idx, auto value_idx){
-		if (!lua_isstring(L, Lua::GetStackIndex(key_idx)))
+		if (lua_type(L, Lua::GetStackIndex(key_idx)) != LUA_TSTRING)
 			luaL_error(L, "Option key is not a string");
 
 		const auto key = Lua::ToStringView(L, Lua::GetStackIndex(key_idx));

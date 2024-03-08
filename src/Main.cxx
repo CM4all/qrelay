@@ -91,7 +91,7 @@ try {
 
 	auto handler = std::make_shared<Lua::Value>(L, Lua::StackIndex(2));
 
-	if (lua_isstring(L, 1)) {
+	if (lua_type(L, 1) == LUA_TSTRING) {
 		const char *address_string = lua_tostring(L, 1);
 
 		AllocatedSocketAddress address;
