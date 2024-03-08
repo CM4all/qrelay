@@ -72,6 +72,7 @@ class QmqpRelayConnection final :
 	// only used for logging
 	enum class State : uint_least8_t {
 		INIT,
+		RECEIVED,
 		LUA,
 		NOT_RELAYING,
 		RELAYING,

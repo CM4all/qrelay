@@ -60,6 +60,11 @@ QmqpRelayConnection::~QmqpRelayConnection() noexcept
 		/* nothing received yet, don't bother logging this */
 		break;
 
+	case State::RECEIVED:
+		/* we received something, but maybe it's malformed, so
+		   can't log it */
+		break;
+
 	case State::LUA:
 	case State::RELAYING:
 		Log("canceled"sv);
@@ -89,6 +94,7 @@ void
 QmqpRelayConnection::OnRequest(AllocatedArray<std::byte> &&payload)
 {
 	assert(state == State::INIT);
+	state = State::RECEIVED;
 
 	MutableMail mail(std::move(payload));
 	if (!mail.Parse()) {
@@ -312,7 +318,8 @@ QmqpRelayConnection::Finish(std::string_view response) noexcept
 {
 	assert(state != State::INIT && state != State::END);
 
-	Log(response.substr(1));
+	if (state != State::RECEIVED)
+		Log(response.substr(1));
 
 	if (SendResponse(response))
 		delete this;
