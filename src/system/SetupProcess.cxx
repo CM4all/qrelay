@@ -5,11 +5,10 @@
 #include "SetupProcess.hxx"
 
 #include <sys/signal.h>
-#include <sys/prctl.h>
 #include <pthread.h>
 
 void
-SetupProcess()
+SetupProcess() noexcept
 {
 	signal(SIGPIPE, SIG_IGN);
 
