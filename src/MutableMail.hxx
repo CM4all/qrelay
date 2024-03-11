@@ -44,6 +44,17 @@ struct MutableMail : QmqpMail {
 	explicit MutableMail(AllocatedArray<std::byte> &&_buffer)
 		:buffer(_buffer) {}
 
+	/**
+	 * Clear this object and free all C++ heap allocations.
+	 */
+	void Free() noexcept {
+		*static_cast<QmqpMail *>(this) = {};
+		buffer = nullptr;
+		sender_buffer.clear();
+		headers.clear();
+		account.clear();
+	}
+
 	bool Parse() {
 		return QmqpMail::Parse({(const std::byte *)buffer.data(), buffer.size()});
 	}

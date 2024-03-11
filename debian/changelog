@@ -1,5 +1,6 @@
 cm4all-qrelay (0.30) unstable; urgency=low
 
+  * free memory immediately after email has been processed
   * catch logging errors
 
  --   

@@ -64,6 +64,7 @@ public:
 
 	int Close(lua_State *) {
 		auto_close = nullptr;
+		Free();
 		return 0;
 	}
 
