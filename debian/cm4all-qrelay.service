@@ -21,8 +21,8 @@ CPUSchedulingPolicy=batch
 TimerSlackNSec=10ms
 
 # Resource limits
-MemoryMax=1G
-TasksMax=16
+MemoryMax=4G
+TasksMax=1024
 LimitNOFILE=16384
 
 # Paranoid security settings
