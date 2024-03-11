@@ -325,7 +325,11 @@ QmqpRelayConnection::Log(std::string_view message) noexcept
 		.SetLength(mail_ptr->message.size() + added_header_size)
 		.SetDuration(std::chrono::duration_cast<Net::Log::Duration>(GetEventLoop().SteadyNow() - start_time));
 
-	Net::Log::Send(log_socket, d);
+	try {
+		Net::Log::Send(log_socket, d);
+	} catch (...) {
+		PrintException(std::current_exception());
+	}
 
 	state = State::END;
 }

@@ -1,6 +1,6 @@
 cm4all-qrelay (0.30) unstable; urgency=low
 
-  * 
+  * catch logging errors
 
  --   
 
