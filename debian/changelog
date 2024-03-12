@@ -4,7 +4,7 @@ cm4all-qrelay (0.30) unstable; urgency=low
   * catch logging errors
   * systemd: increase MemoryMax and TasksMax
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Tue, 12 Mar 2024 13:35:27 +0100
 
 cm4all-qrelay (0.29) unstable; urgency=low
 
