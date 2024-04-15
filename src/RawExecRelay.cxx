@@ -9,7 +9,7 @@
 #include "djb/QmqpMail.hxx"
 #include "lib/fmt/RuntimeError.hxx"
 #include "system/Error.hxx"
-#include "system/PidFD.h"
+#include "system/linux/PidFD.h"
 #include "io/Pipe.hxx"
 #include "io/UniqueFileDescriptor.hxx"
 #include "util/ScopeExit.hxx"
