@@ -1,6 +1,6 @@
 cm4all-qrelay (0.31) unstable; urgency=low
 
-  * 
+  * require libfmt 9
 
  --   
 
