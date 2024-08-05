@@ -3,7 +3,7 @@ cm4all-qrelay (0.31) unstable; urgency=low
   * pg: fix assertion failure
   * require libfmt 9
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Mon, 05 Aug 2024 19:17:03 +0200
 
 cm4all-qrelay (0.30) unstable; urgency=low
 
