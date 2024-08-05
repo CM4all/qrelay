@@ -1,5 +1,6 @@
 cm4all-qrelay (0.31) unstable; urgency=low
 
+  * pg: fix assertion failure
   * require libfmt 9
 
  --   
