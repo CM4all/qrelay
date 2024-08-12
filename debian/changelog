@@ -1,6 +1,6 @@
 cm4all-qrelay (0.32) unstable; urgency=low
 
-  * 
+  * pg: fix 0.31 regression
 
  --   
 
