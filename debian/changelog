@@ -2,7 +2,7 @@ cm4all-qrelay (0.32) unstable; urgency=low
 
   * pg: fix 0.31 regression
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Mon, 12 Aug 2024 15:01:24 +0200
 
 cm4all-qrelay (0.31) unstable; urgency=low
 
