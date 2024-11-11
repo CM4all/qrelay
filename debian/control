@@ -3,7 +3,7 @@ Section: mail
 Priority: extra
 Maintainer: Max Kellermann <mk@cm4all.com>
 Build-Depends: debhelper (>= 13.3~),
- meson (>= 0.56),
+ meson (>= 1.0),
  g++ (>= 4:8),
  libc6-dev (>= 2.13),
  libfmt-dev (>= 9),
