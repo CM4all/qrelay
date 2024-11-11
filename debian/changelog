@@ -1,6 +1,6 @@
 cm4all-qrelay (0.33) unstable; urgency=low
 
-  * 
+  * pg: support integer parameters
 
  --   
 
