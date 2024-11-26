@@ -4,7 +4,7 @@ cm4all-qrelay (0.33) unstable; urgency=low
   * fix buffer overflow in netstring header parser
   * pg: support integer parameters
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Tue, 26 Nov 2024 08:43:50 +0100
 
 cm4all-qrelay (0.32) unstable; urgency=low
 
