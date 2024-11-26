@@ -1,5 +1,6 @@
 cm4all-qrelay (0.33) unstable; urgency=low
 
+  * use pidfd to avoid PID recycling races
   * pg: support integer parameters
 
  --   

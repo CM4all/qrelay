@@ -12,13 +12,12 @@
 #include "lua/Resume.hxx"
 #include "lua/ValuePtr.hxx"
 #include "lua/CoRunner.hxx"
+#include "net/linux/PeerAuth.hxx"
 #include "util/DisposablePointer.hxx"
 #include "util/IntrusiveList.hxx"
 
 #include <cstdint>
 #include <list>
-
-#include <sys/socket.h> // for struct ucred
 
 struct MutableMail;
 struct Action;
@@ -34,7 +33,7 @@ class QmqpRelayConnection final :
 
 	const Event::TimePoint start_time;
 
-	const struct ucred peer_cred;
+	const SocketPeerAuth peer_auth;
 
 	const Lua::ValuePtr handler;
 	ChildLogger logger;

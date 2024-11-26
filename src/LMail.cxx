@@ -14,6 +14,7 @@
 #include "lua/StringView.hxx"
 #include "lua/io/CgroupInfo.hxx"
 #include "lua/net/SocketAddress.hxx"
+#include "net/linux/PeerAuth.hxx"
 #include "uri/EmailAddress.hxx"
 #include "util/StringAPI.hxx"
 #include "util/StringCompare.hxx"
@@ -21,7 +22,6 @@
 #include "io/FileAt.hxx"
 #include "io/Open.hxx"
 #include "io/UniqueFileDescriptor.hxx"
-#include "io/linux/ProcCgroup.hxx"
 
 extern "C" {
 #include <lauxlib.h>
@@ -39,14 +39,14 @@ using std::string_view_literals::operator""sv;
 class IncomingMail : public MutableMail {
 	Lua::AutoCloseList *auto_close;
 
-	const struct ucred cred;
+	const SocketPeerAuth &peer_auth;
 
 public:
 	IncomingMail(lua_State *L, Lua::AutoCloseList &_auto_close,
-		     MutableMail &&src, const struct ucred &_peer_cred)
+		     MutableMail &&src, const SocketPeerAuth &_peer_auth)
 		:MutableMail(std::move(src)),
 		 auto_close(&_auto_close),
-		 cred(_peer_cred)
+		 peer_auth(_peer_auth)
 	{
 		auto_close->Add(L, Lua::RelativeStackIndex{-1});
 
@@ -56,10 +56,6 @@ public:
 
 	bool IsStale() const noexcept {
 		return auto_close == nullptr;
-	}
-
-	bool HavePeerCred() const noexcept {
-		return cred.pid >= 0;
 	}
 
 	int Close(lua_State *) {
@@ -336,34 +332,25 @@ IncomingMail::Index(lua_State *L)
 		PushArray(L, recipients);
 		return 1;
 	} else if (StringIsEqual(name, "pid")) {
-		if (!HavePeerCred())
+		if (!peer_auth.HaveCred())
 			return 0;
 
-		Lua::Push(L, static_cast<lua_Integer>(cred.pid));
+		Lua::Push(L, static_cast<lua_Integer>(peer_auth.GetPid()));
 		return 1;
 	} else if (StringIsEqual(name, "uid")) {
-		if (!HavePeerCred())
+		if (!peer_auth.HaveCred())
 			return 0;
 
-		Lua::Push(L, static_cast<lua_Integer>(cred.uid));
+		Lua::Push(L, static_cast<lua_Integer>(peer_auth.GetUid()));
 		return 1;
 	} else if (StringIsEqual(name, "gid")) {
-		if (!HavePeerCred())
+		if (!peer_auth.HaveCred())
 			return 0;
 
-		Lua::Push(L, static_cast<lua_Integer>(cred.gid));
-		return 1;
-	} else if (StringIsEqual(name, "account")) {
-		if (!account.empty())
-			Lua::Push(L, account);
-		else
-			lua_pushnil(L);
+		Lua::Push(L, static_cast<lua_Integer>(peer_auth.GetGid()));
 		return 1;
 	} else if (StringIsEqual(name, "cgroup")) {
-		if (!HavePeerCred())
-			return 0;
-
-		const auto path = ReadProcessCgroup(cred.pid);
+		const auto path = peer_auth.GetCgroupPath();
 		if (path.empty())
 			return 0;
 
@@ -427,9 +414,9 @@ RegisterLuaMail(lua_State *L)
 MutableMail *
 NewLuaMail(lua_State *L,
 	   Lua::AutoCloseList &auto_close,
-	   MutableMail &&src, const struct ucred &peer_cred)
+	   MutableMail &&src, const SocketPeerAuth &peer_auth)
 {
-	return LuaMail::New(L, L, auto_close, std::move(src), peer_cred);
+	return LuaMail::New(L, L, auto_close, std::move(src), peer_auth);
 }
 
 MutableMail &

@@ -121,6 +121,7 @@ subdir('libcommon/src/system')
 subdir('libcommon/src/event')
 subdir('libcommon/src/net')
 subdir('libcommon/src/net/djb')
+subdir('libcommon/src/net/linux')
 subdir('libcommon/src/net/log')
 subdir('libcommon/src/lua/net')
 subdir('libcommon/src/event/net')
@@ -186,6 +187,7 @@ executable('cm4all-qrelay',
     event_net_dep,
     event_net_djb_dep,
     net_log_dep,
+    net_linux_dep,
     fmt_dep,
   ],
   install: true,

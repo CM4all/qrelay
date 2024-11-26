@@ -29,12 +29,12 @@ using std::string_view_literals::operator""sv;
 using namespace Lua;
 
 static std::string
-MakeLoggerDomain(const struct ucred &cred, SocketAddress)
+MakeLoggerDomain(const SocketPeerAuth &auth, SocketAddress)
 {
-	if (cred.pid < 0)
+	if (!auth.HaveCred())
 		return "connection";
 
-	return fmt::format("pid={} uid={}", cred.pid, cred.uid);
+	return fmt::format("pid={} uid={}", auth.GetPid(), auth.GetUid());
 }
 
 QmqpRelayConnection::QmqpRelayConnection(Instance &_instance,
@@ -46,9 +46,9 @@ QmqpRelayConnection::QmqpRelayConnection(Instance &_instance,
 	:NetstringServer(_instance.GetEventLoop(), std::move(_fd), max_size),
 	 instance(_instance),
 	 start_time(_instance.GetEventLoop().SteadyNow()),
-	 peer_cred(GetSocket().GetPeerCredentials()),
+	 peer_auth(GetSocket()),
 	 handler(std::move(_handler)),
-	 logger(parent_logger, MakeLoggerDomain(peer_cred, address).c_str()),
+	 logger(parent_logger, MakeLoggerDomain(peer_auth, address).c_str()),
 	 auto_close(handler->GetState()),
 	 thread(handler->GetState()),
 	 relay_timeout(_instance.GetEventLoop(), BIND_THIS_METHOD(OnRelayTimeout)) {}
@@ -108,7 +108,7 @@ QmqpRelayConnection::OnRequest(AllocatedArray<std::byte> &&payload)
 	handler->Push(L);
 
 	mail_ptr = NewLuaMail(L, auto_close,
-			      std::move(mail), peer_cred);
+			      std::move(mail), peer_auth);
 	lua_mail = {L, Lua::RelativeStackIndex{-1}};
 
 	state = State::LUA;
@@ -198,10 +198,10 @@ QmqpRelayConnection::AssembleHeaders(const MutableMail &mail) noexcept
 {
 	std::list<std::span<const std::byte>> list;
 
-	if (peer_cred.pid >= 0) {
+	if (peer_auth.HaveCred()) {
 		char *end = fmt::format_to(received_buffer,
 					   "Received: from PID={} UID={} with QMQP\r\n",
-					   peer_cred.pid, peer_cred.uid);
+					   peer_auth.GetPid(), peer_auth.GetUid());
 		list.emplace_front(AsBytes(std::string_view{received_buffer, end}));
 	}
 

@@ -6,9 +6,9 @@
 
 #include <string_view>
 
-struct ucred;
 struct lua_State;
 struct MutableMail;
+class SocketPeerAuth;
 namespace Lua { class AutoCloseList; }
 
 void
@@ -20,7 +20,7 @@ RegisterLuaMail(lua_State *L);
 MutableMail *
 NewLuaMail(lua_State *L,
 	   Lua::AutoCloseList &auto_close,
-	   MutableMail &&src, const struct ucred &peer_cred);
+	   MutableMail &&src, const SocketPeerAuth &peer_auth);
 
 MutableMail &
 CastLuaMail(lua_State *L, int idx);
