@@ -1,6 +1,7 @@
 cm4all-qrelay (0.33) unstable; urgency=low
 
   * use pidfd to avoid PID recycling races
+  * fix buffer overflow in netstring header parser
   * pg: support integer parameters
 
  --   
