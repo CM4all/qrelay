@@ -319,7 +319,7 @@ IncomingMail::Index(lua_State *L)
 		return luaL_error(L, "Stale object");
 
 	for (const auto *i = mail_methods; i->name != nullptr; ++i) {
-		if (strcmp(i->name, name) == 0) {
+		if (StringIsEqual(i->name, name)) {
 			Lua::Push(L, i->func);
 			return 1;
 		}
@@ -329,25 +329,25 @@ IncomingMail::Index(lua_State *L)
 	if (Lua::GetFenvCache(L, 1, name_idx))
 		return 1;
 
-	if (strcmp(name, "sender") == 0) {
+	if (StringIsEqual(name, "sender")) {
 		Lua::Push(L, sender);
 		return 1;
-	} else if (strcmp(name, "recipients") == 0) {
+	} else if (StringIsEqual(name, "recipients")) {
 		PushArray(L, recipients);
 		return 1;
-	} else if (strcmp(name, "pid") == 0) {
+	} else if (StringIsEqual(name, "pid")) {
 		if (!HavePeerCred())
 			return 0;
 
 		Lua::Push(L, static_cast<lua_Integer>(cred.pid));
 		return 1;
-	} else if (strcmp(name, "uid") == 0) {
+	} else if (StringIsEqual(name, "uid")) {
 		if (!HavePeerCred())
 			return 0;
 
 		Lua::Push(L, static_cast<lua_Integer>(cred.uid));
 		return 1;
-	} else if (strcmp(name, "gid") == 0) {
+	} else if (StringIsEqual(name, "gid")) {
 		if (!HavePeerCred())
 			return 0;
 
