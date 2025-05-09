@@ -1,6 +1,6 @@
 cm4all-qrelay (0.34) unstable; urgency=low
 
-  * 
+  * debian: add missing build-dependency on pkg-config
 
  --   
 
