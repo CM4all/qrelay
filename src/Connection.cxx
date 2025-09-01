@@ -20,7 +20,6 @@
 #include "lua/Error.hxx"
 #include "util/ScopeExit.hxx"
 #include "util/SpanCast.hxx"
-#include "util/Compiler.h"
 
 #include <fmt/format.h>
 
@@ -164,7 +163,7 @@ QmqpRelayConnection::Do(const Action &action, const MutableMail &mail)
 	switch (action.type) {
 	case Action::Type::UNDEFINED:
 		assert(false);
-		gcc_unreachable();
+		std::unreachable();
 
 	case Action::Type::DISCARD:
 		state = State::NOT_RELAYING;

@@ -15,7 +15,7 @@ Building qrelay
 You need:
 
 - Linux kernel 5.4 or newer
-- a C++20 compliant compiler (e.g. gcc or clang)
+- a C++23 compliant compiler (e.g. gcc or clang)
 - `libfmt <https://fmt.dev/>`__
 - `LuaJIT <http://luajit.org/>`__
 - `Meson 1.2 <http://mesonbuild.com/>`__ and `Ninja <https://ninja-build.org/>`__
