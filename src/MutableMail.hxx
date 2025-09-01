@@ -64,7 +64,7 @@ struct MutableMail : QmqpMail {
 		sender = sender_buffer = std::forward<T>(new_sender);
 	}
 
-	void InsertHeader(const char *name, const char *value);
+	void InsertHeader(std::string_view name, std::string_view value);
 };
 
 #endif

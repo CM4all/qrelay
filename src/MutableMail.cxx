@@ -9,7 +9,7 @@
 using std::string_view_literals::operator""sv;
 
 void
-MutableMail::InsertHeader(const char *name, const char *value)
+MutableMail::InsertHeader(std::string_view name, std::string_view value)
 {
 	headers.emplace_front(fmt::format("{}: {}\r\n"sv, name, value));
 }
