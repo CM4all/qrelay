@@ -81,7 +81,7 @@ try {
 	stdout_w.Close();
 
 	ExitListener &exit_listener = *this;
-	pidfd.emplace(GetEventLoop(), UniqueFileDescriptor{my_pidfd_open(pid, 0)},
+	pidfd.emplace(GetEventLoop(), UniqueFileDescriptor{AdoptTag{}, my_pidfd_open(pid, 0)},
 		      "exec", exit_listener);
 
 	stdin_w.SetNonBlocking();
