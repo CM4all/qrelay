@@ -1,5 +1,6 @@
 cm4all-qrelay (0.34) unstable; urgency=low
 
+  * close cgroup file descriptors on disconnect
   * debian: add missing build-dependencies on libsodium-dev, pkg-config
   * switch to C++23
   * require Meson 1.2
