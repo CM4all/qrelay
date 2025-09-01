@@ -5,21 +5,32 @@
 #include "LResolver.hxx"
 #include "lua/Util.hxx"
 #include "lua/net/Resolver.hxx"
-#include "net/AddressInfo.hxx"
 #include "net/log/Protocol.hxx"
 
 extern "C" {
 #include <lua.h>
 }
 
+#include <netdb.h>
+
 void
 RegisterLuaResolver(lua_State *L)
 {
-	static constexpr auto hints = MakeAddrInfo(AI_ADDRCONFIG, AF_UNSPEC, SOCK_STREAM);
+	static constexpr struct addrinfo hints{
+		.ai_flags = AI_ADDRCONFIG,
+		.ai_family = AF_UNSPEC,
+		.ai_socktype = SOCK_STREAM,
+	};
+
 	Lua::PushResolveFunction(L, hints, 628);
 	lua_setglobal(L, "qmqp_resolve");
 
-	static constexpr auto log_hints = MakeAddrInfo(AI_ADDRCONFIG, AF_UNSPEC, SOCK_DGRAM);
+	static constexpr struct addrinfo log_hints{
+		.ai_flags = AI_ADDRCONFIG,
+		.ai_family = AF_UNSPEC,
+		.ai_socktype = SOCK_DGRAM,
+	};
+
 	Lua::PushResolveFunction(L, log_hints, Net::Log::DEFAULT_PORT);
 	lua_setglobal(L, "log_resolve");
 }
