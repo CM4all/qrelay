@@ -5,7 +5,7 @@ cm4all-qrelay (0.34) unstable; urgency=low
   * switch to C++23
   * require Meson 1.2
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Mon, 01 Sep 2025 22:27:59 +0200
 
 cm4all-qrelay (0.33) unstable; urgency=low
 
