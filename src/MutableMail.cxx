@@ -4,13 +4,12 @@
 
 #include "MutableMail.hxx"
 
+#include <fmt/core.h>
+
+using std::string_view_literals::operator""sv;
+
 void
 MutableMail::InsertHeader(const char *name, const char *value)
 {
-	std::string line(name);
-	line += ": ";
-	line += value;
-	line += "\r\n";
-
-	headers.emplace_front(std::move(line));
+	headers.emplace_front(fmt::format("{}: {}\r\n"sv, name, value));
 }
