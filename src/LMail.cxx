@@ -7,6 +7,7 @@
 #include "LAction.hxx"
 #include "Action.hxx"
 #include "lua/AutoCloseList.hxx"
+#include "lua/CheckArg.hxx"
 #include "lua/Class.hxx"
 #include "lua/Error.hxx"
 #include "lua/FenvCache.hxx"
@@ -18,6 +19,7 @@
 #include "uri/EmailAddress.hxx"
 #include "util/StringAPI.hxx"
 #include "util/StringCompare.hxx"
+#include "util/StringVerify.hxx"
 #include "io/Beneath.hxx"
 #include "io/FileAt.hxx"
 #include "io/Open.hxx"
@@ -75,7 +77,7 @@ typedef Lua::Class<IncomingMail, lua_mail_class> LuaMail;
  * @see RFC2822 2.2
  */
 static constexpr bool
-IsValidHeaderNameChar(char ch)
+IsValidHeaderNameChar(char ch) noexcept
 {
 	return ch >= 33 && ch <= 126 && ch != ':';
 }
@@ -83,15 +85,10 @@ IsValidHeaderNameChar(char ch)
 /**
  * Is this a valid header name according to RFC2822 2.2?
  */
-static bool
-IsValidHeaderName(const char *p)
+static constexpr bool
+IsValidHeaderName(std::string_view s) noexcept
 {
-	do {
-		if (!IsValidHeaderNameChar(*p))
-			return false;
-	} while (*++p != 0);
-
-	return true;
+	return CheckCharsNonEmpty(s, IsValidHeaderNameChar);
 }
 
 /**
@@ -99,7 +96,7 @@ IsValidHeaderName(const char *p)
  * characters are allowed.
  */
 static constexpr bool
-IsValidHeaderValueChar(char ch)
+IsValidHeaderValueChar(char ch) noexcept
 {
 	return ch >= ' ' && ch <= 126;
 }
@@ -108,13 +105,9 @@ IsValidHeaderValueChar(char ch)
  * Is this a valid header value according to RFC2822 2.2?
  */
 static bool
-IsValidHeaderValue(const char *p)
+IsValidHeaderValue(std::string_view s) noexcept
 {
-	for (; *p != 0; ++p)
-		if (!IsValidHeaderValueChar(*p))
-			return false;
-
-	return true;
+	return CheckChars(s, IsValidHeaderValueChar);
 }
 
 static int
@@ -123,11 +116,11 @@ InsertHeader(lua_State *L)
 	if (lua_gettop(L) != 3)
 		return luaL_error(L, "Invalid parameters");
 
-	const char *name = luaL_checkstring(L, 2);
+	const std::string_view name = Lua::CheckStringView(L, 2);
 	if (!IsValidHeaderName(name))
 		luaL_argerror(L, 2, "Illegal header name");
 
-	const char *value = luaL_checkstring(L, 3);
+	const std::string_view value = Lua::CheckStringView(L, 3);
 	if (!IsValidHeaderValue(value))
 		luaL_argerror(L, 2, "Illegal header value");
 
@@ -245,7 +238,7 @@ CollectExec(Action &action, lua_State *L, unsigned top)
 		if (action.exec.full())
 			luaL_argerror(L, i, "Too many arguments");
 
-		action.exec.emplace_back(luaL_checkstring(L, i));
+		action.exec.emplace_back(Lua::CheckStringView(L, i));
 	}
 }
 
@@ -377,7 +370,7 @@ IncomingMail::NewIndex(lua_State *L)
 	constexpr int value_idx = 3;
 
 	if (StringIsEqual(name, "sender")) {
-		const char *new_value = luaL_checkstring(L, value_idx);
+		const std::string_view new_value = Lua::CheckStringView(L, value_idx);
 		if (!VerifyEmailAddress(new_value))
 			luaL_argerror(L, value_idx, "Malformed email address");
 
@@ -387,8 +380,8 @@ IncomingMail::NewIndex(lua_State *L)
 		if (lua_isnil(L, value_idx)) {
 			account.clear();
 		} else {
-			const char *new_value = luaL_checkstring(L, value_idx);
-			luaL_argcheck(L, *new_value != 0, value_idx,
+			const std::string_view new_value = Lua::CheckStringView(L, value_idx);
+			luaL_argcheck(L, !new_value.empty(), value_idx,
 				      "Empty string not allowed");
 
 			account = new_value;
