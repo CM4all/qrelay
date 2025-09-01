@@ -12,20 +12,20 @@ cm4all-qrelay (0.33) unstable; urgency=low
   * fix buffer overflow in netstring header parser
   * pg: support integer parameters
 
- -- Max Kellermann <mk@cm4all.com>  Tue, 26 Nov 2024 08:43:50 +0100
+ -- Max Kellermann <max.kellermann@ionos.com>  Tue, 26 Nov 2024 08:43:50 +0100
 
 cm4all-qrelay (0.32) unstable; urgency=low
 
   * pg: fix 0.31 regression
 
- -- Max Kellermann <mk@cm4all.com>  Mon, 12 Aug 2024 15:01:24 +0200
+ -- Max Kellermann <max.kellermann@ionos.com>  Mon, 12 Aug 2024 15:01:24 +0200
 
 cm4all-qrelay (0.31) unstable; urgency=low
 
   * pg: fix assertion failure
   * require libfmt 9
 
- -- Max Kellermann <mk@cm4all.com>  Mon, 05 Aug 2024 19:17:03 +0200
+ -- Max Kellermann <max.kellermann@ionos.com>  Mon, 05 Aug 2024 19:17:03 +0200
 
 cm4all-qrelay (0.30) unstable; urgency=low
 
@@ -33,7 +33,7 @@ cm4all-qrelay (0.30) unstable; urgency=low
   * catch logging errors
   * systemd: increase MemoryMax and TasksMax
 
- -- Max Kellermann <mk@cm4all.com>  Tue, 12 Mar 2024 13:35:27 +0100
+ -- Max Kellermann <max.kellermann@ionos.com>  Tue, 12 Mar 2024 13:35:27 +0100
 
 cm4all-qrelay (0.29) unstable; urgency=low
 
@@ -43,7 +43,7 @@ cm4all-qrelay (0.29) unstable; urgency=low
   * exec: add "timeout" option
   * network logging (to Pond server)
 
- -- Max Kellermann <mk@cm4all.com>  Fri, 08 Mar 2024 17:47:36 +0100
+ -- Max Kellermann <max.kellermann@ionos.com>  Fri, 08 Mar 2024 17:47:36 +0100
 
 cm4all-qrelay (0.28) unstable; urgency=low
 
@@ -51,7 +51,7 @@ cm4all-qrelay (0.28) unstable; urgency=low
   * exec_raw: fix endless loop
   * exec: allow setting environment variables
 
- -- Max Kellermann <mk@cm4all.com>  Wed, 06 Mar 2024 17:22:58 +0100
+ -- Max Kellermann <max.kellermann@ionos.com>  Wed, 06 Mar 2024 17:22:58 +0100
 
 cm4all-qrelay (0.27) unstable; urgency=low
 
@@ -61,7 +61,7 @@ cm4all-qrelay (0.27) unstable; urgency=low
   * exec: wait for process to exit and kill on cancellation
   * make the systemd and the PostgreSQL client optional
 
- -- Max Kellermann <mk@cm4all.com>  Wed, 21 Feb 2024 23:15:20 +0100
+ -- Max Kellermann <max.kellermann@ionos.com>  Wed, 21 Feb 2024 23:15:20 +0100
 
 cm4all-qrelay (0.26) unstable; urgency=low
 
@@ -74,20 +74,20 @@ cm4all-qrelay (0.26) unstable; urgency=low
   * systemd: enable more security settings
   * systemd: enable the watchdog
 
- -- Max Kellermann <mk@cm4all.com>  Wed, 06 Dec 2023 13:16:44 +0100
+ -- Max Kellermann <max.kellermann@ionos.com>  Wed, 06 Dec 2023 13:16:44 +0100
 
 cm4all-qrelay (0.25) unstable; urgency=low
 
   * fix use-after-free crash bug
   * allow relative "dofile" commands in config.lua
 
- -- Max Kellermann <mk@cm4all.com>  Fri, 24 Nov 2023 15:39:23 +0100
+ -- Max Kellermann <max.kellermann@ionos.com>  Fri, 24 Nov 2023 15:39:23 +0100
 
 cm4all-qrelay (0.24) unstable; urgency=low
 
   * support cgroup xattr
 
- -- Max Kellermann <mk@cm4all.com>  Wed, 22 Nov 2023 15:31:42 +0100
+ -- Max Kellermann <max.kellermann@ionos.com>  Wed, 22 Nov 2023 15:31:42 +0100
 
 cm4all-qrelay (0.23) unstable; urgency=low
 
@@ -98,14 +98,14 @@ cm4all-qrelay (0.23) unstable; urgency=low
   * fix file descriptor leak bug
   * debian: restart after upgrade
 
- -- Max Kellermann <mk@cm4all.com>  Wed, 20 Sep 2023 12:29:43 +0200
+ -- Max Kellermann <max.kellermann@ionos.com>  Wed, 20 Sep 2023 12:29:43 +0200
 
 cm4all-qrelay (0.22) unstable; urgency=low
 
   * lua: eliminate manual GC on cancellation
   * add "mail.cgroup", deprecate "mail:get_cgroup()"
 
- -- Max Kellermann <mk@cm4all.com>  Thu, 20 Apr 2023 09:47:39 +0200
+ -- Max Kellermann <max.kellermann@ionos.com>  Thu, 20 Apr 2023 09:47:39 +0200
 
 cm4all-qrelay (0.21) unstable; urgency=low
 
@@ -113,13 +113,13 @@ cm4all-qrelay (0.21) unstable; urgency=low
   * reuse PostgreSQL connections
   * eliminate compile-time Boost dependency
 
- -- Max Kellermann <mk@cm4all.com>  Wed, 16 Nov 2022 15:14:56 +0100
+ -- Max Kellermann <max.kellermann@ionos.com>  Wed, 16 Nov 2022 15:14:56 +0100
 
 cm4all-qrelay (0.20) unstable; urgency=low
 
   * fix use-after-free bug (coroutine regression)
 
- -- Max Kellermann <mk@cm4all.com>  Wed, 18 Aug 2021 15:31:43 +0200
+ -- Max Kellermann <max.kellermann@ionos.com>  Wed, 18 Aug 2021 15:31:43 +0200
 
 cm4all-qrelay (0.19) unstable; urgency=low
 
@@ -128,25 +128,25 @@ cm4all-qrelay (0.19) unstable; urgency=low
   * add PostgreSQL client
   * reply with temporary error if Lua script fails
 
- -- Max Kellermann <mk@cm4all.com>  Wed, 04 Aug 2021 14:57:01 +0200
+ -- Max Kellermann <max.kellermann@ionos.com>  Wed, 04 Aug 2021 14:57:01 +0200
 
 cm4all-qrelay (0.18) unstable; urgency=low
 
   * allow changing the envelope sender
 
- -- Max Kellermann <mk@cm4all.com>  Thu, 29 Jul 2021 16:38:07 +0200
+ -- Max Kellermann <max.kellermann@ionos.com>  Thu, 29 Jul 2021 16:38:07 +0200
 
 cm4all-qrelay (0.17) unstable; urgency=low
 
   * add local socket support to qmqp_resolve()
 
- -- Max Kellermann <mk@cm4all.com>  Thu, 20 May 2021 16:42:20 +0200
+ -- Max Kellermann <max.kellermann@ionos.com>  Thu, 20 May 2021 16:42:20 +0200
 
 cm4all-qrelay (0.16) unstable; urgency=low
 
   * cgroup2 support for get_cgroup()
 
- -- Max Kellermann <mk@cm4all.com>  Fri, 23 Apr 2021 18:13:31 +0200
+ -- Max Kellermann <max.kellermann@ionos.com>  Fri, 23 Apr 2021 18:13:31 +0200
 
 cm4all-qrelay (0.15) unstable; urgency=low
 
@@ -154,20 +154,20 @@ cm4all-qrelay (0.15) unstable; urgency=low
   * fix assertion failure
   * fix double close() bug
 
- -- Max Kellermann <mk@cm4all.com>  Wed, 13 Jan 2021 11:07:14 +0100
+ -- Max Kellermann <max.kellermann@ionos.com>  Wed, 13 Jan 2021 11:07:14 +0100
 
 cm4all-qrelay (0.14) unstable; urgency=low
 
   * meson.build: disable ld.so lazy binding and enable relro
   * debian: move postinst code to sysusers.d
 
- -- Max Kellermann <mk@cm4all.com>  Tue, 22 Dec 2020 11:48:30 +0100
+ -- Max Kellermann <max.kellermann@ionos.com>  Tue, 22 Dec 2020 11:48:30 +0100
 
 cm4all-qrelay (0.13) unstable; urgency=low
 
   * eliminate runtime Boost dependency
 
- -- Max Kellermann <mk@cm4all.com>  Wed, 16 Dec 2020 22:08:53 +0100
+ -- Max Kellermann <max.kellermann@ionos.com>  Wed, 16 Dec 2020 22:08:53 +0100
 
 cm4all-qrelay (0.12) unstable; urgency=low
 
@@ -175,7 +175,7 @@ cm4all-qrelay (0.12) unstable; urgency=low
   * systemd: configure resource limits
   * systemd: paranoid security settings
 
- -- Max Kellermann <mk@cm4all.com>  Wed, 03 Jun 2020 13:36:33 +0200
+ -- Max Kellermann <max.kellermann@ionos.com>  Wed, 03 Jun 2020 13:36:33 +0200
 
 cm4all-qrelay (0.11) unstable; urgency=low
 
@@ -184,7 +184,7 @@ cm4all-qrelay (0.11) unstable; urgency=low
   * debian: use debhelper 12
   * debian/rules: use dh_sphinxdoc
 
- -- Max Kellermann <mk@cm4all.com>  Wed, 21 Aug 2019 14:43:07 +0200
+ -- Max Kellermann <max.kellermann@ionos.com>  Wed, 21 Aug 2019 14:43:07 +0200
 
 cm4all-qrelay (0.10) unstable; urgency=low
 
@@ -194,35 +194,35 @@ cm4all-qrelay (0.10) unstable; urgency=low
   * eliminate dependency on libevent
   * debian: enable compiler optimization
 
- -- Max Kellermann <mk@cm4all.com>  Thu, 30 Aug 2018 11:56:39 -0000
+ -- Max Kellermann <max.kellermann@ionos.com>  Thu, 30 Aug 2018 11:56:39 -0000
 
 cm4all-qrelay (0.9) unstable; urgency=low
 
   * net: support interface name as scope id in IPv6 addresses
   * net: resolving "*" prefers the IPv6 wildcard "::"
 
- -- Max Kellermann <mk@cm4all.com>  Tue, 01 Aug 2017 10:49:47 -0000
+ -- Max Kellermann <max.kellermann@ionos.com>  Tue, 01 Aug 2017 10:49:47 -0000
 
 cm4all-qrelay (0.8) unstable; urgency=low
 
   * lua: fix mount_info parser, skip optional tagged fields properly
   * lua: insert_header() aborts if name or value are illegal
 
- -- Max Kellermann <mk@cm4all.com>  Thu, 22 Jun 2017 10:05:18 -0000
+ -- Max Kellermann <max.kellermann@ionos.com>  Thu, 22 Jun 2017 10:05:18 -0000
 
 cm4all-qrelay (0.7) unstable; urgency=low
 
   * lua: don't crash when Lua "panics"
   * fix assertion failure when inserting too many headers
 
- -- Max Kellermann <mk@cm4all.com>  Tue, 20 Jun 2017 22:18:29 -0000
+ -- Max Kellermann <max.kellermann@ionos.com>  Tue, 20 Jun 2017 22:18:29 -0000
 
 cm4all-qrelay (0.6) unstable; urgency=medium
 
   * new Lua function qmqp_resolve() allows resolving during startup
   * allow only numeric IP addresses in method mail.connect()
 
- -- Max Kellermann <mk@cm4all.com>  Mon, 03 Apr 2017 06:32:41 -0000
+ -- Max Kellermann <max.kellermann@ionos.com>  Mon, 03 Apr 2017 06:32:41 -0000
 
 cm4all-qrelay (0.5) unstable; urgency=low
 
@@ -233,7 +233,7 @@ cm4all-qrelay (0.5) unstable; urgency=low
   * add mail method insert_header()
   * strip the trailing newline character in the get_cgroup() result
 
- -- Max Kellermann <mk@cm4all.com>  Fri, 03 Mar 2017 10:46:24 -0000
+ -- Max Kellermann <max.kellermann@ionos.com>  Fri, 03 Mar 2017 10:46:24 -0000
 
 cm4all-qrelay (0.4) unstable; urgency=low
 
@@ -245,7 +245,7 @@ cm4all-qrelay (0.4) unstable; urgency=low
   * replace configuration file with Lua script
   * support systemd socket activation
 
- -- Max Kellermann <mk@cm4all.com>  Fri, 17 Feb 2017 11:54:14 -0000
+ -- Max Kellermann <max.kellermann@ionos.com>  Fri, 17 Feb 2017 11:54:14 -0000
 
 cm4all-qrelay (0.3) unstable; urgency=low
 
@@ -253,7 +253,7 @@ cm4all-qrelay (0.3) unstable; urgency=low
   * allow port specification in "connect" setting
   * insert "Received" header with client process id and user id
 
- -- Max Kellermann <mk@cm4all.com>  Fri, 04 Apr 2014 18:30:52 -0000
+ -- Max Kellermann <max.kellermann@ionos.com>  Fri, 04 Apr 2014 18:30:52 -0000
 
 cm4all-qrelay (0.2) unstable; urgency=low
 
@@ -263,10 +263,10 @@ cm4all-qrelay (0.2) unstable; urgency=low
   * rename "connect" to "default connect", allows other actions
   * documentation
 
- -- Max Kellermann <mk@cm4all.com>  Mon, 24 Feb 2014 16:58:20 -0000
+ -- Max Kellermann <max.kellermann@ionos.com>  Mon, 24 Feb 2014 16:58:20 -0000
 
 cm4all-qrelay (0.1) unstable; urgency=low
 
   * initial release
 
- -- Max Kellermann <mk@cm4all.com>  Fri, 14 Feb 2014 15:01:42 -0000
+ -- Max Kellermann <max.kellermann@ionos.com>  Fri, 14 Feb 2014 15:01:42 -0000
