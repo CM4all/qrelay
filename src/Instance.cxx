@@ -83,7 +83,7 @@ Instance::AddSystemdListener(size_t max_size, Lua::ValuePtr &&handler)
 	}
 
 	for (unsigned i = 0; i < unsigned(n); ++i)
-		AddListener(UniqueSocketDescriptor(SD_LISTEN_FDS_START + i),
+		AddListener(UniqueSocketDescriptor(AdoptTag{}, SD_LISTEN_FDS_START + i),
 			    max_size,
 			    Lua::ValuePtr(handler));
 }
