@@ -127,7 +127,6 @@ subdir('libcommon/src/lua/net')
 subdir('libcommon/src/event/net')
 subdir('libcommon/src/event/net/djb')
 subdir('libcommon/src/lua/event')
-subdir('libcommon/src/stock')
 subdir('libcommon/src/lua/io')
 
 if sodium_dep.found()
