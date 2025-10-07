@@ -4,7 +4,7 @@ cm4all-qrelay (0.35) unstable; urgency=low
   * pg: fix assertion failure
   * pg: fix stalled connection
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Tue, 07 Oct 2025 15:15:51 +0200
 
 cm4all-qrelay (0.34) unstable; urgency=low
 
