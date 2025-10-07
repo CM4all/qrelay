@@ -1,3 +1,9 @@
+cm4all-qrelay (0.36) unstable; urgency=low
+
+  * 
+
+ --   
+
 cm4all-qrelay (0.35) unstable; urgency=low
 
   * pg: no delay for first auto-reconnect
