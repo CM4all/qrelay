@@ -9,10 +9,12 @@
 #include "lib/fmt/SystemError.hxx"
 #include "system/SetupProcess.hxx"
 #include "net/LocalSocketAddress.hxx"
+#include "lua/LightUserData.hxx"
 #include "lua/Value.hxx"
 #include "lua/Util.hxx"
 #include "lua/Error.hxx"
 #include "lua/PushCClosure.hxx"
+#include "lua/Resume.hxx"
 #include "lua/RunFile.hxx"
 #include "lua/StringView.hxx"
 #include "lua/io/XattrTable.hxx"
@@ -112,6 +114,7 @@ static void
 SetupConfigState(lua_State *L, Instance &instance)
 {
 	luaL_openlibs(L);
+	Lua::InitResume(L);
 
 #ifdef HAVE_LIBSODIUM
 	Lua::InitSodium(L);

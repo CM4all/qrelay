@@ -1,6 +1,7 @@
 cm4all-qrelay (0.36) unstable; urgency=low
 
-  * 
+  * lua: support coroutine.yield(), coroutine.resume()
+  * pg: fix use-after-free bug
 
  --   
 
