@@ -264,11 +264,11 @@ try {
 }
 
 void
-QmqpRelayConnection::OnLuaError(lua_State *, std::exception_ptr e) noexcept
+QmqpRelayConnection::OnLuaError(lua_State *, std::exception_ptr &&error) noexcept
 {
 	assert(state == State::LUA);
 
-	logger(1, e);
+	logger(1, std::move(error));
 	Finish("Zscript failed"sv);
 }
 
