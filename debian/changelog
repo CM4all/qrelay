@@ -3,7 +3,7 @@ cm4all-qrelay (0.36) unstable; urgency=low
   * lua: support coroutine.yield(), coroutine.resume()
   * pg: fix use-after-free bug
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Wed, 22 Oct 2025 11:10:29 +0200
 
 cm4all-qrelay (0.35) unstable; urgency=low
 
