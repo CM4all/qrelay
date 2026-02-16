@@ -2,6 +2,7 @@ cm4all-qrelay (0.37) unstable; urgency=low
 
   * lua: new libraries:
     - "control_client
+    - "socket"
 
  --   
 
