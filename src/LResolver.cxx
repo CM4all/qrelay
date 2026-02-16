@@ -5,6 +5,7 @@
 #include "LResolver.hxx"
 #include "lua/Util.hxx"
 #include "lua/net/Resolver.hxx"
+#include "net/control/Protocol.hxx"
 #include "net/log/Protocol.hxx"
 
 extern "C" {
@@ -25,14 +26,17 @@ RegisterLuaResolver(lua_State *L)
 	Lua::PushResolveFunction(L, hints, 628);
 	lua_setglobal(L, "qmqp_resolve");
 
-	static constexpr struct addrinfo log_hints{
+	static constexpr struct addrinfo dgram_hints{
 		.ai_flags = AI_ADDRCONFIG,
 		.ai_family = AF_UNSPEC,
 		.ai_socktype = SOCK_DGRAM,
 	};
 
-	Lua::PushResolveFunction(L, log_hints, Net::Log::DEFAULT_PORT);
+	Lua::PushResolveFunction(L, dgram_hints, Net::Log::DEFAULT_PORT);
 	lua_setglobal(L, "log_resolve");
+
+	Lua::PushResolveFunction(L, dgram_hints, BengControl::DEFAULT_PORT);
+	lua_setglobal(L, "control_resolve");
 }
 
 void
@@ -40,4 +44,5 @@ UnregisterLuaResolver(lua_State *L)
 {
 	Lua::SetGlobal(L, "qmqp_resolve", nullptr);
 	Lua::SetGlobal(L, "log_resolve", nullptr);
+	Lua::SetGlobal(L, "control_resolve", nullptr);
 }

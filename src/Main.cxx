@@ -20,6 +20,7 @@
 #include "lua/io/XattrTable.hxx"
 #include "lua/io/CgroupInfo.hxx"
 #include "lua/net/SocketAddress.hxx"
+#include "lua/net/ControlClient.hxx"
 #include "lua/event/Init.hxx"
 #include "util/PrintException.hxx"
 #include "util/ScopeExit.hxx"
@@ -127,6 +128,7 @@ SetupConfigState(lua_State *L, Instance &instance)
 #endif
 
 	Lua::InitSocketAddress(L);
+	Lua::InitControlClient(L);
 	RegisterLuaResolver(L);
 
 	static constexpr lua_Integer DEFAULT_MAX_SIZE = 16 * 1024 * 1024;
