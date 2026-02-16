@@ -179,7 +179,7 @@ static void
 CollectExecEnv(Action &action, lua_State *L, Lua::AnyStackIndex auto idx)
 {
 	Lua::ForEach(L, idx, [L, &action](auto name_idx, auto value_idx){
-		if (action.exec.full())
+		if (action.env.full())
 			luaL_error(L, "Too many environment variables");
 
 		if (lua_type(L, Lua::GetStackIndex(name_idx)) != LUA_TSTRING)
