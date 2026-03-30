@@ -155,6 +155,7 @@ configure_file(output: 'config.h', configuration: conf)
 
 executable('cm4all-qrelay',
   'libcommon/src/spawn/PidfdEvent.cxx',
+  'libcommon/src/spawn/Registry.cxx',
   'libcommon/src/spawn/ZombieReaper.cxx',
   'src/CommandLine.cxx',
   'src/djb/NetstringParser.cxx',

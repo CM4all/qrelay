@@ -136,6 +136,7 @@ QmqpRelayConnection::DoExec(const Action &action, const MutableMail &mail)
 		relay_timeout.Schedule(action.timeout);
 
 	auto *relay = new ExecRelay(GetEventLoop(),
+				    instance.GetChildProcessRegistry(),
 				    mail, AssembleHeaders(mail),
 				    *this);
 	relay_operation = ToDeletePointer(relay);
@@ -150,6 +151,7 @@ QmqpRelayConnection::DoRawExec(const Action &action, const MutableMail &mail)
 		relay_timeout.Schedule(action.timeout);
 
 	auto *relay = new RawExecRelay(GetEventLoop(),
+				       instance.GetChildProcessRegistry(),
 				       mail, AssembleHeaders(mail),
 				       *this);
 	relay_operation = ToDeletePointer(relay);

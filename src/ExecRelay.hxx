@@ -7,21 +7,30 @@
 #include "BasicRelay.hxx"
 #include "net/djb/NetstringGenerator.hxx"
 #include "spawn/ExitListener.hxx"
-#include "spawn/PidfdEvent.hxx"
 
-#include <optional>
+#include <memory>
 
 struct Action;
+class ChildProcessRegistry;
+class PidfdEvent;
 
 class ExecRelay final
 	: BasicRelay, ExitListener
 {
+	ChildProcessRegistry &child_process_registry;
+
 	AllocatedArray<std::byte> deferred_response;
 
-	std::optional<PidfdEvent> pidfd;
+	std::unique_ptr<PidfdEvent> pidfd;
 
 public:
-	using BasicRelay::BasicRelay;
+	[[nodiscard]]
+	ExecRelay(EventLoop &event_loop,
+		  ChildProcessRegistry &_child_process_registry,
+		  const QmqpMail &mail,
+		  std::list<std::span<const std::byte>> &&additional_headers,
+		  RelayHandler &_handler) noexcept;
+
 	~ExecRelay() noexcept;
 
 	bool Start(const Action &action) noexcept;

@@ -5,24 +5,27 @@
 #pragma once
 
 #include "spawn/ExitListener.hxx"
-#include "spawn/PidfdEvent.hxx"
 #include "event/PipeEvent.hxx"
 #include "io/MultiWriteBuffer.hxx"
 
 #include <array>
 #include <list>
-#include <optional>
+#include <memory>
 
 struct Action;
 struct QmqpMail;
+class ChildProcessRegistry;
+class PidfdEvent;
 class RelayHandler;
 
 class RawExecRelay final
 	: ExitListener
 {
+	ChildProcessRegistry &child_process_registry;
+
 	RelayHandler &handler;
 
-	std::optional<PidfdEvent> pidfd;
+	std::unique_ptr<PidfdEvent> pidfd;
 
 	MultiWriteBuffer request_buffer;
 
@@ -39,7 +42,9 @@ class RawExecRelay final
 	int status;
 
 public:
-	RawExecRelay(EventLoop &event_loop, const QmqpMail &mail,
+	RawExecRelay(EventLoop &event_loop,
+		     ChildProcessRegistry &_child_process_registry,
+		     const QmqpMail &mail,
 		     std::list<std::span<const std::byte>> &&additional_headers,
 		     RelayHandler &_handler);
 	~RawExecRelay() noexcept;

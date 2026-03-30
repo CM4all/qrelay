@@ -8,6 +8,7 @@
 #include "lua/ReloadRunner.hxx"
 #include "lua/State.hxx"
 #include "lua/ValuePtr.hxx"
+#include "spawn/Registry.hxx"
 #include "spawn/ZombieReaper.hxx"
 #include "net/UniqueSocketDescriptor.hxx"
 #include "io/Logger.hxx"
@@ -26,6 +27,7 @@ class Instance {
 	ShutdownListener shutdown_listener{event_loop, BIND_THIS_METHOD(OnShutdown)};
 	SignalEvent sighup_event;
 
+	ChildProcessRegistry child_process_registry;
 	ZombieReaper zombie_reaper{event_loop};
 
 #ifdef HAVE_LIBSYSTEMD
@@ -47,6 +49,10 @@ public:
 
 	EventLoop &GetEventLoop() {
 		return event_loop;
+	}
+
+	auto &GetChildProcessRegistry() noexcept {
+		return child_process_registry;
 	}
 
 	lua_State *GetLuaState() {

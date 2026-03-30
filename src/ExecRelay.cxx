@@ -6,6 +6,8 @@
 #include "ExitStatus.hxx"
 #include "Handler.hxx"
 #include "Action.hxx"
+#include "spawn/PidfdEvent.hxx"
+#include "spawn/Registry.hxx"
 #include "lib/fmt/RuntimeError.hxx"
 #include "system/Error.hxx"
 #include "system/linux/PidFD.h"
@@ -21,11 +23,20 @@
 
 using std::string_view_literals::operator""sv;
 
+ExecRelay::ExecRelay(EventLoop &event_loop,
+		     ChildProcessRegistry &_child_process_registry,
+		     const QmqpMail &mail,
+		     std::list<std::span<const std::byte>> &&additional_headers,
+		     RelayHandler &_handler) noexcept
+	:BasicRelay(event_loop, mail, std::move(additional_headers), _handler),
+	 child_process_registry(_child_process_registry)
+{
+}
+
 ExecRelay::~ExecRelay() noexcept
 {
 	if (pidfd)
-		// TODO send SIGKILL after timeout?
-		pidfd->Kill(SIGTERM);
+		child_process_registry.Kill(std::move(pidfd), SIGTERM);
 }
 
 bool
@@ -81,8 +92,9 @@ try {
 	stdout_w.Close();
 
 	ExitListener &exit_listener = *this;
-	pidfd.emplace(GetEventLoop(), UniqueFileDescriptor{AdoptTag{}, my_pidfd_open(pid, 0)},
-		      "exec", exit_listener);
+	pidfd.reset(new PidfdEvent(GetEventLoop(),
+				   UniqueFileDescriptor{AdoptTag{}, my_pidfd_open(pid, 0)},
+				   "exec", exit_listener));
 
 	stdin_w.SetNonBlocking();
 	stdout_r.SetNonBlocking();

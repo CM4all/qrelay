@@ -7,6 +7,8 @@
 #include "Handler.hxx"
 #include "Action.hxx"
 #include "djb/QmqpMail.hxx"
+#include "spawn/PidfdEvent.hxx"
+#include "spawn/Registry.hxx"
 #include "lib/fmt/RuntimeError.hxx"
 #include "system/Error.hxx"
 #include "system/linux/PidFD.h"
@@ -23,10 +25,13 @@
 
 using std::string_view_literals::operator""sv;
 
-RawExecRelay::RawExecRelay(EventLoop &event_loop, const QmqpMail &mail,
+RawExecRelay::RawExecRelay(EventLoop &event_loop,
+			   ChildProcessRegistry &_child_process_registry,
+			   const QmqpMail &mail,
 			   std::list<std::span<const std::byte>> &&additional_headers,
 			   RelayHandler &_handler)
-	:handler(_handler),
+	:child_process_registry(_child_process_registry),
+	 handler(_handler),
 	 request_pipe(event_loop, BIND_THIS_METHOD(OnRequestPipeReady)),
 	 response_pipe(event_loop, BIND_THIS_METHOD(OnResponsePipeReady))
 {
@@ -41,8 +46,7 @@ RawExecRelay::~RawExecRelay() noexcept
 	response_pipe.Close();
 
 	if (pidfd)
-		// TODO send SIGKILL after timeout?
-		pidfd->Kill(SIGTERM);
+		child_process_registry.Kill(std::move(pidfd), SIGTERM);
 }
 
 bool
@@ -99,8 +103,9 @@ try {
 	stdout_w.Close();
 
 	ExitListener &exit_listener = *this;
-	pidfd.emplace(GetEventLoop(), UniqueFileDescriptor{AdoptTag{}, my_pidfd_open(pid, 0)},
-		      "exec_raw", exit_listener);
+	pidfd.reset(new PidfdEvent(GetEventLoop(),
+				   UniqueFileDescriptor{AdoptTag{}, my_pidfd_open(pid, 0)},
+				   "exec_raw", exit_listener));
 
 	stdout_r.SetNonBlocking();
 	response_pipe.Open(stdout_r.Release());
