@@ -127,7 +127,7 @@ ExecRelay::OnChildProcessExit(int status) noexcept
 		return;
 	}
 
-	if (deferred_response.data() != nullptr)
+	if (deferred_response != nullptr)
 		BasicRelay::OnNetstringResponse(std::move(deferred_response));
 }
 
