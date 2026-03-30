@@ -113,21 +113,16 @@ ExecRelay::OnChildProcessExit(int status) noexcept
 {
 	pidfd.reset();
 
-	try {
-		if (WIFSIGNALED(status))
-			throw FmtRuntimeError("Process died from signal {}{}"sv,
-					      WTERMSIG(status),
-					      WCOREDUMP(status) ? " (core dumped)"sv : ""sv);
-		else if (WEXITSTATUS(status) != EXIT_SUCCESS)
-			throw FmtRuntimeError("Exit status {}",
-					      WEXITSTATUS(status));
-	} catch (...) {
+	if (WIFSIGNALED(status))
 		handler.OnRelayError(ExitStatusToQmqpResponse(WEXITSTATUS(status)),
-				     std::current_exception());
-		return;
-	}
-
-	if (deferred_response != nullptr)
+				     std::make_exception_ptr(FmtRuntimeError("Process died from signal {}{}"sv,
+									     WTERMSIG(status),
+									     WCOREDUMP(status) ? " (core dumped)"sv : ""sv)));
+	else if (WEXITSTATUS(status) != EXIT_SUCCESS)
+		handler.OnRelayError(ExitStatusToQmqpResponse(WEXITSTATUS(status)),
+				     std::make_exception_ptr(FmtRuntimeError("Exit status {}",
+									     WEXITSTATUS(status))));
+	else if (deferred_response != nullptr)
 		BasicRelay::OnNetstringResponse(std::move(deferred_response));
 }
 
