@@ -210,7 +210,7 @@ RawExecRelay::Finish() noexcept
 	assert(!pidfd);
 
 	std::string_view response = "K"sv;
-	if (WIFSIGNALED(status))
+	if (status < 0 || WIFSIGNALED(status))
 		response = "Zinternal server error";
 	else if (WEXITSTATUS(status) != EXIT_SUCCESS)
 		response = ExitStatusToQmqpResponse(WEXITSTATUS(status));
@@ -221,7 +221,11 @@ RawExecRelay::Finish() noexcept
 		response = ToStringView(response_span);
 	}
 
-	if (WIFSIGNALED(status))
+	if (status < 0)
+		handler.OnRelayError(response,
+				     std::make_exception_ptr(MakeErrno(-status,
+								       "waitid() failed")));
+	else if (WIFSIGNALED(status))
 		handler.OnRelayError(response,
 				     std::make_exception_ptr(FmtRuntimeError("Process died from signal {}{}"sv,
 									     WTERMSIG(status),
