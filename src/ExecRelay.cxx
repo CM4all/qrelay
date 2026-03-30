@@ -123,6 +123,9 @@ ExecRelay::OnChildProcessExit(int status) noexcept
 				     std::make_exception_ptr(FmtRuntimeError("Exit status {}",
 									     WEXITSTATUS(status))));
 	else if (deferred_response != nullptr)
+		/* OnNetstringResponse() has already been called, but
+		   the response has been postponed to verify the exit
+		   status - it's fine, we can submit the response */
 		BasicRelay::OnNetstringResponse(std::move(deferred_response));
 }
 
@@ -132,5 +135,7 @@ ExecRelay::OnNetstringResponse(AllocatedArray<std::byte> &&payload) noexcept
 	if (pidfd)
 		deferred_response = std::move(payload);
 	else
+		/* the child process still runs - postpone the
+		   response until OnChildProcessExit() gets called */
 		BasicRelay::OnNetstringResponse(std::move(payload));
 }
