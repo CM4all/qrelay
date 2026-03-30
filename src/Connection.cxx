@@ -197,15 +197,15 @@ QmqpRelayConnection::AssembleHeaders(const MutableMail &mail) noexcept
 {
 	std::list<std::span<const std::byte>> list;
 
+	for (const auto &i : mail.headers)
+		list.emplace_back(std::as_bytes(std::span{i}));
+
 	if (peer_auth.HaveCred()) {
 		char *end = fmt::format_to(received_buffer,
 					   "Received: from PID={} UID={} with QMQP\r\n",
 					   peer_auth.GetPid(), peer_auth.GetUid());
-		list.emplace_front(AsBytes(std::string_view{received_buffer, end}));
+		list.emplace_back(AsBytes(std::string_view{received_buffer, end}));
 	}
-
-	for (const auto &i : mail.headers)
-		list.emplace_front(std::as_bytes(std::span{i}));
 
 	return list;
 }

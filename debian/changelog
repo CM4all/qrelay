@@ -1,5 +1,6 @@
 cm4all-qrelay (0.37) unstable; urgency=low
 
+  * reverse the order of custom headers
   * lua: new libraries:
     - "control_client
     - "socket"
