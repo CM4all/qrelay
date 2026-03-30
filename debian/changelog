@@ -8,7 +8,7 @@ cm4all-qrelay (0.37) unstable; urgency=low
     - "socket"
   * fix build with glibc 2.43
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Mon, 30 Mar 2026 22:12:03 +0200
 
 cm4all-qrelay (0.36) unstable; urgency=low
 
