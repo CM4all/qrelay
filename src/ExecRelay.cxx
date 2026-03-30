@@ -114,7 +114,7 @@ ExecRelay::OnChildProcessExit(int status) noexcept
 	pidfd.reset();
 
 	if (WIFSIGNALED(status))
-		handler.OnRelayError(ExitStatusToQmqpResponse(WEXITSTATUS(status)),
+		handler.OnRelayError("Zinternal server error"sv,
 				     std::make_exception_ptr(FmtRuntimeError("Process died from signal {}{}"sv,
 									     WTERMSIG(status),
 									     WCOREDUMP(status) ? " (core dumped)"sv : ""sv)));
