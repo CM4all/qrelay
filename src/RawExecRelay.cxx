@@ -11,7 +11,6 @@
 #include "spawn/Registry.hxx"
 #include "lib/fmt/RuntimeError.hxx"
 #include "system/Error.hxx"
-#include "system/linux/PidFD.h"
 #include "io/Pipe.hxx"
 #include "io/UniqueFileDescriptor.hxx"
 #include "util/ScopeExit.hxx"
@@ -93,8 +92,8 @@ try {
 
 	env[n] = nullptr;
 
-	pid_t pid;
-	if (int error = posix_spawn(&pid, argv[0], &file_actions, &attr,
+	int _pidfd;
+	if (int error = pidfd_spawn(&_pidfd, argv[0], &file_actions, &attr,
 				    const_cast<char *const *>(argv),
 				    const_cast<char *const *>(env));
 	    error != 0)
@@ -105,7 +104,7 @@ try {
 
 	ExitListener &exit_listener = *this;
 	pidfd.reset(new PidfdEvent(GetEventLoop(),
-				   UniqueFileDescriptor{AdoptTag{}, my_pidfd_open(pid, 0)},
+				   UniqueFileDescriptor{AdoptTag{}, _pidfd},
 				   "exec_raw", exit_listener));
 
 	stdout_r.SetNonBlocking();
