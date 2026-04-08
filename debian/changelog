@@ -1,6 +1,7 @@
 cm4all-qrelay (0.38) unstable; urgency=low
 
   * fix use-after-free crash bug during Lua GC
+  * fix spurious bogus exec error messages
 
  --   
 

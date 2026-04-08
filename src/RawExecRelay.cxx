@@ -94,10 +94,11 @@ try {
 	env[n] = nullptr;
 
 	pid_t pid;
-	if (posix_spawn(&pid, argv[0], &file_actions, &attr,
-			const_cast<char *const *>(argv),
-			const_cast<char *const *>(env)) != 0)
-		throw MakeErrno("Failed to execute process");
+	if (int error = posix_spawn(&pid, argv[0], &file_actions, &attr,
+				    const_cast<char *const *>(argv),
+				    const_cast<char *const *>(env));
+	    error != 0)
+		throw MakeErrno(error, "Failed to execute process");
 
 	stdin_r.Close();
 	stdout_w.Close();
