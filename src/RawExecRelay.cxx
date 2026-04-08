@@ -65,7 +65,7 @@ try {
 	sigset_t signals;
 	sigemptyset(&signals);
 	posix_spawnattr_setsigmask(&attr, &signals);
-	sigaddset(&signals, SIGHUP);
+	sigaddset(&signals, SIGPIPE);
 	posix_spawnattr_setsigdefault(&attr, &signals);
 
 	posix_spawnattr_setflags(&attr, POSIX_SPAWN_SETSIGDEF|POSIX_SPAWN_SETSIGMASK);
