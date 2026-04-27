@@ -3,10 +3,9 @@
 // author: Max Kellermann <max.kellermann@ionos.com>
 
 #include "NetstringParser.hxx"
+#include "util/NumberParser.hxx"
 
 #include <algorithm>
-
-#include <stdlib.h>
 
 std::string_view
 ParseNetstring(Range<const char *> &input_r)
@@ -17,9 +16,8 @@ ParseNetstring(Range<const char *> &input_r)
 	if (colon == input.end())
 		return {};
 
-	char *endptr;
-	const size_t value_size = strtoul(input.begin(), &endptr, 10);
-	if (endptr != colon)
+	std::size_t value_size;
+	if (!ParseIntegerTo({input.begin(), colon}, value_size))
 		return {};
 
 	const char *value = colon + 1;
