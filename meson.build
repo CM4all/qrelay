@@ -145,12 +145,13 @@ libcommon_require_pg = get_option('pg')
 subdir('libcommon/src/pg')
 if pg_dep.found()
   subdir('libcommon/src/lua/pg')
-  pg_dep = lua_pg_dep
+else
+  lua_pg_dep = pg_dep
 endif
 
 conf.set('HAVE_LIBSODIUM', sodium_dep.found())
 conf.set('HAVE_LIBSYSTEMD', libsystemd.found())
-conf.set('HAVE_PG', pg_dep.found())
+conf.set('HAVE_PG', lua_pg_dep.found())
 configure_file(output: 'config.h', configuration: conf)
 
 executable('cm4all-qrelay',
@@ -184,7 +185,7 @@ executable('cm4all-qrelay',
     lua_net_dep,
     lua_event_dep,
     lua_sodium_dep,
-    pg_dep,
+    lua_pg_dep,
     event_net_dep,
     event_net_djb_dep,
     net_log_dep,
