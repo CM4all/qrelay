@@ -2,16 +2,11 @@
 // Copyright CM4all GmbH
 // author: Max Kellermann <max.kellermann@ionos.com>
 
-#ifndef NETSTRING_PARSER_HXX
-#define NETSTRING_PARSER_HXX
-
-#include "util/Range.hxx"
+#pragma once
 
 #include <string_view>
 
 class Error;
 
 std::string_view
-ParseNetstring(Range<const char *> &input);
-
-#endif
+ParseNetstring(std::string_view &input_r) noexcept;

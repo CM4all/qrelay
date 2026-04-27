@@ -5,6 +5,7 @@
 #include "QmqpMail.hxx"
 #include "NetstringParser.hxx"
 #include "uri/EmailAddress.hxx"
+#include "util/SpanCast.hxx"
 
 static inline constexpr std::string_view
 MakeStringView(const char *begin, const char *end)
@@ -15,8 +16,7 @@ MakeStringView(const char *begin, const char *end)
 bool
 QmqpMail::Parse(std::span<const std::byte> __input) noexcept
 {
-	const std::span<const char> _input{(const char *)__input.data(), __input.size()};
-	Range<const char *> input(_input.data(), _input.data() + _input.size());
+	std::string_view input = ToStringView(__input);
 
 	auto _message = ParseNetstring(input);
 	if (_message.data() == nullptr)

@@ -4,29 +4,24 @@
 
 #include "NetstringParser.hxx"
 #include "util/NumberParser.hxx"
-
-#include <algorithm>
+#include "util/StringSplit.hxx"
 
 std::string_view
-ParseNetstring(Range<const char *> &input_r)
+ParseNetstring(std::string_view &input_r) noexcept
 {
-	const Range<const char *> input = input_r;
+	const std::string_view input = input_r;
 
-	const char *colon = std::find(input.begin(), input.end(), ':');
-	if (colon == input.end())
+	const auto [value_size_string, rest] = Split(input, ':');
+	if (rest.data() == nullptr)
 		return {};
 
 	std::size_t value_size;
-	if (!ParseIntegerTo({input.begin(), colon}, value_size))
+	if (!ParseIntegerTo(value_size_string, value_size))
 		return {};
 
-	const char *value = colon + 1;
-
-	const size_t header_size = value - input.begin();
-	size_t remaining = input.size() - header_size;
-	if (value_size >= remaining || value[value_size] != ',')
+	if (value_size >= rest.size() || rest[value_size] != ',')
 		return {};
 
-	input_r = { value + value_size + 1, input.end() };
-	return { value, value_size };
+	input_r = rest.substr(value_size + 1);
+	return rest.substr(0, value_size);
 }

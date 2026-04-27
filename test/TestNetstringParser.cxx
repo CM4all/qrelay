@@ -11,50 +11,34 @@
 
 using std::string_view_literals::operator""sv;
 
-namespace {
-
-Range<const char *>
-MakeRange(std::string_view s) noexcept
-{
-	return {s.data(), s.data() + s.size()};
-}
-
-std::string_view
-Remaining(Range<const char *> r) noexcept
-{
-	return {r.begin(), static_cast<std::size_t>(r.end() - r.begin())};
-}
-
-} // namespace
-
 TEST(NetstringParser, Basic)
 {
-	auto input = MakeRange("3:foo,"sv);
+	auto input = "3:foo,"sv;
 	const auto value = ParseNetstring(input);
 
 	EXPECT_EQ(value, "foo"sv);
-	EXPECT_EQ(Remaining(input), ""sv);
+	EXPECT_EQ(input, ""sv);
 }
 
 TEST(NetstringParser, Empty)
 {
-	auto input = MakeRange("0:,"sv);
+	auto input = "0:,"sv;
 	const auto value = ParseNetstring(input);
 
 	EXPECT_NE(value.data(), nullptr);
 	EXPECT_EQ(value, ""sv);
-	EXPECT_EQ(Remaining(input), ""sv);
+	EXPECT_EQ(input, ""sv);
 }
 
 TEST(NetstringParser, AdvancesToNextValue)
 {
-	auto input = MakeRange("3:foo,4:tail,"sv);
+	auto input = "3:foo,4:tail,"sv;
 
 	EXPECT_EQ(ParseNetstring(input), "foo"sv);
-	EXPECT_EQ(Remaining(input), "4:tail,"sv);
+	EXPECT_EQ(input, "4:tail,"sv);
 
 	EXPECT_EQ(ParseNetstring(input), "tail"sv);
-	EXPECT_EQ(Remaining(input), ""sv);
+	EXPECT_EQ(input, ""sv);
 }
 
 TEST(NetstringParser, MalformedDoesNotAdvance)
@@ -77,7 +61,7 @@ TEST(NetstringParser, MalformedDoesNotAdvance)
 	};
 
 	for (const auto test : tests) {
-		auto input = MakeRange(test);
+		std::string_view input = test;
 		const auto old_begin = input.begin();
 		const auto old_end = input.end();
 
