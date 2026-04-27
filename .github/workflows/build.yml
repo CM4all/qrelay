@@ -32,6 +32,7 @@ jobs:
           sudo apt install -y --no-install-recommends \
             meson \
             ccache \
+            libgtest-dev \
             libsystemd-dev \
             libpq-dev \
             libluajit-5.1-dev

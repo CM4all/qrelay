@@ -199,3 +199,10 @@ executable('cm4all-qrelay',
 
 subdir('doc')
 subdir('test')
+subdir('libcommon/test/util')
+subdir('libcommon/test/uri')
+subdir('libcommon/test/time')
+subdir('libcommon/test/lua')
+subdir('libcommon/test/net')
+subdir('libcommon/test/pg')
+subdir('libcommon/test/sodium')
