@@ -74,9 +74,16 @@ class QmqpRelayConnection final :
 		INIT,
 
 		/**
-		 * A Netstring blob was received.
+		 * A Netstring blob was received but was not yet
+		 * parsed.  The #mail_ptr field is not yet valid.
 		 */
 		RECEIVED,
+
+		/**
+		 * The Netstring blob was parsed and #mail_ptr points
+		 * to a valid object.
+		 */
+		PARSED,
 
 		/**
 		 * The Lua handler is currently running.

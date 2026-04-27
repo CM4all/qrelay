@@ -64,6 +64,7 @@ QmqpRelayConnection::~QmqpRelayConnection() noexcept
 		   can't log it */
 		break;
 
+	case State::PARSED:
 	case State::LUA:
 	case State::RELAYING:
 		Log("canceled"sv);
@@ -100,6 +101,9 @@ QmqpRelayConnection::OnRequest(AllocatedArray<std::byte> &&payload)
 		Finish("Dmalformed input"sv);
 		return;
 	}
+
+	assert(state == State::RECEIVED);
+	state = State::PARSED;
 
 	/* create a new thread for the handler coroutine */
 	const auto L = thread.CreateThread(*this);
@@ -217,7 +221,7 @@ QmqpRelayConnection::OnError(std::exception_ptr ep) noexcept
 {
 	logger(1, ep);
 
-	if (state > State::INIT)
+	if (state >= State::PARSED)
 		Log("client error"sv);
 	delete this;
 }
