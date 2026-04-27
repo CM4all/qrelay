@@ -229,7 +229,7 @@ static void
 CollectExec(Action &action, lua_State *L, unsigned top)
 {
 	/* if the last parameter is a table, it may contain options */
-	if (lua_istable(L, top)) {
+	if (top > 2 && lua_istable(L, top)) {
 		CollectExecOptions(action, L, Lua::StackIndex(top));
 		--top;
 	}
