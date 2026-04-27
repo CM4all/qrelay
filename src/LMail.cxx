@@ -343,6 +343,8 @@ IncomingMail::Index(lua_State *L)
 		Lua::Push(L, static_cast<lua_Integer>(peer_auth.GetGid()));
 		return 1;
 	} else if (StringIsEqual(name, "cgroup")) {
+		/* this call throws if the client process has already
+		   exited which will fail the script */
 		const auto path = peer_auth.GetCgroupPath();
 		if (path.empty())
 			return 0;
