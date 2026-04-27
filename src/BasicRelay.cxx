@@ -25,9 +25,23 @@ BasicRelay::BasicRelay(EventLoop &event_loop, const QmqpMail &mail,
 
 }
 
+static constexpr bool
+IsValidQmqpResponse(std::string_view payload) noexcept
+{
+	return !payload.empty() &&
+		(payload.front() == 'K' || payload.front() == 'D' ||
+		 payload.front() == 'Z');
+}
+
 void
 BasicRelay::OnNetstringResponse(AllocatedArray<std::byte> &&payload) noexcept
 {
+	if (!IsValidQmqpResponse(ToStringView(payload))) {
+		handler.OnRelayError("Zmalformed relay response"sv,
+				     std::make_exception_ptr(std::runtime_error("Malformed QMQP response")));
+		return;
+	}
+
 	handler.OnRelayResponse(ToStringView(payload));
 }
 

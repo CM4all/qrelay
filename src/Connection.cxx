@@ -343,6 +343,7 @@ void
 QmqpRelayConnection::Finish(std::string_view response) noexcept
 {
 	assert(state != State::INIT && state != State::END);
+	assert(!response.empty());
 
 	if (state != State::RECEIVED)
 		Log(response.substr(1));
