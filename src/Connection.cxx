@@ -221,7 +221,7 @@ QmqpRelayConnection::OnError(std::exception_ptr ep) noexcept
 {
 	logger(1, ep);
 
-	if (state >= State::PARSED)
+	if (state >= State::PARSED && state < State::END)
 		Log("client error"sv);
 	delete this;
 }
