@@ -68,11 +68,36 @@ class QmqpRelayConnection final :
 
 	// only used for logging
 	enum class State : uint_least8_t {
+		/**
+		 * Nothing received yet.
+		 */
 		INIT,
+
+		/**
+		 * A Netstring blob was received.
+		 */
 		RECEIVED,
+
+		/**
+		 * The Lua handler is currently running.
+		 */
 		LUA,
+
+		/**
+		 * The Lua handler has finished, but the email is not
+		 * going to be relayed.
+		 */
 		NOT_RELAYING,
+
+		/**
+		 * The Lua handler has finished, and the email is
+		 * being relayed.
+		 */
 		RELAYING,
+
+		/**
+		 * The submission has ended.
+		 */
 		END
 	} state = State::INIT;
 
