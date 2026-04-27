@@ -45,7 +45,11 @@ jobs:
             -Ddocumentation=disabled \
              --force-fallback-for=fmt \
             -Dwrap_mode=nofallback \
+            -Dtest=enabled \
             output
 
       - name: Build
         run: ninja -C output -v
+
+      - name: Unit Tests
+        run: meson test -C output --print-errorlogs
