@@ -112,7 +112,8 @@ the front of the email.  Example::
 
   m:insert_header('X-Cgroup', m.cgroup)
 
-Both name and value must conform to RFC 2822 2.2.
+Both name and value must conform to RFC 2822 2.2.  No more than 16
+additional headers can be inserted this way.
 
 
 Actions

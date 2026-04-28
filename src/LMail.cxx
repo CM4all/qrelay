@@ -44,6 +44,14 @@ class IncomingMail : public MutableMail {
 	const SocketPeerAuth &peer_auth;
 
 public:
+	/**
+	 * The maximum number of Lua insert_header() calls.  This must
+	 * be limited to avoid overflowing the array in class
+	 * MultiWriteBuffer.
+	 */
+	static constexpr unsigned MAX_HEADERS = 16;
+	unsigned n_headers = 0;
+
 	IncomingMail(lua_State *L, Lua::AutoCloseList &_auto_close,
 		     MutableMail &&src, const SocketPeerAuth &_peer_auth)
 		:MutableMail(std::move(src)),
@@ -125,6 +133,11 @@ InsertHeader(lua_State *L)
 		luaL_argerror(L, 2, "Illegal header value");
 
 	auto &mail = (IncomingMail &)CastLuaMail(L, 1);
+
+	if (mail.n_headers >= IncomingMail::MAX_HEADERS)
+		return luaL_error(L, "Too many headers");
+
+	++mail.n_headers;
 	mail.InsertHeader(name, value);
 	return 0;
 }

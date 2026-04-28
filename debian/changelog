@@ -7,6 +7,7 @@ cm4all-qrelay (0.38) unstable; urgency=low
   * fix crash on empty QMQP response from relay
   * stricter netstring header parser
   * reject emails with more than 1024 recipients
+  * limit number of additional headers to 16
 
  --   
 
