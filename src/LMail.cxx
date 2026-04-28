@@ -68,6 +68,14 @@ public:
 		return auto_close == nullptr;
 	}
 
+	/**
+	 * Raise a Lua error if this object is stale.
+	 */
+	void CheckStale(lua_State *L) const {
+		if (IsStale()) [[unlikely]]
+			luaL_error(L, "Stale object");
+	}
+
 	int Close(lua_State *) {
 		auto_close = nullptr;
 		Free();
@@ -317,8 +325,7 @@ IncomingMail::Index(lua_State *L)
 	constexpr Lua::StackIndex name_idx{2};
 	const char *const name = luaL_checkstring(L, 2);
 
-	if (IsStale())
-		return luaL_error(L, "Stale object");
+	CheckStale(L);
 
 	for (const auto *i = mail_methods; i->name != nullptr; ++i) {
 		if (StringIsEqual(i->name, name)) {
@@ -378,8 +385,7 @@ IncomingMail::NewIndex(lua_State *L)
 	if (lua_gettop(L) != 3)
 		return luaL_error(L, "Invalid parameters");
 
-	if (IsStale())
-		return luaL_error(L, "Stale object");
+	CheckStale(L);
 
 	const char *const name = luaL_checkstring(L, 2);
 	constexpr int value_idx = 3;
