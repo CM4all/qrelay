@@ -85,6 +85,10 @@ QmqpRelayConnection::OnRequest(AllocatedArray<std::byte> &&payload)
 	case QmqpMail::ParseResult::BAD_ADDRESS:
 		Finish("Dbad address"sv);
 		return;
+
+	case QmqpMail::ParseResult::TOO_MANY_RECIPIENTS:
+		Finish("Dtoo many recipients"sv);
+		return;
 	}
 
 	assert(state == State::RECEIVED);

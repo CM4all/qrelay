@@ -12,6 +12,8 @@
  * An email received via QMQP.
  */
 struct QmqpMail {
+	static constexpr std::size_t MAX_RECIPIENTS = 1024;
+
 	/**
 	 * The message.
 	 */
@@ -52,6 +54,12 @@ struct QmqpMail {
 		 * At least one envelope address was bad.
 		 */
 		BAD_ADDRESS,
+
+		/**
+		 * Too many recipients.  This software has a
+		 * hard-coded limit for that.
+		 */
+		TOO_MANY_RECIPIENTS,
 	};
 
 	ParseResult Parse(std::span<const std::byte> input) noexcept;

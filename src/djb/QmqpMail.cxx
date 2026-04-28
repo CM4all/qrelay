@@ -43,6 +43,9 @@ QmqpMail::Parse(std::span<const std::byte> __input) noexcept
 		if (!VerifyEmailAddress(value))
 			return ParseResult::BAD_ADDRESS;
 
+		if (recipients.size() >= MAX_RECIPIENTS)
+			return ParseResult::TOO_MANY_RECIPIENTS;
+
 		recipients.push_back(value);
 	} while (!input.empty());
 
