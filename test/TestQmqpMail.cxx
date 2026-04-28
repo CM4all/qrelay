@@ -79,7 +79,7 @@ TEST(QmqpMail, EmptyMessage)
 
 TEST(QmqpMail, RejectsMalformedEnvelope)
 {
-	static const std::vector<std::string> tests{
+	const std::array tests{
 		MakeQmqp("message"sv, "not an address"sv, {"recipient@example.com"sv}),
 		MakeQmqp("message"sv, "sender@example.com"sv, {"not an address"sv}),
 		MakeQmqp("message"sv, "sender@example.com"sv, {}),
