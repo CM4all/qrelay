@@ -25,8 +25,11 @@ QmqpMail::Parse(std::span<const std::byte> __input) noexcept
 	message = _message;
 
 	auto _sender = ParseNetstring(input);
-	if (_sender.data() == nullptr || !VerifyEmailAddress(_sender))
+	if (_sender.data() == nullptr)
 		return ParseResult::MALFORMED;
+
+	if (!VerifyEmailAddress(_sender))
+		return ParseResult::BAD_ADDRESS;
 
 	sender = _sender;
 
@@ -34,8 +37,11 @@ QmqpMail::Parse(std::span<const std::byte> __input) noexcept
 
 	do {
 		auto value = ParseNetstring(input);
-		if (value.data() == nullptr || !VerifyEmailAddress(value))
+		if (value.data() == nullptr)
 			return ParseResult::MALFORMED;
+
+		if (!VerifyEmailAddress(value))
+			return ParseResult::BAD_ADDRESS;
 
 		recipients.push_back(value);
 	} while (!input.empty());

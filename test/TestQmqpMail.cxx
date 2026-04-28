@@ -80,8 +80,6 @@ TEST(QmqpMail, EmptyMessage)
 TEST(QmqpMail, RejectsMalformedEnvelope)
 {
 	const std::array tests{
-		MakeQmqp("message"sv, "not an address"sv, {"recipient@example.com"sv}),
-		MakeQmqp("message"sv, "sender@example.com"sv, {"not an address"sv}),
 		MakeQmqp("message"sv, "sender@example.com"sv, {}),
 		Netstring("message"sv) + " 18:sender@example.com," +
 			Netstring("recipient@example.com"sv),
@@ -94,5 +92,18 @@ TEST(QmqpMail, RejectsMalformedEnvelope)
 	for (const auto &payload : tests) {
 		QmqpMail mail;
 		ASSERT_EQ(mail.Parse(AsBytes(payload)), QmqpMail::ParseResult::MALFORMED) << payload;
+	}
+}
+
+TEST(QmqpMail, RejectsBadAddress)
+{
+	const std::array tests{
+		MakeQmqp("message"sv, "not an address"sv, {"recipient@example.com"sv}),
+		MakeQmqp("message"sv, "sender@example.com"sv, {"not an address"sv}),
+	};
+
+	for (const auto &payload : tests) {
+		QmqpMail mail;
+		ASSERT_EQ(mail.Parse(AsBytes(payload)), QmqpMail::ParseResult::BAD_ADDRESS) << payload;
 	}
 }

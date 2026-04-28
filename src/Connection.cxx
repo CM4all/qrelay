@@ -81,6 +81,10 @@ QmqpRelayConnection::OnRequest(AllocatedArray<std::byte> &&payload)
 	case QmqpMail::ParseResult::MALFORMED:
 		Finish("Dmalformed input"sv);
 		return;
+
+	case QmqpMail::ParseResult::BAD_ADDRESS:
+		Finish("Dbad address"sv);
+		return;
 	}
 
 	assert(state == State::RECEIVED);

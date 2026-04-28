@@ -47,6 +47,11 @@ struct QmqpMail {
 		 * syntax).
 		 */
 		MALFORMED,
+
+		/**
+		 * At least one envelope address was bad.
+		 */
+		BAD_ADDRESS,
 	};
 
 	ParseResult Parse(std::span<const std::byte> input) noexcept;
