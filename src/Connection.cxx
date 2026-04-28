@@ -64,7 +64,6 @@ QmqpRelayConnection::~QmqpRelayConnection() noexcept
 		   can't log it */
 		break;
 
-	case State::PARSED:
 	case State::LUA:
 	case State::RELAYING:
 		Log("canceled"sv);
@@ -103,7 +102,6 @@ QmqpRelayConnection::OnRequest(AllocatedArray<std::byte> &&payload)
 	}
 
 	assert(state == State::RECEIVED);
-	state = State::PARSED;
 
 	/* create a new thread for the handler coroutine */
 	const auto L = thread.CreateThread(*this);
@@ -221,7 +219,7 @@ QmqpRelayConnection::OnError(std::exception_ptr ep) noexcept
 {
 	logger(1, ep);
 
-	if (state >= State::PARSED && state < State::END)
+	if (mail_ptr != nullptr && state < State::END)
 		Log("client error"sv);
 	delete this;
 }
@@ -257,6 +255,7 @@ void
 QmqpRelayConnection::OnLuaFinished(lua_State *L) noexcept
 try {
 	assert(state == State::LUA);
+	assert(mail_ptr != nullptr);
 
 	const ScopeCheckStack check_thread_stack(L);
 
@@ -273,6 +272,7 @@ void
 QmqpRelayConnection::OnLuaError(lua_State *, std::exception_ptr &&error) noexcept
 {
 	assert(state == State::LUA);
+	assert(mail_ptr != nullptr);
 
 	logger(1, std::move(error));
 	Finish("Zscript failed"sv);
@@ -292,6 +292,7 @@ void
 QmqpRelayConnection::Log(std::string_view message) noexcept
 {
 	assert(state != State::END);
+	assert(mail_ptr != nullptr);
 
 	const auto &log_socket = instance.GetLogSocket();
 	if (!log_socket.IsDefined())
@@ -345,7 +346,7 @@ QmqpRelayConnection::Finish(std::string_view response) noexcept
 	assert(state != State::INIT && state != State::END);
 	assert(!response.empty());
 
-	if (state != State::RECEIVED)
+	if (mail_ptr != nullptr)
 		Log(response.substr(1));
 
 	if (SendResponse(response))

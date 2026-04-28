@@ -53,7 +53,13 @@ class QmqpRelayConnection final :
 	 */
 	Lua::Ref lua_mail;
 
-	MutableMail *mail_ptr;
+	/**
+	 * A pointer to the current #IncomingMail instance (pointing
+	 * to a Lua userdata object).  It is initially `nullptr` until
+	 * the email is parsed succesfully, right before the Lua
+	 * handler is invoked.
+	 */
+	MutableMail *mail_ptr = nullptr;
 
 	/**
 	 * An instance of the class that actually relays the email,
@@ -74,16 +80,10 @@ class QmqpRelayConnection final :
 		INIT,
 
 		/**
-		 * A Netstring blob was received but was not yet
-		 * parsed.  The #mail_ptr field is not yet valid.
+		 * A Netstring blob was received and will be parsed
+		 * (and then #mail_ptr will be set).
 		 */
 		RECEIVED,
-
-		/**
-		 * The Netstring blob was parsed and #mail_ptr points
-		 * to a valid object.
-		 */
-		PARSED,
 
 		/**
 		 * The Lua handler is currently running.
