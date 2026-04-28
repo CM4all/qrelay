@@ -1,3 +1,9 @@
+cm4all-qrelay (0.39) unstable; urgency=low
+
+  * 
+
+ --   
+
 cm4all-qrelay (0.38) unstable; urgency=low
 
   * lua: fix assertion failure on illegal exec() call
