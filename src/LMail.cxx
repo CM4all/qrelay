@@ -283,7 +283,7 @@ static constexpr struct luaL_Reg mail_methods [] = {
 };
 
 static void
-PushArray(lua_State *L, const std::vector<std::string_view> &src)
+PushArray(lua_State *L, const std::span<const std::string_view> src)
 {
 	using namespace Lua;
 
