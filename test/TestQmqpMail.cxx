@@ -49,7 +49,7 @@ TEST(QmqpMail, Basic)
 				      {"one@example.com"sv, "two@example.com"sv});
 
 	QmqpMail mail;
-	ASSERT_TRUE(mail.Parse(AsBytes(payload)));
+	ASSERT_EQ(mail.Parse(AsBytes(payload)), QmqpMail::ParseResult::SUCCESS);
 
 	EXPECT_EQ(mail.message, "Subject: Hello!\r\n\r\nBody\r\n"sv);
 	EXPECT_EQ(mail.sender, "sender@example.com"sv);
@@ -68,7 +68,7 @@ TEST(QmqpMail, EmptyMessage)
 				      {"recipient@example.com"sv});
 
 	QmqpMail mail;
-	ASSERT_TRUE(mail.Parse(AsBytes(payload)));
+	ASSERT_EQ(mail.Parse(AsBytes(payload)), QmqpMail::ParseResult::SUCCESS);
 
 	EXPECT_NE(mail.message.data(), nullptr);
 	EXPECT_EQ(mail.message, ""sv);
@@ -93,6 +93,6 @@ TEST(QmqpMail, RejectsMalformedEnvelope)
 
 	for (const auto &payload : tests) {
 		QmqpMail mail;
-		EXPECT_FALSE(mail.Parse(AsBytes(payload))) << payload;
+		ASSERT_EQ(mail.Parse(AsBytes(payload)), QmqpMail::ParseResult::MALFORMED) << payload;
 	}
 }

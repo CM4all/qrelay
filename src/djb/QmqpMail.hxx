@@ -35,5 +35,19 @@ struct QmqpMail {
 	 */
 	std::vector<std::string_view> recipients;
 
-	bool Parse(std::span<const std::byte> input) noexcept;
+	enum class ParseResult {
+		/**
+		 * Parsing has succeeded and all fields contain valid
+		 * values.
+		 */
+		SUCCESS,
+
+		/**
+		 * The input was malformed (bad Netstring or QMQP
+		 * syntax).
+		 */
+		MALFORMED,
+	};
+
+	ParseResult Parse(std::span<const std::byte> input) noexcept;
 };

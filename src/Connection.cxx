@@ -74,7 +74,11 @@ QmqpRelayConnection::OnRequest(AllocatedArray<std::byte> &&payload)
 	state = State::RECEIVED;
 
 	MutableMail mail(std::move(payload));
-	if (!mail.Parse()) {
+	switch (mail.Parse()) {
+	case QmqpMail::ParseResult::SUCCESS:
+		break;
+
+	case QmqpMail::ParseResult::MALFORMED:
 		Finish("Dmalformed input"sv);
 		return;
 	}

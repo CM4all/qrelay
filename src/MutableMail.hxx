@@ -55,7 +55,7 @@ struct MutableMail : QmqpMail {
 		account.clear();
 	}
 
-	bool Parse() {
+	ParseResult Parse() noexcept {
 		return QmqpMail::Parse(buffer);
 	}
 

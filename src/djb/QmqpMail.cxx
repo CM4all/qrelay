@@ -13,20 +13,20 @@ MakeStringView(const char *begin, const char *end)
 	return {begin, size_t(end - begin)};
 }
 
-bool
+QmqpMail::ParseResult
 QmqpMail::Parse(std::span<const std::byte> __input) noexcept
 {
 	std::string_view input = ToStringView(__input);
 
 	auto _message = ParseNetstring(input);
 	if (_message.data() == nullptr)
-		return false;
+		return ParseResult::MALFORMED;
 
 	message = _message;
 
 	auto _sender = ParseNetstring(input);
 	if (_sender.data() == nullptr || !VerifyEmailAddress(_sender))
-		return false;
+		return ParseResult::MALFORMED;
 
 	sender = _sender;
 
@@ -35,10 +35,10 @@ QmqpMail::Parse(std::span<const std::byte> __input) noexcept
 	do {
 		auto value = ParseNetstring(input);
 		if (value.data() == nullptr || !VerifyEmailAddress(value))
-			return false;
+			return ParseResult::MALFORMED;
 
 		recipients.push_back(value);
 	} while (!input.empty());
 
-	return true;
+	return ParseResult::SUCCESS;
 }
