@@ -50,6 +50,7 @@ TEST(NetstringParser, MalformedDoesNotAdvance)
 		"foo"sv,
 		"foo:bar,"sv,
 		" 3:foo,"sv,
+		"03:foo,"sv, // no leading zeroes allowed
 		"+3:foo,"sv,
 		"-3:foo,"sv,
 		"1.0:x,"sv,

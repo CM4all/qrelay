@@ -19,6 +19,10 @@ ParseNetstring(std::string_view &input_r) noexcept
 	if (!ParseIntegerTo(value_size_string, value_size))
 		return {};
 
+	if (value_size > 0 && value_size_string.front() == '0')
+		/* reject leading zeroes */
+		return {};
+
 	if (value_size >= rest.size() || rest[value_size] != ',')
 		return {};
 
