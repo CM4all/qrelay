@@ -3,6 +3,7 @@
 // author: Max Kellermann <max.kellermann@ionos.com>
 
 #include "djb/QmqpMail.hxx"
+#include "util/SpanCast.hxx"
 
 #include <gtest/gtest.h>
 
@@ -39,18 +40,6 @@ MakeQmqp(std::string_view message, std::string_view sender,
 	return payload;
 }
 
-std::span<const std::byte>
-AsBytes(std::string_view s) noexcept
-{
-	return {reinterpret_cast<const std::byte *>(s.data()), s.size()};
-}
-
-bool
-Parse(QmqpMail &mail, const std::string &payload) noexcept
-{
-	return mail.Parse(AsBytes(payload));
-}
-
 } // namespace
 
 TEST(QmqpMail, Basic)
@@ -60,7 +49,7 @@ TEST(QmqpMail, Basic)
 				      {"one@example.com"sv, "two@example.com"sv});
 
 	QmqpMail mail;
-	ASSERT_TRUE(Parse(mail, payload));
+	ASSERT_TRUE(mail.Parse(AsBytes(payload)));
 
 	EXPECT_EQ(mail.message, "Subject: Hello!\r\n\r\nBody\r\n"sv);
 	EXPECT_EQ(mail.sender, "sender@example.com"sv);
@@ -79,7 +68,7 @@ TEST(QmqpMail, EmptyMessage)
 				      {"recipient@example.com"sv});
 
 	QmqpMail mail;
-	ASSERT_TRUE(Parse(mail, payload));
+	ASSERT_TRUE(mail.Parse(AsBytes(payload)));
 
 	EXPECT_NE(mail.message.data(), nullptr);
 	EXPECT_EQ(mail.message, ""sv);
@@ -104,6 +93,6 @@ TEST(QmqpMail, RejectsMalformedEnvelope)
 
 	for (const auto &payload : tests) {
 		QmqpMail mail;
-		EXPECT_FALSE(Parse(mail, payload)) << payload;
+		EXPECT_FALSE(mail.Parse(AsBytes(payload))) << payload;
 	}
 }
