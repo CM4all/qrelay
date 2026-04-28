@@ -141,6 +141,7 @@ InsertHeader(lua_State *L)
 		luaL_argerror(L, 2, "Illegal header value");
 
 	auto &mail = (IncomingMail &)CastLuaMail(L, 1);
+	mail.CheckStale(L);
 
 	if (mail.n_headers >= IncomingMail::MAX_HEADERS)
 		return luaL_error(L, "Too many headers");
