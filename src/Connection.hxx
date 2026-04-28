@@ -58,6 +58,8 @@ class QmqpRelayConnection final :
 	 * to a Lua userdata object).  It is initially `nullptr` until
 	 * the email is parsed succesfully, right before the Lua
 	 * handler is invoked.
+	 *
+	 * Log() will clear this field.
 	 */
 	MutableMail *mail_ptr = nullptr;
 

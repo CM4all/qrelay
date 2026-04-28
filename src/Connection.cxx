@@ -54,30 +54,8 @@ QmqpRelayConnection::QmqpRelayConnection(Instance &_instance,
 
 QmqpRelayConnection::~QmqpRelayConnection() noexcept
 {
-	switch (state) {
-	case State::INIT:
-		/* nothing received yet, don't bother logging this */
-		break;
-
-	case State::RECEIVED:
-		/* we received something, but maybe it's malformed, so
-		   can't log it */
-		break;
-
-	case State::LUA:
-	case State::RELAYING:
+	if (mail_ptr != nullptr)
 		Log("canceled"sv);
-		break;
-
-	case State::NOT_RELAYING:
-		/* this should not be reachable because the connection
-		   does not get destructed without calling Log() */
-		break;
-
-	case State::END:
-		/* already logged */
-		break;
-	}
 
 	thread.Cancel();
 }
@@ -219,7 +197,7 @@ QmqpRelayConnection::OnError(std::exception_ptr ep) noexcept
 {
 	logger(1, ep);
 
-	if (mail_ptr != nullptr && state < State::END)
+	if (mail_ptr != nullptr)
 		Log("client error"sv);
 	delete this;
 }
@@ -338,6 +316,7 @@ QmqpRelayConnection::Log(std::string_view message) noexcept
 	}
 
 	state = State::END;
+	mail_ptr = nullptr;
 }
 
 void
