@@ -1,6 +1,6 @@
 cm4all-qrelay (0.39) unstable; urgency=low
 
-  * 
+  * lua: fix crash on error() with non-string parameter
 
  --   
 
