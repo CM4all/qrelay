@@ -3,7 +3,7 @@ cm4all-qrelay (0.39) unstable; urgency=low
   * lua: fix crash on error() with non-string parameter
   * lua/socket: rethrow C++ exception from resolver as Lua error
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Wed, 29 Apr 2026 22:00:39 +0200
 
 cm4all-qrelay (0.38) unstable; urgency=low
 
