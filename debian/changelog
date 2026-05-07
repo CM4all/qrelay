@@ -1,6 +1,7 @@
 cm4all-qrelay (0.40) unstable; urgency=low
 
   * lua: add JSON library
+  * lua/sodium: add Lua bindings for crypto_sign
 
  --   
 

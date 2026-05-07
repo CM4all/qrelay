@@ -287,8 +287,16 @@ There are some `libsodium <https://www.libsodium.org/>`__ bindings.
   ciphertext = sodium.crypto_box_seal('hello world', pk)
   message = sodium.crypto_box_seal_open(ciphertext, pk, sk)
 
+`Public-key signatures
+<https://libsodium.gitbook.io/doc/public-key_cryptography/public-key_signatures>`__::
+
+  pk, sk = sodium.crypto_sign_keypair()
+  m = 'hello world'
+  sig = sodium.crypto_sign_detached(m, sk)
+  valid = sodium.crypto_sign_verify_detached(sig, m, pk)
+
 `Point*scalar multiplication
-<https://doc.libsodium.org/advanced/scalar_multiplication>__::
+<https://doc.libsodium.org/advanced/scalar_multiplication>`__::
 
   pk = sodium.crypto_scalarmult_base(sk)
 
