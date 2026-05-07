@@ -106,10 +106,12 @@ inc = include_directories(
 )
 
 libcommon_enable_DefaultFifoBuffer = false
+libcommon_enable_json = get_option('json')
 libcommon_require_sodium = get_option('sodium')
 
 subdir('libcommon/src/util')
 subdir('libcommon/src/lib/fmt')
+subdir('libcommon/src/lib/nlohmann_json')
 subdir('libcommon/src/lib/sodium')
 subdir('libcommon/src/uri')
 subdir('libcommon/src/time')
@@ -136,6 +138,12 @@ else
   lua_sodium_dep = sodium_dep
 endif
 
+if nlohmann_json_dep.found()
+  subdir('libcommon/src/lua/json')
+else
+  lua_json_dep = nlohmann_json_dep
+endif
+
 if libsystemd.found()
   subdir('libcommon/src/event/systemd')
   libsystemd = event_systemd_dep
@@ -149,6 +157,7 @@ else
   lua_pg_dep = pg_dep
 endif
 
+conf.set('HAVE_JSON', nlohmann_json_dep.found())
 conf.set('HAVE_LIBSODIUM', sodium_dep.found())
 conf.set('HAVE_LIBSYSTEMD', libsystemd.found())
 conf.set('HAVE_PG', lua_pg_dep.found())
@@ -184,6 +193,7 @@ executable('cm4all-qrelay',
     lua_io_dep,
     lua_net_dep,
     lua_event_dep,
+    lua_json_dep,
     lua_sodium_dep,
     lua_pg_dep,
     event_net_dep,

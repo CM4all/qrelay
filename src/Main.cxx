@@ -35,6 +35,10 @@
 #include "lua/sodium/Init.hxx"
 #endif
 
+#ifdef HAVE_JSON
+#include "lua/json/Init.hxx"
+#endif
+
 extern "C" {
 #include <lauxlib.h>
 #include <lualib.h>
@@ -120,6 +124,10 @@ SetupConfigState(lua_State *L, Instance &instance)
 
 #ifdef HAVE_LIBSODIUM
 	Lua::InitSodium(L);
+#endif
+
+#ifdef HAVE_JSON
+	Lua::InitJson(L);
 #endif
 
 	Lua::InitEvent(L, instance.GetEventLoop());
