@@ -39,6 +39,10 @@
 #include "lua/json/Init.hxx"
 #endif
 
+#ifdef HAVE_JWT
+#include "lua/jwt/Init.hxx"
+#endif
+
 extern "C" {
 #include <lauxlib.h>
 #include <lualib.h>
@@ -128,6 +132,10 @@ SetupConfigState(lua_State *L, Instance &instance)
 
 #ifdef HAVE_JSON
 	Lua::InitJson(L);
+#endif
+
+#ifdef HAVE_JWT
+	Lua::InitJwt(L);
 #endif
 
 	Lua::InitEvent(L, instance.GetEventLoop());
