@@ -11,13 +11,13 @@
 #include <memory>
 
 struct Action;
-class ChildProcessRegistry;
+class ChildProcessTerminator;
 class PidfdEvent;
 
 class ExecRelay final
 	: BasicRelay, ExitListener
 {
-	ChildProcessRegistry &child_process_registry;
+	ChildProcessTerminator &child_process_terminator;
 
 	AllocatedArray<std::byte> deferred_response;
 
@@ -26,7 +26,7 @@ class ExecRelay final
 public:
 	[[nodiscard]]
 	ExecRelay(EventLoop &event_loop,
-		  ChildProcessRegistry &_child_process_registry,
+		  ChildProcessTerminator &_child_process_terminator,
 		  const QmqpMail &mail,
 		  std::list<std::span<const std::byte>> &&additional_headers,
 		  RelayHandler &_handler) noexcept;

@@ -14,14 +14,14 @@
 
 struct Action;
 struct QmqpMail;
-class ChildProcessRegistry;
+class ChildProcessTerminator;
 class PidfdEvent;
 class RelayHandler;
 
 class RawExecRelay final
 	: ExitListener
 {
-	ChildProcessRegistry &child_process_registry;
+	ChildProcessTerminator &child_process_terminator;
 
 	RelayHandler &handler;
 
@@ -43,7 +43,7 @@ class RawExecRelay final
 
 public:
 	RawExecRelay(EventLoop &event_loop,
-		     ChildProcessRegistry &_child_process_registry,
+		     ChildProcessTerminator &_child_process_terminator,
 		     const QmqpMail &mail,
 		     std::list<std::span<const std::byte>> &&additional_headers,
 		     RelayHandler &_handler);

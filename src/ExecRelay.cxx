@@ -7,7 +7,7 @@
 #include "Handler.hxx"
 #include "Action.hxx"
 #include "spawn/PidfdEvent.hxx"
-#include "spawn/Registry.hxx"
+#include "spawn/Terminator.hxx"
 #include "lib/fmt/RuntimeError.hxx"
 #include "system/Error.hxx"
 #include "io/Pipe.hxx"
@@ -23,19 +23,19 @@
 using std::string_view_literals::operator""sv;
 
 ExecRelay::ExecRelay(EventLoop &event_loop,
-		     ChildProcessRegistry &_child_process_registry,
+		     ChildProcessTerminator &_child_process_terminator,
 		     const QmqpMail &mail,
 		     std::list<std::span<const std::byte>> &&additional_headers,
 		     RelayHandler &_handler) noexcept
 	:BasicRelay(event_loop, mail, std::move(additional_headers), _handler),
-	 child_process_registry(_child_process_registry)
+	 child_process_terminator(_child_process_terminator)
 {
 }
 
 ExecRelay::~ExecRelay() noexcept
 {
 	if (pidfd)
-		child_process_registry.Kill(std::move(pidfd), SIGTERM);
+		child_process_terminator.Kill(std::move(pidfd), SIGTERM);
 }
 
 bool
