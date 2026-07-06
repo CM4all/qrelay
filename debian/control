@@ -13,7 +13,7 @@ Build-Depends: debhelper (>= 13.3~),
  libpq-dev,
  libluajit-5.1-dev,
  libgtest-dev,
- pkg-config,
+ pkgconf,
  python3-sphinx
 Standards-Version: 4.0.0
 Vcs-Browser: https://github.com/CM4all/qrelay
