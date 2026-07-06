@@ -29,7 +29,7 @@ extern "C" {
 #include <lauxlib.h>
 }
 
-#include <fmt/core.h>
+#include <fmt/format.h>
 
 #include <cmath> // for std::isnormal()
 

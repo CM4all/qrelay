@@ -1,6 +1,8 @@
 cm4all-qrelay (0.41) unstable; urgency=low
 
+  * support libfmt 12.2.0
   * debian: build-depend on pkgconf instead of pkg-config
+  * debian: add copyright file
 
  --   
 
