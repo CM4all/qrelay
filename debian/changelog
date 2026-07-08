@@ -4,7 +4,7 @@ cm4all-qrelay (0.41) unstable; urgency=low
   * debian: build-depend on pkgconf instead of pkg-config
   * debian: add copyright file
 
- --   
+ -- Max Kellermann <mk@cm4all.com>  Wed, 08 Jul 2026 19:46:48 +0200
 
 cm4all-qrelay (0.40) unstable; urgency=low
 
