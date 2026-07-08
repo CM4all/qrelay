@@ -1,6 +1,7 @@
 cm4all-qrelay (0.42) unstable; urgency=low
 
   * debian: add source/format file
+  * debian/copyright: add license text
 
  --   
 
