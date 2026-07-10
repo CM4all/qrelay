@@ -1,5 +1,7 @@
 [Unit]
 Description=CM4all QMQP relay daemon
+Documentation=https://qrelay.readthedocs.io/
+
 Wants=network-online.target
 After=network-online.target
 

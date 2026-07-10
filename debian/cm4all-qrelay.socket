@@ -1,4 +1,6 @@
 [Socket]
+Documentation=https://qrelay.readthedocs.io/
+
 ListenStream=/run/cm4all/qrelay/socket
 PassCredentials=true
 
