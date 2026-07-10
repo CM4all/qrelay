@@ -5,7 +5,7 @@ cm4all-qrelay (0.42) unstable; urgency=low
   * debian/control: set "Priority: optional"
   * debian/copyright: add license text and year
 
- --   
+ -- Max Kellermann <max.kellermann@ionos.com>  Fri, 10 Jul 2026 12:51:46 +0200
 
 cm4all-qrelay (0.41) unstable; urgency=low
 
