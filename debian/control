@@ -17,7 +17,7 @@ Build-Depends: debhelper (>= 13.3~),
  python3-sphinx
 Standards-Version: 4.0.0
 Vcs-Browser: https://github.com/CM4all/qrelay
-Vcs-Git: git://github.com/CM4all/qrelay
+Vcs-Git: https://github.com/CM4all/qrelay
 
 Package: cm4all-qrelay
 Architecture: any
