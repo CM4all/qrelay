@@ -227,9 +227,12 @@ CollectExecOptions(Action &action, lua_State *L, Lua::AnyStackIndex auto idx)
 			luaL_error(L, "Option key is not a string");
 
 		const auto key = Lua::ToStringView(L, Lua::GetStackIndex(key_idx));
-		if (key == "env"sv)
+		if (key == "env"sv) {
+			if (!lua_istable(L, Lua::GetStackIndex(value_idx)))
+				luaL_error(L, "Env is not a table");
+
 			CollectExecEnv(action, L, value_idx);
-		else if (key == "timeout"sv) {
+		} else if (key == "timeout"sv) {
 			if (!lua_isnumber(L, Lua::GetStackIndex(value_idx)))
 				luaL_error(L, "Timeout is not a number");
 
