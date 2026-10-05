@@ -148,6 +148,14 @@ The following actions are possible:
   envelope is not submitted, the caller should translate the envelope
   to command-line arguments.
 
+  .. note:: The program launched by this action may interpret the
+            envelope email addresses passed as command-line arguments
+            as options instead, because email addresses are allowed to
+            start with a dash (``-``).  The Lua script is responsible
+            to handle this, for example by inserting a double dash
+            parameter (``--``) which disables further parsing of
+            command-line options, if the program supports that.
+
   The last parameter may be a table specifying options (the same as
   for ``exec()``).
 
