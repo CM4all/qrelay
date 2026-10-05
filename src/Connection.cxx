@@ -317,7 +317,7 @@ QmqpRelayConnection::Log(std::string_view message) noexcept
 		? traffic_received + added_header_size
 		: 0;
 
-	const auto d = Net::Log::Datagram{
+	auto d = Net::Log::Datagram{
 		.timestamp = Net::Log::FromSystem(GetEventLoop().SystemNow()),
 		.site = mail_ptr->account.empty() ? nullptr : mail_ptr->account.c_str(),
 		.message = message,
@@ -325,6 +325,10 @@ QmqpRelayConnection::Log(std::string_view message) noexcept
 	}.SetTraffic(traffic_received, traffic_sent)
 		.SetLength(mail_ptr->message.size() + added_header_size)
 		.SetDuration(std::chrono::duration_cast<Net::Log::Duration>(GetEventLoop().SteadyNow() - start_time));
+
+	/* don't let this log datagram exceed the maximum size (it
+	   would be dropped silently) */
+	d.TruncateMessage(1024);
 
 	try {
 		Net::Log::Send(log_socket, d);
