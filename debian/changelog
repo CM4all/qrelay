@@ -1,6 +1,7 @@
 cm4all-qrelay (0.43) unstable; urgency=low
 
   * lua/control: rethrow LuaJIT errors
+  * lua/pg: quote the LISTEN channel name
 
  --   
 
