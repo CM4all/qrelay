@@ -1,5 +1,6 @@
 cm4all-qrelay (0.43) unstable; urgency=low
 
+  * qmqp: strip leading space in messages to avoid header confusion
   * lua/control: rethrow LuaJIT errors
   * lua/pg: quote the LISTEN channel name
   * lua/pg: reject execute() string parameters containing a null byte

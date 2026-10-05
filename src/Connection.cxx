@@ -20,6 +20,7 @@
 #include "lua/Error.hxx"
 #include "util/ScopeExit.hxx"
 #include "util/SpanCast.hxx"
+#include "util/StringStrip.hxx"
 
 #include <fmt/format.h>
 
@@ -92,6 +93,10 @@ QmqpRelayConnection::OnRequest(AllocatedArray<std::byte> &&payload)
 	}
 
 	assert(state == State::RECEIVED);
+
+	/* strip leading space to avoid the first line to be confused
+	   as a header continuation */
+	mail.message = StripLeft(mail.message);
 
 	/* create a new thread for the handler coroutine */
 	const auto L = thread.CreateThread(*this);
