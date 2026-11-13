@@ -2,7 +2,8 @@ Source: cm4all-qrelay
 Section: mail
 Priority: optional
 Maintainer: Max Kellermann <max.kellermann@ionos.com>
-Build-Depends: debhelper (>= 13.3~),
+Build-Depends: debhelper-compat (= 13),
+ dh-sequence-installsysusers,
  meson (>= 1.2),
  g++ (>= 4:12),
  libc6-dev (>= 2.13),

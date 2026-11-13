@@ -1,6 +1,6 @@
 cm4all-qrelay (0.44) unstable; urgency=low
 
-  * 
+  * debian: use "debhelper-compat" instead of "debian/compat"
 
  --   
 
