@@ -2,7 +2,7 @@ cm4all-qrelay (0.44) unstable; urgency=low
 
   * debian: use "debhelper-compat" instead of "debian/compat"
 
- --   
+ -- Max Kellermann <max.kellermann@ionos.com>  Fri, 13 Nov 2026 09:31:43 +0100
 
 cm4all-qrelay (0.43) unstable; urgency=low
 
