@@ -16,7 +16,7 @@ Build-Depends: debhelper-compat (= 13),
  libgtest-dev,
  pkgconf,
  python3-sphinx
-Standards-Version: 4.7.2
+Standards-Version: 4.7.4
 Vcs-Browser: https://github.com/CM4all/qrelay
 Vcs-Git: https://github.com/CM4all/qrelay
 
