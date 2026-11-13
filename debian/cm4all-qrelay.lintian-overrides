@@ -1,2 +1,5 @@
 # no manpages here; the documentation is in the "-doc" package
 no-manual-page
+
+# this daemon should be started a dependency
+systemd-service-file-missing-install-key
